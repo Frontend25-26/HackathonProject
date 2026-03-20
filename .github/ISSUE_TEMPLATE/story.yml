@@ -1,0 +1,58 @@
+name: Сторя
+description: Новая фича или улучшение для бэклога
+labels: [story]
+projects: ["ВашаОрг/1"]
+type: Feature
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      placeholder: Что нужно реализовать и зачем
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии готовности
+      description: Как понять что задача выполнена
+      placeholder: |
+        - [ ] Студент видит список ДЗ
+        - [ ] Статусы отображаются корректно
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - '0'
+        - '1'
+        - '2'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options:
+        - XS
+        - S
+        - M
+        - L
+        - XL
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Хакатон
+      options:
+        - Хакатон №1 - 28 марта
+        - Бэклог
+    validations:
+      required: true
