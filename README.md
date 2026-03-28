@@ -3,13 +3,9 @@
 ## Стек
 
 - **Next.js**
-- **React**
 - **TypeScript**
 - **ESLint**
-- **Jest / React Testing Library**
-- **Storybook**
 - **SCSS Modules / Tailwind CSS**
-- **Axios / Fetch**
 
 ## Feature-Sliced Design
 ```text
@@ -22,11 +18,12 @@ src/
 ```
 ## Команды запуска
 ```bash
-npm run start   Запустить приложение
-npm run dev     Запуск сборки для разработчиков 
-npm run build   Сборка 
-npm run lint    Проверка кода линтером
-npm test        Запуск тестов
+npm run start       Запустить приложение
+npm run dev         Запуск сборки для разработчиков 
+npm run build       Сборка 
+npm run lint        Проверка кода линтером
+npm run lint:fix    Автоматические изменения линтером 
+npm test            Запуск тестов
 ```
 ## Conventional Commits
 ```
@@ -47,6 +44,7 @@ feat/{n}
 fix/{n}
 refactor/{n} 
 ``` 
+
 ## Backend & Mocks
 
 Все API-запросы фронтенда проксируются через `src/app/api/[...path]/route.ts`. Режим работы определяется переменной окружения `USE_MOCKS`.
