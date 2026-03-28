@@ -1,50 +1,50 @@
 name: Баг
 description: Что-то работает не так
 labels: [bug]
-projects: ["ВашаОрг/1"]
+projects: ['ВашаОрг/1']
 type: Bug
 body:
-  - type: textarea
-    id: description
-    attributes:
-      label: Что происходит
-      placeholder: Описание бага
-    validations:
-      required: true
+    - type: textarea
+      id: description
+      attributes:
+          label: Что происходит
+          placeholder: Описание бага
+      validations:
+          required: true
 
-  - type: textarea
-    id: steps
-    attributes:
-      label: Шаги для воспроизведения
-      placeholder: |
-        1. Открыть страницу /dashboard
-        2. Нажать на ...
-        3. Увидеть ошибку
-    validations:
-      required: true
+    - type: textarea
+      id: steps
+      attributes:
+          label: Шаги для воспроизведения
+          placeholder: |
+              1. Открыть страницу /dashboard
+              2. Нажать на ...
+              3. Увидеть ошибку
+      validations:
+          required: true
 
-  - type: textarea
-    id: expected
-    attributes:
-      label: Ожидаемое поведение
-    validations:
-      required: true
+    - type: textarea
+      id: expected
+      attributes:
+          label: Ожидаемое поведение
+      validations:
+          required: true
 
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      options:
-        - '0'
-        - '1'
-        - '2'
-    validations:
-      required: true
+    - type: dropdown
+      id: priority
+      attributes:
+          label: Priority
+          options:
+              - '0'
+              - '1'
+              - '2'
+      validations:
+          required: true
 
-  - type: input
-    id: url
-    attributes:
-      label: URL или маршрут
-      placeholder: /homework/123
-    validations:
-      required: false
+    - type: input
+      id: url
+      attributes:
+          label: URL или маршрут
+          placeholder: /homework/123
+      validations:
+          required: false
