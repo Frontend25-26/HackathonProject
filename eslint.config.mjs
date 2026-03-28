@@ -1,25 +1,21 @@
-import babelParser from '@babel/eslint-parser';
-import { defineConfig } from 'eslint/config';
-import eslintConfigPrettier from 'eslint-config-prettier';
-import importPlugins from 'eslint-plugin-import';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import tseslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config'
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import importPlugins from 'eslint-plugin-import'
+import tseslint from 'typescript-eslint'
 
-import eslintignore from './eslintignore.mjs';
+import eslintignore from './eslintignore.mjs'
 
 export default defineConfig([
     eslintignore,
+    ...nextCoreWebVitals,
+    ...tseslint.configs.recommended,
     {
-        files: ['**/*.{js,jsx,mjs,ts,tsx,mts,mdx}'],
+        files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
         plugins: {
-            '@typescript-eslint': tseslint.plugin,
-            react,
-            'react-hooks': reactHooks,
             import: importPlugins,
-            eslintConfigPrettier,
         },
         rules: {
+            semi: ['error', 'never'],
             'import/order': [
                 'error',
                 {
@@ -40,46 +36,27 @@ export default defineConfig([
                     },
                 },
             ],
-            'sort-imports': 'off', // Disable core sort-imports rule to avoid conflict
-        },
-        languageOptions: {
-            parser: babelParser,
-            ecmaVersion: 2020,
-            sourceType: 'module',
-            parserOptions: {
-                requireConfigFile: false,
-                ecmaFeatures: {
-                    jsx: true,
-                },
-                babelOptions: {
-                    presets: ['next/babel'],
-                    caller: {
-                        supportsTopLevelAwait: true,
-                    },
-                },
-            },
+            'import/newline-after-import': ['error', { count: 1 }],
+            'sort-imports': 'off',
         },
         settings: {
-            react: {
-                version: 'detect',
-            },
             'import/resolver': {
                 typescript: true,
             },
-            'import/internal-regex': '^next/',
         },
     },
     {
-        files: [
-            'test/**/*.js',
-            'test/**/*.ts',
-            'test/**/*.tsx',
-            '**/*.test.ts',
-            '**/*.test.tsx',
-        ],
-        ignores: ['test/tmp/**'],
+        files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'],
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'warn',
+                {
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
+        },
     },
-    {
-        files: ['**/__tests__/**'],
-    },
-]);
+])
