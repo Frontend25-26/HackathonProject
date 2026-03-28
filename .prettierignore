@@ -1,0 +1,12 @@
+# Build artifacts
+.next/
+.turbo/
+_next/
+__tmp__/
+dist/
+target/
+compiled/
+
+.github/actions/next-stats-action/.work
+
+readme.md
