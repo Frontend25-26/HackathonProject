@@ -4,52 +4,52 @@ labels: [hackathon-1]
 projects: ['Frontend25-26/1']
 type: Task
 body:
-    - type: textarea
-      id: description
-      attributes:
-          label: Описание
-          placeholder: Что нужно сделать и зачем
-      validations:
-          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      placeholder: Что нужно сделать и зачем
+    validations:
+      required: true
 
-    - type: textarea
-      id: checklist
-      attributes:
-          label: Подзадачи
-          placeholder: |
-              - [ ] Шаг 1
-              - [ ] Шаг 2
-      validations:
-          required: false
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Подзадачи
+      placeholder: |
+        - [ ] Шаг 1
+        - [ ] Шаг 2
+    validations:
+      required: false
 
-    - type: dropdown
-      id: priority
-      attributes:
-          label: Priority
-          options:
-              - '0'
-              - '1'
-              - '2'
-      validations:
-          required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - '0'
+        - '1'
+        - '2'
+    validations:
+      required: true
 
-    - type: dropdown
-      id: size
-      attributes:
-          label: Size
-          options:
-              - XS
-              - S
-              - M
-              - L
-              - XL
-      validations:
-          required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options:
+        - XS
+        - S
+        - M
+        - L
+        - XL
+    validations:
+      required: true
 
-    - type: textarea
-      id: blocked
-      attributes:
-          label: Блокеры
-          placeholder: Есть ли зависимости от других задач
-      validations:
-          required: false
+  - type: textarea
+    id: blocked
+    attributes:
+      label: Блокеры
+      placeholder: Есть ли зависимости от других задач
+    validations:
+      required: false
