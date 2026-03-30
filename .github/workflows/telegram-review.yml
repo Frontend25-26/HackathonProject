@@ -65,7 +65,7 @@ jobs:
             const prBranch = context.payload.pull_request.head.ref;
             const prUrl = context.payload.pull_request.html_url;
             const prAuthor = context.payload.pull_request.user.login;
-            const messageIdPrefix = 'telegram-review-message-id:';
+            const serviceMarker = 'telegram-review-bot';
 
             try {
               await github.rest.issues.removeLabel({
@@ -127,30 +127,36 @@ jobs:
               return;
             }
 
-            const explicitChatUrl = process.env.TELEGRAM_CHAT_URL;
-            const chatId = process.env.TELEGRAM_CHAT_ID;
-            let messageUrl = '';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
 
-            if (explicitChatUrl) {
-              messageUrl = `${explicitChatUrl.replace(/\/$/, '')}/${messageId}`;
-            } else if (chatId?.startsWith('-100')) {
-              messageUrl = `https://t.me/c/${chatId.slice(4)}/${messageId}`;
-            }
+            const existingServiceComment = comments
+              .filter(comment => comment.body.includes(`<!-- ${serviceMarker}`))
+              .at(-1);
 
-            const commentLines = [];
-            if (messageUrl) {
-              commentLines.push(`Telegram review message: ${messageUrl}`);
-            } else {
-              commentLines.push('Telegram review message sent.');
+            const commentBody =
+              `<!-- ${serviceMarker} message-id:${messageId} reviewer:${githubReviewer} -->\n` +
+              `Current reviewer: @${githubReviewer}`;
+
+            if (existingServiceComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingServiceComment.id,
+                body: commentBody,
+              });
+              return;
             }
-            commentLines.push(`Requested reviewer: @${githubReviewer}`);
-            commentLines.push(`${messageIdPrefix} ${messageId}`);
 
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: prNumber,
-              body: commentLines.join('\n'),
+              body: commentBody,
             });
 
   delete_review_message:
@@ -167,7 +173,7 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const prNumber = context.payload.pull_request.number;
-            const messageIdPrefix = 'telegram-review-message-id:';
+            const serviceMarker = 'telegram-review-bot';
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
@@ -177,7 +183,7 @@ jobs:
             });
 
             const serviceComment = comments
-              .filter(comment => comment.body.includes(messageIdPrefix))
+              .filter(comment => comment.body.includes(`<!-- ${serviceMarker}`))
               .at(-1);
 
             if (!serviceComment) {
@@ -185,7 +191,7 @@ jobs:
               return;
             }
 
-            const messageIdMatch = serviceComment.body.match(/telegram-review-message-id:\s*([0-9]+)/);
+            const messageIdMatch = serviceComment.body.match(/message-id:([0-9]+)/);
             const messageId = messageIdMatch?.[1];
 
             if (!messageId) {
