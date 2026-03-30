@@ -8,6 +8,7 @@
 - **SCSS Modules / Tailwind CSS**
 
 ## Feature-Sliced Design
+
 ```text
 src/
 ├── app/          # Next.js App Router: layouts, pages, providers
@@ -16,17 +17,21 @@ src/
 ├── shared/       # UI-кит, утилиты, конфиг API, типы
 └── widgets/      # Составные блоки страниц
 ```
+
 ## Команды запуска
+
 ```bash
-npm run start       Запустить приложение
-npm run dev         Запуск сборки для разработчиков 
-npm run build       Сборка 
-npm run lint        Проверка кода линтером
-npm run lint:fix    Автоматические изменения линтером 
-npm test            Запуск тестов
+npm run start       # Запустить приложение
+npm run dev         # Запуск сборки для разработчиков
+npm run build       # Сборка
+npm run lint        # Проверка кода линтером
+npm run lint:fix    # Автоматические изменения линтером
+npm test            # Запуск тестов
 ```
+
 ## Conventional Commits
-```
+
+```text
 fix:      исправление бага
 feat:     новая функциональность
 build:    изменения системы сборки
@@ -38,12 +43,94 @@ refactor: рефакторинг без новых фич
 perf:     улучшение производительности
 test:     добавление тестов
 ```
+
 ## Найминг веток
+
 ```text
-feat/{n} 
+feat/{n}
 fix/{n}
-refactor/{n} 
-``` 
+refactor/{n}
+```
+
+## База данных
+
+Проект использует MySQL 8.4, запускаемую через Docker, и Prisma ORM.
+
+### Запуск
+
+1. Скопируй `.env.example` в `.env` и заполни переменные:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Подними БД:
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. Примени миграции:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+4. Сгенерируй Prisma Client:
+
+   ```bash
+   npm run db:generate
+   ```
+
+5. Запусти проект:
+
+   ```bash
+   npm run dev
+   ```
+
+### Команды для работы с БД
+
+```bash
+npm run db:migrate         # Создать и применить новую миграцию (dev)
+npm run db:migrate:deploy  # Применить миграции без создания новых (prod/CI)
+npm run db:generate        # Перегенерировать Prisma Client после изменений схемы
+npm run db:studio          # Открыть Prisma Studio (GUI для просмотра данных)
+```
+
+### Создание новой миграции
+
+После изменения `prisma/schema.prisma`:
+
+```bash
+npm run db:migrate
+# Prisma спросит название миграции, например: add_user_avatar
+```
+
+### Переменные окружения
+
+| Переменная | Описание | Пример |
+| --- | --- | --- |
+| `MYSQL_ROOT_PASSWORD` | Пароль root пользователя MySQL | `rootpassword` |
+| `MYSQL_DATABASE` | Название БД | `hackathon_dev` |
+| `MYSQL_USER` | Пользователь приложения | `hackathon` |
+| `MYSQL_PASSWORD` | Пароль пользователя | `hackathon` |
+| `DATABASE_URL` | Строка подключения для Prisma | `mysql://hackathon:hackathon@localhost:3900/hackathon_dev` |
+
+> По умолчанию стоит **порт 3900** — нестандартный, так как Hyper-V на Windows резервирует диапазон 3053–3852.
+
+### Структура миграций
+
+```text
+prisma/
+├── schema.prisma        # Схема БД (источник истины)
+└── migrations/
+    └── 20260330_init/
+        └── migration.sql
+```
+
+Миграции коммитятся в репозиторий. Не редактируйте уже применённые файлы `migration.sql` вручную.
+
+---
 
 ## Backend & Mocks
 
