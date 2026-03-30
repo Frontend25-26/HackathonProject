@@ -1,32 +1,32 @@
 name: Hackathon issue setup
 
 on:
-    issues:
-        types: [opened, labeled]
+  issues:
+    types: [opened, labeled]
 
 jobs:
-    milestone:
-        if: |
-            contains(github.event.issue.labels.*.name, 'hackathon-1') ||
-            contains(github.event.issue.labels.*.name, 'hackathon-2') ||
-            contains(github.event.issue.labels.*.name, 'hackathon-3')
-        runs-on: ubuntu-latest
-        permissions:
-            issues: write
+  milestone:
+    if: |
+      contains(github.event.issue.labels.*.name, 'hackathon-1') ||
+      contains(github.event.issue.labels.*.name, 'hackathon-2') ||
+      contains(github.event.issue.labels.*.name, 'hackathon-3')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
-        steps:
-            - name: Assign milestone
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  if ${{ contains(github.event.issue.labels.*.name, 'hackathon-1') }}; then
-                    MILESTONE="Хакатон №1"
-                  elif ${{ contains(github.event.issue.labels.*.name, 'hackathon-2') }}; then
-                    MILESTONE="Хакатон №2"
-                  elif ${{ contains(github.event.issue.labels.*.name, 'hackathon-3') }}; then
-                    MILESTONE="Хакатон №3"
-                  fi
+    steps:
+      - name: Assign milestone
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ${{ contains(github.event.issue.labels.*.name, 'hackathon-1') }}; then
+            MILESTONE="Хакатон №1"
+          elif ${{ contains(github.event.issue.labels.*.name, 'hackathon-2') }}; then
+            MILESTONE="Хакатон №2"
+          elif ${{ contains(github.event.issue.labels.*.name, 'hackathon-3') }}; then
+            MILESTONE="Хакатон №3"
+          fi
 
-                  gh issue edit ${{ github.event.issue.number }} \
-                    --milestone "$MILESTONE" \
-                    --repo ${{ github.repository }}
+          gh issue edit ${{ github.event.issue.number }} \
+            --milestone "$MILESTONE" \
+            --repo ${{ github.repository }}
