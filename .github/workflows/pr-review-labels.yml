@@ -1,0 +1,119 @@
+name: PR Review Labels
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  update_labels_on_approval:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Replace review labels after approval
+        uses: actions/github-script@v7
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+            const approvingReviewer = context.payload.review.user.login;
+            const serviceMarker = 'telegram-review-bot';
+
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner,
+              repo,
+              issue_number: prNumber,
+            });
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const serviceComment = comments
+              .filter(comment => comment.body.includes(`<!-- ${serviceMarker}`))
+              .at(-1);
+
+            if (!serviceComment) {
+              core.info('No Telegram review comment found, skipping label update.');
+              return;
+            }
+
+            const requestedReviewerMatch = serviceComment.body.match(/reviewer:([A-Za-z0-9-]+)/);
+
+            if (!requestedReviewerMatch) {
+              core.info('No requested reviewer found in Telegram review comment, skipping label update.');
+              return;
+            }
+
+            const requestedReviewer = requestedReviewerMatch[1];
+
+            if (requestedReviewer !== approvingReviewer) {
+              core.info(`Approval from @${approvingReviewer} ignored, waiting for @${requestedReviewer}.`);
+              return;
+            }
+
+            const labelNames = labels.map(label => label.name);
+
+            if (labelNames.includes('needs-review')) {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: prNumber,
+                name: 'needs-review',
+              });
+            }
+
+            if (!labelNames.includes('review-done')) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: prNumber,
+                labels: ['review-done'],
+              });
+            }
+
+            const messageIdMatch = serviceComment.body.match(/message-id:([0-9]+)/);
+            const messageId = messageIdMatch?.[1];
+
+            if (!messageId) {
+              core.setFailed(`Saved Telegram message id is malformed: ${serviceComment.body}`);
+              return;
+            }
+
+            const deleteResponse = await fetch(
+              `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/deleteMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  chat_id: process.env.TELEGRAM_CHAT_ID,
+                  message_id: messageId,
+                }),
+              }
+            );
+
+            const deleteResult = await deleteResponse.json();
+
+            if (!deleteResponse.ok || !deleteResult.ok) {
+              core.setFailed(`Telegram deleteMessage failed: ${JSON.stringify(deleteResult)}`);
+              return;
+            }
+
+            await github.rest.issues.deleteComment({
+              owner,
+              repo,
+              comment_id: serviceComment.id,
+            });
