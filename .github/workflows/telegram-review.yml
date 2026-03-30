@@ -8,7 +8,6 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: read
 
 jobs:
   notify_review_requested:
@@ -34,6 +33,10 @@ jobs:
 
           comments_url="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
           marker="<!-- telegram-review-message:"
+
+          echo "Actor: ${GITHUB_ACTOR}"
+          echo "Repository: ${GITHUB_REPOSITORY}"
+          echo "PR number: ${PR_NUMBER}"
 
           if [ -z "${TELEGRAM_REVIEWERS}" ]; then
             echo "TELEGRAM_REVIEWERS repository variable is not set"
@@ -73,6 +76,7 @@ jobs:
           github_response=$(curl --fail-with-body -sS -X POST "${comments_url}" \
             -H "Authorization: Bearer ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
             -d "$(jq -nc --arg body "${comment_body}" '{body: $body}')")
 
           if [ "$(printf '%s' "${github_response}" | jq -r '.id')" = "null" ]; then
