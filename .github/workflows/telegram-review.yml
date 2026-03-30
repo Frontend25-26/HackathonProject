@@ -16,88 +16,142 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Telegram review request
+      - name: Request reviewer and send Telegram message
+        uses: actions/github-script@v7
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_CHAT_URL: ${{ vars.TELEGRAM_CHAT_URL }}
           TELEGRAM_REVIEWERS: ${{ vars.TELEGRAM_REVIEWERS }}
-          GITHUB_API_URL: ${{ github.api_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-        run: |
-          set -euo pipefail
+        with:
+          script: |
+            const reviewersRaw = process.env.TELEGRAM_REVIEWERS;
 
-          comments_url="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
-          message_id_prefix="telegram-review-message-id:"
+            if (!reviewersRaw) {
+              core.setFailed('TELEGRAM_REVIEWERS repository variable is not set');
+              return;
+            }
 
-          if [ -z "${TELEGRAM_REVIEWERS}" ]; then
-            echo "TELEGRAM_REVIEWERS repository variable is not set"
-            exit 1
-          fi
+            let reviewers;
+            try {
+              reviewers = JSON.parse(reviewersRaw);
+            } catch (error) {
+              core.setFailed(`TELEGRAM_REVIEWERS must be valid JSON: ${error.message}`);
+              return;
+            }
 
-          mapfile -t reviewers < <(printf '%s' "${TELEGRAM_REVIEWERS}" | jq -r '.[]')
+            if (!Array.isArray(reviewers) || reviewers.length === 0) {
+              core.setFailed('TELEGRAM_REVIEWERS must contain at least one reviewer');
+              return;
+            }
 
-          if [ "${#reviewers[@]}" -eq 0 ]; then
-            echo "TELEGRAM_REVIEWERS must contain at least one reviewer"
-            exit 1
-          fi
+            const selectedReviewer = reviewers[Math.floor(Math.random() * reviewers.length)];
+            const githubReviewer = selectedReviewer?.github;
+            const telegramReviewer = selectedReviewer?.telegram;
 
-          reviewer=${reviewers[$RANDOM % ${#reviewers[@]}]}
-          text=$(printf 'Review requested for PR: %s\nBranch: %s\nAuthor: @%s\nReviewer: %s\n%s' \
-            "${PR_TITLE}" "${PR_BRANCH}" "${PR_AUTHOR}" "${reviewer}" "${PR_URL}")
+            if (!githubReviewer) {
+              core.setFailed('Each TELEGRAM_REVIEWERS entry must include a github field');
+              return;
+            }
 
-          telegram_response=$(curl --fail-with-body -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=${text}")
+            if (!telegramReviewer) {
+              core.setFailed('Each TELEGRAM_REVIEWERS entry must include a telegram field');
+              return;
+            }
 
-          if [ "$(printf '%s' "${telegram_response}" | jq -r '.ok')" != "true" ]; then
-            echo "Telegram sendMessage failed"
-            echo "${telegram_response}"
-            exit 1
-          fi
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+            const prTitle = context.payload.pull_request.title;
+            const prBranch = context.payload.pull_request.head.ref;
+            const prUrl = context.payload.pull_request.html_url;
+            const prAuthor = context.payload.pull_request.user.login;
+            const messageIdPrefix = 'telegram-review-message-id:';
 
-          message_id=$(printf '%s' "${telegram_response}" | jq -r '.result.message_id')
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: prNumber,
+                name: 'review-done',
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
 
-          if [ -z "${message_id}" ] || [ "${message_id}" = "null" ]; then
-            echo "Telegram sendMessage did not return message_id"
-            echo "${telegram_response}"
-            exit 1
-          fi
+            const reviewerResponse = await github.rest.pulls.requestReviewers({
+              owner,
+              repo,
+              pull_number: prNumber,
+              reviewers: [githubReviewer],
+            });
 
-          if [ -n "${TELEGRAM_CHAT_URL}" ]; then
-            message_url="${TELEGRAM_CHAT_URL}/${message_id}"
-          elif [[ "${TELEGRAM_CHAT_ID}" == -100* ]]; then
-            internal_chat_id="${TELEGRAM_CHAT_ID#-100}"
-            message_url="https://t.me/c/${internal_chat_id}/${message_id}"
-          else
-            message_url=""
-          fi
+            if (!reviewerResponse.data.requested_reviewers?.some(user => user.login === githubReviewer)) {
+              core.setFailed(`Failed to request GitHub reviewer @${githubReviewer}`);
+              return;
+            }
 
-          if [ -n "${message_url}" ]; then
-            comment_body=$(printf 'Telegram review message: %s\n%s %s' \
-              "${message_url}" "${message_id_prefix}" "${message_id}")
-          else
-            comment_body=$(printf 'Telegram review message sent.\n%s %s' \
-              "${message_id_prefix}" "${message_id}")
-          fi
+            const text =
+              `Review requested for PR: ${prTitle}\n` +
+              `Branch: ${prBranch}\n` +
+              `Author: @${prAuthor}\n` +
+              `Reviewer: ${telegramReviewer}\n` +
+              `${prUrl}`;
 
-          github_response=$(curl --fail-with-body -sS -X POST "${comments_url}" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -nc --arg body "${comment_body}" '{body: $body}')")
+            const sendResponse = await fetch(
+              `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  chat_id: process.env.TELEGRAM_CHAT_ID,
+                  text,
+                }),
+              }
+            );
 
-          if [ "$(printf '%s' "${github_response}" | jq -r '.id')" = "null" ]; then
-            echo "Failed to save Telegram message id in PR comment"
-            echo "${github_response}"
-            exit 1
-          fi
+            const telegramResult = await sendResponse.json();
+
+            if (!sendResponse.ok || !telegramResult.ok) {
+              core.setFailed(`Telegram sendMessage failed: ${JSON.stringify(telegramResult)}`);
+              return;
+            }
+
+            const messageId = telegramResult.result?.message_id;
+
+            if (!messageId) {
+              core.setFailed(`Telegram sendMessage did not return message_id: ${JSON.stringify(telegramResult)}`);
+              return;
+            }
+
+            const explicitChatUrl = process.env.TELEGRAM_CHAT_URL;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+            let messageUrl = '';
+
+            if (explicitChatUrl) {
+              messageUrl = `${explicitChatUrl.replace(/\/$/, '')}/${messageId}`;
+            } else if (chatId?.startsWith('-100')) {
+              messageUrl = `https://t.me/c/${chatId.slice(4)}/${messageId}`;
+            }
+
+            const commentLines = [];
+            if (messageUrl) {
+              commentLines.push(`Telegram review message: ${messageUrl}`);
+            } else {
+              commentLines.push('Telegram review message sent.');
+            }
+            commentLines.push(`Requested reviewer: @${githubReviewer}`);
+            commentLines.push(`${messageIdPrefix} ${messageId}`);
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: prNumber,
+              body: commentLines.join('\n'),
+            });
 
   delete_review_message:
     if: github.event.label.name == 'review-done'
@@ -105,50 +159,63 @@ jobs:
 
     steps:
       - name: Delete Telegram review message
+        uses: actions/github-script@v7
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          GITHUB_API_URL: ${{ github.api_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          set -euo pipefail
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+            const messageIdPrefix = 'telegram-review-message-id:';
 
-          comments_url="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100"
-          message_id_prefix="telegram-review-message-id:"
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
 
-          comments=$(curl --fail-with-body -sS -X GET "${comments_url}" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json")
+            const serviceComment = comments
+              .filter(comment => comment.body.includes(messageIdPrefix))
+              .at(-1);
 
-          comment_json=$(printf '%s' "${comments}" | jq -c '[.[] | select(.body | contains("'"${message_id_prefix}"'"))] | last')
-          comment_id=$(printf '%s' "${comment_json}" | jq -r '.id')
-          comment_body=$(printf '%s' "${comment_json}" | jq -r '.body')
+            if (!serviceComment) {
+              core.setFailed('No saved Telegram message id found for this PR');
+              return;
+            }
 
-          if [ -z "${comment_id}" ] || [ "${comment_id}" = "null" ]; then
-            echo "No saved Telegram message id found for this PR"
-            exit 1
-          fi
+            const messageIdMatch = serviceComment.body.match(/telegram-review-message-id:\s*([0-9]+)/);
+            const messageId = messageIdMatch?.[1];
 
-          message_id=$(printf '%s' "${comment_body}" | sed -nE 's/.*telegram-review-message-id:[[:space:]]*([0-9]+).*/\1/p')
+            if (!messageId) {
+              core.setFailed(`Saved Telegram message id is malformed: ${serviceComment.body}`);
+              return;
+            }
 
-          if [ -z "${message_id}" ] || ! printf '%s' "${message_id}" | grep -Eq '^[0-9]+$'; then
-            echo "Saved Telegram message id is malformed"
-            echo "${comment_body}"
-            exit 1
-          fi
+            const deleteResponse = await fetch(
+              `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/deleteMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  chat_id: process.env.TELEGRAM_CHAT_ID,
+                  message_id: messageId,
+                }),
+              }
+            );
 
-          delete_response=$(curl --fail-with-body -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteMessage" \
-            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "message_id=${message_id}")
+            const deleteResult = await deleteResponse.json();
 
-          if [ "$(printf '%s' "${delete_response}" | jq -r '.ok')" != "true" ]; then
-            echo "Telegram deleteMessage failed"
-            echo "${delete_response}"
-            exit 1
-          fi
+            if (!deleteResponse.ok || !deleteResult.ok) {
+              core.setFailed(`Telegram deleteMessage failed: ${JSON.stringify(deleteResult)}`);
+              return;
+            }
 
-          curl --fail-with-body -sS -X DELETE "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json"
+            await github.rest.issues.deleteComment({
+              owner,
+              repo,
+              comment_id: serviceComment.id,
+            });
