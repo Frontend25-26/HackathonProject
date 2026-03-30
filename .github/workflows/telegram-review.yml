@@ -5,17 +5,27 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
 jobs:
-  notify:
+  notify_review_requested:
     if: github.event.label.name == 'needs-review'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Telegram message
+      - name: Send Telegram review request
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_REVIEWERS: ${{ vars.TELEGRAM_REVIEWERS }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          LABEL_NAME: ${{ github.event.label.name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
           PR_URL: ${{ github.event.pull_request.html_url }}
@@ -23,6 +33,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          comments_url="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          marker="<!-- telegram-review-message:"
           if [ -z "${TELEGRAM_REVIEWERS}" ]; then
             echo "TELEGRAM_REVIEWERS repository variable is not set"
             exit 1
@@ -36,9 +48,71 @@ jobs:
           fi
 
           reviewer=${reviewers[$RANDOM % ${#reviewers[@]}]}
-          text=$(printf 'Нужен review для PR: %s\nВетка: %s\nАвтор: @%s\nПроверяющий: %s\n%s' \
+          text=$(printf 'Nuzhen review dlya PR: %s\nVetka: %s\nAvtor: @%s\nProveryayushchiy: %s\n%s' \
             "${PR_TITLE}" "${PR_BRANCH}" "${PR_AUTHOR}" "${reviewer}" "${PR_URL}")
 
-          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+          response=$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=${text}"
+            --data-urlencode "text=${text}")
+
+          message_id=$(printf '%s' "${response}" | jq -r '.result.message_id')
+
+          if [ -z "${message_id}" ] || [ "${message_id}" = "null" ]; then
+            echo "Telegram sendMessage did not return message_id"
+            echo "${response}"
+            exit 1
+          fi
+
+          comment_body=$(printf '%s%s -->' "${marker}" "${message_id}")
+
+          curl -sS -X POST "${comments_url}" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "$(jq -nc --arg body "${comment_body}" '{body: $body}')"
+
+  delete_review_message:
+    if: github.event.label.name == 'review-done'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete Telegram review message
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          comments_url="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          marker="<!-- telegram-review-message:"
+
+          comments=$(curl -sS -X GET "${comments_url}" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json")
+
+          comment_json=$(printf '%s' "${comments}" | jq -c '[.[] | select(.body | startswith("'"${marker}"'"))] | last')
+          comment_id=$(printf '%s' "${comment_json}" | jq -r '.id')
+          comment_body=$(printf '%s' "${comment_json}" | jq -r '.body')
+
+          if [ -z "${comment_id}" ] || [ "${comment_id}" = "null" ]; then
+            echo "No saved Telegram message id found for this PR"
+            exit 1
+          fi
+
+          message_id=$(printf '%s' "${comment_body}" | sed -E 's/^<!-- telegram-review-message:([0-9]+) -->$/\1/')
+
+          if [ -z "${message_id}" ]; then
+            echo "Saved Telegram message id is malformed"
+            exit 1
+          fi
+
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "message_id=${message_id}"
+
+          curl -sS -X DELETE "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json"
