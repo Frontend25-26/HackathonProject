@@ -1,4 +1,5 @@
 import { Role } from '@backend/generated/prisma'
+
 import { prisma } from '@backend/lib/prisma'
 
 export const userRepository = {
