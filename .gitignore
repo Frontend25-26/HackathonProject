@@ -42,4 +42,4 @@ yarn-error.log*
 next-env.d.ts
 
 .idea
-/src/generated/prisma
+/src/backend/generated/prisma

@@ -18,6 +18,49 @@ src/
 └── widgets/      # Составные блоки страниц
 ```
 
+## 🚀 Локальная разработка
+
+### 1. Подготовка окружения
+
+Скопируй `.env.example` в `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+### 2. Заполни `.env.local`
+
+- **`AUTH_GITHUB_ID`** и **`AUTH_GITHUB_SECRET`** — попроси у куратора в приватном чате
+- **`AUTH_SECRET`** — сгенерируй сам:
+
+  ```bash
+  openssl rand -base64 32
+  ```
+
+- **`NEXTAUTH_URL`** — оставь как есть (`http://localhost:3000`)
+- **`GITHUB_ORG`** — оставь как есть (`Frontend25-26`)
+
+### 3. Запусти БД и примени миграции
+
+```bash
+npm install
+docker compose up -d
+npm run db:migrate
+```
+
+### 4. Запусти проект
+
+```bash
+npm run dev
+```
+
+Открой [http://localhost:3000](http://localhost:3000) — всё готово!
+
+### ⚠️ Важно
+
+- **Никогда не коммитьте `.env.local`** — он в `.gitignore`
+- Не делись `AUTH_GITHUB_SECRET` и `AUTH_SECRET` публично
+
 ## Команды запуска
 
 ```bash
@@ -112,9 +155,10 @@ npm run db:migrate
 | --- | --- | --- |
 | `MYSQL_ROOT_PASSWORD` | Пароль root пользователя MySQL | `rootpassword` |
 | `MYSQL_DATABASE` | Название БД | `hackathon_dev` |
-| `MYSQL_USER` | Пользователь приложения | `hackathon` |
-| `MYSQL_PASSWORD` | Пароль пользователя | `hackathon` |
-| `DATABASE_URL` | Строка подключения для Prisma | `mysql://hackathon:hackathon@localhost:3900/hackathon_dev` |
+| `MYSQL_USER` | Пользователь БД | `hackathon` |
+| `MYSQL_PASSWORD` | Пароль пользователя БД | `hackathon` |
+| `MYSQL_HOST` | Хост БД | `localhost` |
+| `MYSQL_PORT` | Порт БД | `3306` |
 
 > По умолчанию стоит **порт 3900** — нестандартный, так как Hyper-V на Windows резервирует диапазон 3053–3852.
 

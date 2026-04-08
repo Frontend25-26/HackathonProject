@@ -7,4 +7,6 @@ export default globalIgnores([
     '**/_next/**/*',
     '**/.vscode/**/*',
     '**/dist/**/*',
+    '.prettierignore', // Config file, not markdown
+    'src/backend/generated/**/*', // Generated code
 ])

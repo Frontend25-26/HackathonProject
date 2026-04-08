@@ -58,6 +58,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
       - name: Run lint
         run: npm run lint
 
@@ -83,6 +86,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run db:generate
 
       - name: Run production build
         env:
