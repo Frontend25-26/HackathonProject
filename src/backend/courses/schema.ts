@@ -42,7 +42,9 @@ registry.registerPath({
     tags: ['Courses'],
     summary: 'Создать курс',
     request: {
-        body: { content: { 'application/json': { schema: CreateCourseSchema } } },
+        body: {
+            content: { 'application/json': { schema: CreateCourseSchema } },
+        },
     },
     responses: {
         201: {
@@ -74,7 +76,9 @@ registry.registerPath({
     summary: 'Обновить курс',
     request: {
         params: z.object({ id: z.string() }),
-        body: { content: { 'application/json': { schema: UpdateCourseSchema } } },
+        body: {
+            content: { 'application/json': { schema: UpdateCourseSchema } },
+        },
     },
     responses: {
         200: {

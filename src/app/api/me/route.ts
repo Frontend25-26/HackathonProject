@@ -19,10 +19,7 @@ export async function GET() {
         const first = users[0]
 
         if (!first) {
-            return Response.json(
-                { error: 'No users in DB' },
-                { status: 404 },
-            )
+            return Response.json({ error: 'No users in DB' }, { status: 404 })
         }
 
         return Response.json(first)

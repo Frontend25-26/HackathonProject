@@ -19,7 +19,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         return Response.json({ error: 'Comment not found' }, { status: 404 })
     }
 
-    const comment = await reviewCommentRepository.update(Number(id), parsed.data)
+    const comment = await reviewCommentRepository.update(
+        Number(id),
+        parsed.data,
+    )
     return Response.json(comment)
 }
 

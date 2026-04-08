@@ -64,18 +64,26 @@ import { registry } from '@backend/lib/openapi'
 
 export const EntitySchema = registry.register(
     'Entity',
-    z.object({ /* поля */ }),
+    z.object({
+        /* поля */
+    }),
 )
 
-export const CreateEntitySchema = z.object({ /* ... */ })
-export const UpdateEntitySchema = z.object({ /* ... */ })
+export const CreateEntitySchema = z.object({
+    /* ... */
+})
+export const UpdateEntitySchema = z.object({
+    /* ... */
+})
 
 registry.registerPath({
     method: 'get',
     path: '/entities',
     tags: ['Entities'],
     summary: '...',
-    responses: { /* ... */ },
+    responses: {
+        /* ... */
+    },
 })
 ```
 
@@ -109,11 +117,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = Create<Entity>Schema.safeParse(body)
-    
+
     if (!parsed.success) {
         return Response.json({ error: parsed.error.issues }, { status: 400 })
     }
-    
+
     const item = await <entity>Repository.create(parsed.data)
     return Response.json(item, { status: 201 })
 }
@@ -147,6 +155,7 @@ model User {
 Функция `resolveRoleFromGitHubTeams(login: string): Promise<Role>` проверяет, в каких GitHub Teams состоит пользователь в организации `GITHUB_ORG`.
 
 **Маппинг:**
+
 - Пользователь в team `admins` → `ADMIN`
 - Пользователь в team `mentors` → `MENTOR`
 - Иначе → `STUDENT` (даже если не член организации)
@@ -161,6 +170,7 @@ await userRepository.update(userId, { role })
 ```
 
 **Требования:**
+
 - `GITHUB_TOKEN` должен быть установлен (требует скоп `read:org`)
 - `GITHUB_ORG` должен быть установлен в `.env`
 
@@ -183,24 +193,24 @@ PATCH /users/{id}
 
 ### Поведение
 
-| Режим | USE_MOCKS | Ответ |
-|-------|-----------|-------|
-| **Development** | `true` | 200 — первый пользователь из БД (с его role) |
-| **Production** | `false` | 401 — требует аутентификации через Auth.js |
+| Режим           | USE_MOCKS | Ответ                                        |
+| --------------- | --------- | -------------------------------------------- |
+| **Development** | `true`    | 200 — первый пользователь из БД (с его role) |
+| **Production**  | `false`   | 401 — требует аутентификации через Auth.js   |
 
 ### Response
 
 ```json
 {
-  "id": 1,
-  "githubId": 12345,
-  "login": "octocat",
-  "name": "The Octocat",
-  "email": "octocat@github.com",
-  "avatar": "https://...",
-  "role": "MENTOR",
-  "createdAt": "2026-04-08T10:00:00Z",
-  "updatedAt": "2026-04-08T10:00:00Z"
+    "id": 1,
+    "githubId": 12345,
+    "login": "octocat",
+    "name": "The Octocat",
+    "email": "octocat@github.com",
+    "avatar": "https://...",
+    "role": "MENTOR",
+    "createdAt": "2026-04-08T10:00:00Z",
+    "updatedAt": "2026-04-08T10:00:00Z"
 }
 ```
 
@@ -215,62 +225,59 @@ PATCH /users/{id}
 Сейчас Auth.js не установлен. Когда он будет добавлен, нужно:
 
 1. **Установить зависимости:**
-   ```bash
-   npm install @auth/nextjs @auth/github
-   ```
+
+    ```bash
+    npm install @auth/nextjs @auth/github
+    ```
 
 2. **Создать `auth.ts` с конфигурацией GitHub OAuth:**
 
 3. **Обновить `/api/me` в `src/app/api/me/route.ts`:**
-   ```ts
-   import { auth } from '@/auth'
-   
-   export async function GET() {
-       const session = await auth()
-       
-       if (!session?.user?.githubId) {
-           return Response.json(
-               { error: 'Unauthorized' },
-               { status: 401 },
-           )
-       }
-       
-       const user = await userRepository.findByGithubId(
-           Number(session.user.githubId)
-       )
-       
-       if (!user) {
-           return Response.json(
-               { error: 'User not found' },
-               { status: 404 },
-           )
-       }
-       
-       return Response.json(user)
-   }
-   ```
+
+    ```ts
+    import { auth } from '@/auth'
+
+    export async function GET() {
+        const session = await auth()
+
+        if (!session?.user?.githubId) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const user = await userRepository.findByGithubId(
+            Number(session.user.githubId),
+        )
+
+        if (!user) {
+            return Response.json({ error: 'User not found' }, { status: 404 })
+        }
+
+        return Response.json(user)
+    }
+    ```
 
 4. **Обновить `/api/users` (создание пользователя при первом логине):**
-   ```ts
-   export async function POST(request: NextRequest) {
-       // ... валидация ...
-       
-       // Если пользователь новый — определить роль из GitHub Teams
-       let role = data.role
-       if (!role) {
-           role = await resolveRoleFromGitHubTeams(data.login)
-       }
-       
-       const user = await userRepository.create({ ...data, role })
-       return Response.json(user, { status: 201 })
-   }
-   ```
+
+    ```ts
+    export async function POST(request: NextRequest) {
+        // ... валидация ...
+
+        // Если пользователь новый — определить роль из GitHub Teams
+        let role = data.role
+        if (!role) {
+            role = await resolveRoleFromGitHubTeams(data.login)
+        }
+
+        const user = await userRepository.create({ ...data, role })
+        return Response.json(user, { status: 201 })
+    }
+    ```
 
 5. **Создать Prisma migration:**
-   ```bash
-   npm run db:migrate
-   ```
-   (для добавления полей адаптера, если требуется)
+    ```bash
+    npm run db:migrate
+    ```
+    (для добавления полей адаптера, если требуется)
 
 ---
 
@@ -279,18 +286,18 @@ PATCH /users/{id}
 ### Как добавить ментора в org
 
 1. **Добавить пользователя в организацию `Frontend25-26`:**
-   - Перейти на https://github.com/orgs/Frontend25-26/people
-   - Нажать "Add member"
-   - Выбрать пользователя и роль (желательно Owner или Maintainer)
+    - Перейти на https://github.com/orgs/Frontend25-26/people
+    - Нажать "Add member"
+    - Выбрать пользователя и роль (желательно Owner или Maintainer)
 
 2. **Добавить в team `mentors`:**
-   - Перейти на https://github.com/orgs/Frontend25-26/teams/mentors
-   - Нажать "Add a member"
-   - Выбрать пользователя
+    - Перейти на https://github.com/orgs/Frontend25-26/teams/mentors
+    - Нажать "Add a member"
+    - Выбрать пользователя
 
 3. **Проверить в приложении:**
-   - Вызвать `GET /api/users` и создать запись пользователя (если её нет)
-   - Вызвать `GET /api/me` → должна вернуться роль `MENTOR`
+    - Вызвать `GET /api/users` и создать запись пользователя (если её нет)
+    - Вызвать `GET /api/me` → должна вернуться роль `MENTOR`
 
 ### Как добавить администратора
 
@@ -300,21 +307,22 @@ PATCH /users/{id}
 
 ## Переменные окружения бэкенда
 
-| Переменная | Описание | Пример |
-|---|---|---|
-| `DATABASE_URL` | Connection string MySQL/MariaDB | `mysql://user:pass@localhost:3900/db?allowPublicKeyRetrieval=true` |
-| `GITHUB_TOKEN` | GitHub Personal Access Token (для GitHub API) | Скоп: `read:org` |
-| `GITHUB_ORG` | GitHub Organization (для определения ролей) | `Frontend25-26` |
-| `USE_MOCKS` | Использовать мок-responses вместо реальных запросов | `true` \| `false` |
-| `AUTH_GITHUB_ID` | GitHub App ID (для Auth.js) | _(не установлено)_ |
-| `AUTH_GITHUB_SECRET` | GitHub App Secret (для Auth.js) | _(не установлено)_ |
-| `AUTH_SECRET` | Секретный ключ для Auth.js | _(не установлено)_ |
+| Переменная           | Описание                                            | Пример                                                             |
+| -------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`       | Connection string MySQL/MariaDB                     | `mysql://user:pass@localhost:3900/db?allowPublicKeyRetrieval=true` |
+| `GITHUB_TOKEN`       | GitHub Personal Access Token (для GitHub API)       | Скоп: `read:org`                                                   |
+| `GITHUB_ORG`         | GitHub Organization (для определения ролей)         | `Frontend25-26`                                                    |
+| `USE_MOCKS`          | Использовать мок-responses вместо реальных запросов | `true` \| `false`                                                  |
+| `AUTH_GITHUB_ID`     | GitHub App ID (для Auth.js)                         | _(не установлено)_                                                 |
+| `AUTH_GITHUB_SECRET` | GitHub App Secret (для Auth.js)                     | _(не установлено)_                                                 |
+| `AUTH_SECRET`        | Секретный ключ для Auth.js                          | _(не установлено)_                                                 |
 
 ---
 
 ## Добавление новой сущности — пошаговый чеклист
 
 ### 1. Обновить Prisma schema
+
 ```bash
 # Отредактировать prisma/schema.prisma
 # Добавить model NewEntity { ... }
@@ -327,20 +335,32 @@ npm run db:generate
 ```
 
 ### 2. Создать repository
+
 ```ts
 // src/backend/new-entity/repository.ts
 import { prisma } from '@backend/lib/prisma'
 
 export const newEntityRepository = {
-    findAll() { return prisma.newEntity.findMany() },
-    findById(id) { return prisma.newEntity.findUnique({ where: { id } }) },
-    create(data) { return prisma.newEntity.create({ data }) },
-    update(id, data) { return prisma.newEntity.update({ where: { id }, data }) },
-    delete(id) { return prisma.newEntity.delete({ where: { id } }) },
+    findAll() {
+        return prisma.newEntity.findMany()
+    },
+    findById(id) {
+        return prisma.newEntity.findUnique({ where: { id } })
+    },
+    create(data) {
+        return prisma.newEntity.create({ data })
+    },
+    update(id, data) {
+        return prisma.newEntity.update({ where: { id }, data })
+    },
+    delete(id) {
+        return prisma.newEntity.delete({ where: { id } })
+    },
 }
 ```
 
 ### 3. Создать schema
+
 ```ts
 // src/backend/new-entity/schema.ts
 import { z } from 'zod'
@@ -348,10 +368,14 @@ import { registry } from '@backend/lib/openapi'
 
 export const NewEntitySchema = registry.register(
     'NewEntity',
-    z.object({ /* поля */ }),
+    z.object({
+        /* поля */
+    }),
 )
 
-export const CreateNewEntitySchema = z.object({ /* ... */ })
+export const CreateNewEntitySchema = z.object({
+    /* ... */
+})
 
 registry.registerPath({
     method: 'get',
@@ -362,18 +386,21 @@ registry.registerPath({
 ```
 
 ### 4. Создать route handlers
+
 ```ts
 // src/app/api/new-entities/route.ts
 // src/app/api/new-entities/[id]/route.ts
 ```
 
 ### 5. Зарегистрировать в OpenAPI spec
+
 ```ts
 // src/backend/lib/openapi-spec.ts
-import '@backend/new-entity/schema'  // ← добавить эту строку
+import '@backend/new-entity/schema' // ← добавить эту строку
 ```
 
 ### 6. Проверить
+
 ```bash
 npm run dev
 # Посетить http://localhost:3000/docs
@@ -385,12 +412,14 @@ npm run dev
 ## Тестирование бэкенда локально
 
 ### Используя Swagger UI
+
 1. Открыть http://localhost:3000/docs
 2. Развернуть нужный тег (например, "Users")
 3. Нажать "Try it out"
 4. Заполнить параметры, отправить запрос
 
 ### Используя curl
+
 ```bash
 # GET /api/me
 curl http://localhost:3000/api/me
@@ -412,6 +441,7 @@ curl -X PATCH http://localhost:3000/api/users/1 \
 ```
 
 ### Используя Prisma Studio
+
 ```bash
 npm run db:studio
 # Откроется браузер с GUI для просмотра и редактирования БД

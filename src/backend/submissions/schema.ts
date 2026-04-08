@@ -7,7 +7,13 @@ export const SubmissionSchema = registry.register(
     z.object({
         id: z.number().int(),
         repoUrl: z.string(),
-        ciStatus: z.enum(['UNKNOWN', 'PENDING', 'RUNNING', 'SUCCESS', 'FAILURE']),
+        ciStatus: z.enum([
+            'UNKNOWN',
+            'PENDING',
+            'RUNNING',
+            'SUCCESS',
+            'FAILURE',
+        ]),
         status: z.enum([
             'DRAFT',
             'PENDING',
@@ -34,7 +40,13 @@ export const UpdateSubmissionSchema = z.object({
         .enum(['UNKNOWN', 'PENDING', 'RUNNING', 'SUCCESS', 'FAILURE'])
         .optional(),
     status: z
-        .enum(['DRAFT', 'PENDING', 'IN_REVIEW', 'CHANGES_REQUESTED', 'APPROVED'])
+        .enum([
+            'DRAFT',
+            'PENDING',
+            'IN_REVIEW',
+            'CHANGES_REQUESTED',
+            'APPROVED',
+        ])
         .optional(),
 })
 
@@ -52,7 +64,9 @@ registry.registerPath({
     responses: {
         200: {
             description: 'Список работ',
-            content: { 'application/json': { schema: z.array(SubmissionSchema) } },
+            content: {
+                'application/json': { schema: z.array(SubmissionSchema) },
+            },
         },
     },
 })

@@ -30,6 +30,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         return Response.json({ error: 'Submission not found' }, { status: 404 })
     }
 
-    const submission = await submissionRepository.update(Number(id), parsed.data)
+    const submission = await submissionRepository.update(
+        Number(id),
+        parsed.data,
+    )
     return Response.json(submission)
 }

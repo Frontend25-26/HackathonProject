@@ -3,7 +3,9 @@ import { prisma } from '@backend/lib/prisma'
 export const reviewCommentRepository = {
     findAll(filters?: { threadId?: number }) {
         return prisma.reviewComment.findMany({
-            where: filters?.threadId ? { threadId: filters.threadId } : undefined,
+            where: filters?.threadId
+                ? { threadId: filters.threadId }
+                : undefined,
             orderBy: { createdAt: 'asc' },
         })
     },

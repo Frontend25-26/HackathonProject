@@ -3,7 +3,9 @@ import { prisma } from '@backend/lib/prisma'
 export const assignmentRepository = {
     findAll(filters?: { courseId?: number }) {
         return prisma.assignment.findMany({
-            where: filters?.courseId ? { courseId: filters.courseId } : undefined,
+            where: filters?.courseId
+                ? { courseId: filters.courseId }
+                : undefined,
             orderBy: { createdAt: 'desc' },
         })
     },

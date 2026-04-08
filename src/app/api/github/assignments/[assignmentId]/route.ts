@@ -8,7 +8,9 @@ export async function GET(_request: NextRequest, { params }: Params) {
     const { assignmentId } = await params
 
     try {
-        const assignment = await classroomApi.getAssignment(Number(assignmentId))
+        const assignment = await classroomApi.getAssignment(
+            Number(assignmentId),
+        )
         return Response.json(assignment)
     } catch (err) {
         const message = err instanceof Error ? err.message : 'GitHub API error'

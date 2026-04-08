@@ -49,7 +49,9 @@ registry.registerPath({
     tags: ['Reviews'],
     summary: 'Создать ревью',
     request: {
-        body: { content: { 'application/json': { schema: CreateReviewSchema } } },
+        body: {
+            content: { 'application/json': { schema: CreateReviewSchema } },
+        },
     },
     responses: {
         201: {
@@ -82,7 +84,9 @@ registry.registerPath({
     summary: 'Обновить ревью',
     request: {
         params: z.object({ id: z.string() }),
-        body: { content: { 'application/json': { schema: UpdateReviewSchema } } },
+        body: {
+            content: { 'application/json': { schema: UpdateReviewSchema } },
+        },
     },
     responses: {
         200: {

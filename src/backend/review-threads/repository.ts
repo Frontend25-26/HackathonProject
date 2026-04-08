@@ -3,7 +3,9 @@ import { prisma } from '@backend/lib/prisma'
 export const reviewThreadRepository = {
     findAll(filters?: { reviewId?: number }) {
         return prisma.reviewThread.findMany({
-            where: filters?.reviewId ? { reviewId: filters.reviewId } : undefined,
+            where: filters?.reviewId
+                ? { reviewId: filters.reviewId }
+                : undefined,
             orderBy: { createdAt: 'asc' },
         })
     },

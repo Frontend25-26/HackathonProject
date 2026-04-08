@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
     )
     if (existing) {
         return Response.json(
-            { error: 'Submission already exists for this student and assignment' },
+            {
+                error: 'Submission already exists for this student and assignment',
+            },
             { status: 409 },
         )
     }
