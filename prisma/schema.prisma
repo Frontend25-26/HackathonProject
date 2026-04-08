@@ -1,10 +1,140 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/backend/generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
+}
+
+model User {
+  id                 Int             @id @default(autoincrement())
+  githubId           Int             @unique @map("github_id")
+  login              String          @unique
+  name               String?
+  email              String?
+  avatar             String?
+  role               Role            @default(STUDENT)
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+  createdAssignments Assignment[]    @relation("CreatedBy")
+  mentorEnrollments  Enrollment[]    @relation("MentorEnrollments")
+  studentEnrollments Enrollment[]    @relation("StudentEnrollments")
+  reviewComments     ReviewComment[]
+  reviews            Review[]
+  submissions        Submission[]
+
+  @@map("users")
+}
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  assignments Assignment[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  courseId  Int      @map("course_id")
+  studentId Int      @map("student_id")
+  mentorId  Int?     @map("mentor_id")
+  course    Course   @relation(fields: [courseId], references: [id])
+  mentor    User?    @relation("MentorEnrollments", fields: [mentorId], references: [id])
+  student   User     @relation("StudentEnrollments", fields: [studentId], references: [id])
+
+  @@unique([courseId, studentId])
+  @@index([mentorId], map: "enrollments_mentor_id_fkey")
+  @@index([studentId], map: "enrollments_student_id_fkey")
+  @@map("enrollments")
+}
+
+model Assignment {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String       @db.Text
+  classroomUrl String       @map("classroom_url")
+  maxGrade     Int          @map("max_grade")
+  dueDate      DateTime     @map("due_date")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  courseId     Int          @map("course_id")
+  createdById  Int          @map("created_by_id")
+  course       Course       @relation(fields: [courseId], references: [id])
+  createdBy    User         @relation("CreatedBy", fields: [createdById], references: [id])
+  submissions  Submission[]
+
+  @@index([courseId], map: "assignments_course_id_fkey")
+  @@index([createdById], map: "assignments_created_by_id_fkey")
+  @@map("assignments")
+}
+
+model Submission {
+  id           Int              @id @default(autoincrement())
+  repoUrl      String           @map("repo_url")
+  ciStatus     CiStatus         @default(UNKNOWN) @map("ci_status")
+  status       SubmissionStatus @default(DRAFT)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+  assignmentId Int              @map("assignment_id")
+  studentId    Int              @map("student_id")
+  review       Review?
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id])
+  student      User             @relation(fields: [studentId], references: [id])
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId], map: "submissions_student_id_fkey")
+  @@map("submissions")
+}
+
+model Review {
+  id             Int            @id @default(autoincrement())
+  grade          Int
+  generalComment String?        @map("general_comment") @db.Text
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  submissionId   Int            @unique @map("submission_id")
+  mentorId       Int            @map("mentor_id")
+  threads        ReviewThread[]
+  mentor         User           @relation(fields: [mentorId], references: [id])
+  submission     Submission     @relation(fields: [submissionId], references: [id])
+
+  @@index([mentorId], map: "reviews_mentor_id_fkey")
+  @@map("reviews")
+}
+
+model ReviewThread {
+  id        Int             @id @default(autoincrement())
+  filePath  String          @map("file_path")
+  line      Int
+  createdAt DateTime        @default(now()) @map("created_at")
+  reviewId  Int             @map("review_id")
+  comments  ReviewComment[]
+  review    Review          @relation(fields: [reviewId], references: [id])
+
+  @@index([reviewId], map: "review_threads_review_id_fkey")
+  @@map("review_threads")
+}
+
+model ReviewComment {
+  id        Int          @id @default(autoincrement())
+  body      String       @db.Text
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  threadId  Int          @map("thread_id")
+  authorId  Int          @map("author_id")
+  author    User         @relation(fields: [authorId], references: [id])
+  thread    ReviewThread @relation(fields: [threadId], references: [id])
+
+  @@index([authorId], map: "review_comments_author_id_fkey")
+  @@index([threadId], map: "review_comments_thread_id_fkey")
+  @@map("review_comments")
 }
 
 enum Role {
@@ -27,143 +157,4 @@ enum CiStatus {
   RUNNING
   SUCCESS
   FAILURE
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  githubId  Int      @unique @map("github_id")
-  login     String   @unique
-  name      String?
-  email     String?
-  avatar    String?
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  createdAssignments Assignment[]   @relation("CreatedBy")
-  mentorEnrollments  Enrollment[]   @relation("MentorEnrollments")
-  studentEnrollments Enrollment[]   @relation("StudentEnrollments")
-  submissions        Submission[]
-  reviews            Review[]
-  reviewComments     ReviewComment[]
-
-  @@map("users")
-}
-
-model Course {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  enrollments Enrollment[]
-  assignments Assignment[]
-
-  @@map("courses")
-}
-
-model Enrollment {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-
-  courseId  Int   @map("course_id")
-  course    Course @relation(fields: [courseId], references: [id])
-
-  studentId Int  @map("student_id")
-  student   User @relation("StudentEnrollments", fields: [studentId], references: [id])
-
-  mentorId Int?  @map("mentor_id")
-  mentor   User? @relation("MentorEnrollments", fields: [mentorId], references: [id])
-
-  @@unique([courseId, studentId])
-  @@map("enrollments")
-}
-
-model Assignment {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String   @db.Text
-  classroomUrl String   @map("classroom_url")
-  maxGrade     Int      @map("max_grade")
-  dueDate      DateTime @map("due_date")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  courseId    Int    @map("course_id")
-  course      Course @relation(fields: [courseId], references: [id])
-
-  createdById Int  @map("created_by_id")
-  createdBy   User @relation("CreatedBy", fields: [createdById], references: [id])
-
-  submissions Submission[]
-
-  @@map("assignments")
-}
-
-model Submission {
-  id        Int              @id @default(autoincrement())
-  repoUrl   String           @map("repo_url")
-  ciStatus  CiStatus         @default(UNKNOWN) @map("ci_status")
-  status    SubmissionStatus @default(DRAFT)
-  createdAt DateTime         @default(now()) @map("created_at")
-  updatedAt DateTime         @updatedAt @map("updated_at")
-
-  assignmentId Int        @map("assignment_id")
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-
-  studentId Int  @map("student_id")
-  student   User @relation(fields: [studentId], references: [id])
-
-  review Review?
-
-  @@unique([assignmentId, studentId])
-  @@map("submissions")
-}
-
-model Review {
-  id             Int     @id @default(autoincrement())
-  grade          Int
-  generalComment String? @db.Text @map("general_comment")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  submissionId Int        @unique @map("submission_id")
-  submission   Submission @relation(fields: [submissionId], references: [id])
-
-  mentorId Int  @map("mentor_id")
-  mentor   User @relation(fields: [mentorId], references: [id])
-
-  threads ReviewThread[]
-
-  @@map("reviews")
-}
-
-model ReviewThread {
-  id        Int      @id @default(autoincrement())
-  filePath  String   @map("file_path")
-  line      Int
-  createdAt DateTime @default(now()) @map("created_at")
-
-  reviewId Int    @map("review_id")
-  review   Review @relation(fields: [reviewId], references: [id])
-
-  comments ReviewComment[]
-
-  @@map("review_threads")
-}
-
-model ReviewComment {
-  id        Int      @id @default(autoincrement())
-  body      String   @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  threadId Int          @map("thread_id")
-  thread   ReviewThread @relation(fields: [threadId], references: [id])
-
-  authorId Int  @map("author_id")
-  author   User @relation(fields: [authorId], references: [id])
-
-  @@map("review_comments")
 }
