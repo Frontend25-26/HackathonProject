@@ -1,0 +1,12 @@
+{
+    "_status": 201,
+    "_delay": 150,
+    "id": 4,
+    "repoUrl": "https://github.com/student-charlie/graph-traversal",
+    "ciStatus": "UNKNOWN",
+    "status": "DRAFT",
+    "assignmentId": 3,
+    "studentId": 5,
+    "createdAt": "2026-04-09T12:00:00.000Z",
+    "updatedAt": "2026-04-09T12:00:00.000Z"
+}

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const ReviewCommentSchema = registry.register(
     'ReviewComment',
@@ -28,7 +29,7 @@ registry.registerPath({
     method: 'get',
     path: '/review-comments',
     tags: ['ReviewComments'],
-    summary: 'Список комментариев (фильтр по threadId через query)',
+    summary: addAccessTag('Список комментариев (фильтр по threadId через query)', 'MENTOR'),
     request: {
         query: z.object({ threadId: z.string().optional() }),
     },
@@ -46,7 +47,7 @@ registry.registerPath({
     method: 'post',
     path: '/review-comments',
     tags: ['ReviewComments'],
-    summary: 'Добавить комментарий в тред',
+    summary: addAccessTag('Добавить комментарий в тред', 'MENTOR'),
     request: {
         body: {
             content: {
@@ -66,7 +67,7 @@ registry.registerPath({
     method: 'patch',
     path: '/review-comments/{id}',
     tags: ['ReviewComments'],
-    summary: 'Редактировать комментарий',
+    summary: addAccessTag('Редактировать комментарий', 'MENTOR'),
     request: {
         params: z.object({ id: z.string() }),
         body: {
@@ -88,7 +89,7 @@ registry.registerPath({
     method: 'delete',
     path: '/review-comments/{id}',
     tags: ['ReviewComments'],
-    summary: 'Удалить комментарий',
+    summary: addAccessTag('Удалить комментарий', 'MENTOR'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         204: { description: 'Комментарий удалён' },

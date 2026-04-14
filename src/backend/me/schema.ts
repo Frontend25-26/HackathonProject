@@ -1,15 +1,17 @@
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 import { UserSchema } from '@backend/users/schema'
 
 registry.registerPath({
     method: 'get',
     path: '/me',
     tags: ['Me'],
-    summary: 'Получить текущего пользователя и его роль',
+    summary: addAccessTag('Получить профиль текущего пользователя', 'STUDENT'),
     description:
         'Возвращает профиль текущего пользователя с ролью (STUDENT, MENTOR, ADMIN). ' +
-        'В dev-режиме возвращает первого пользователя из БД. ' +
+        '\n\nТребует авторизацию через Bearer token или x-mock-user-id (dev-only). ' +
         'В prod требует Auth.js и валидной сессии.',
+    security: [{ Authorization: [] }],
     responses: {
         200: {
             description: 'Текущий пользователь',

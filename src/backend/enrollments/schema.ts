@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 import { registry } from '@backend/lib/openapi'
 
@@ -23,7 +24,7 @@ registry.registerPath({
     method: 'get',
     path: '/enrollments',
     tags: ['Enrollments'],
-    summary: 'Список зачислений (фильтр по courseId или studentId через query)',
+    summary: addAccessTag('Список зачислений (фильтр по courseId или studentId через query)', 'STUDENT'),
     request: {
         query: z.object({
             courseId: z.string().optional(),
@@ -41,32 +42,21 @@ registry.registerPath({
 })
 
 registry.registerPath({
-    method: 'post',
-    path: '/enrollments',
-    tags: ['Enrollments'],
-    summary: 'Зачислить студента на курс',
-    request: {
-        body: {
-            content: { 'application/json': { schema: CreateEnrollmentSchema } },
-        },
-    },
-    responses: {
-        201: {
-            description: 'Зачисление создано',
-            content: { 'application/json': { schema: EnrollmentSchema } },
-        },
-        409: { description: 'Студент уже зачислен на этот курс' },
-    },
-})
-
-registry.registerPath({
-    method: 'delete',
+    method: 'patch',
     path: '/enrollments/{id}',
     tags: ['Enrollments'],
-    summary: 'Удалить зачисление',
-    request: { params: z.object({ id: z.string() }) },
+    summary: addAccessTag('Назначить ментора студенту на курс', 'ADMIN'),
+    request: {
+        params: z.object({ id: z.string() }),
+        body: {
+            content: { 'application/json': { schema: z.object({ mentorId: z.number().int() }) } },
+        },
+    },
     responses: {
-        204: { description: 'Зачисление удалено' },
+        200: {
+            description: 'Ментор назначен',
+            content: { 'application/json': { schema: EnrollmentSchema } },
+        },
         404: { description: 'Зачисление не найдено' },
     },
 })

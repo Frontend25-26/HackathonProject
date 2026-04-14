@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "assignmentId": 1,
+    "studentId": 1,
+    "status": "SUBMITTED",
+    "repositoryUrl": "https://github.com/example/repo",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+]

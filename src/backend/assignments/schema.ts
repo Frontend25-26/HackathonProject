@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 import { registry } from '@backend/lib/openapi'
 
@@ -40,7 +41,7 @@ registry.registerPath({
     method: 'get',
     path: '/assignments',
     tags: ['Assignments'],
-    summary: 'Список заданий (фильтр по courseId через query)',
+    summary: addAccessTag('Список заданий (фильтр по courseId через query)', 'STUDENT'),
     request: {
         query: z.object({ courseId: z.string().optional() }),
     },
@@ -58,7 +59,7 @@ registry.registerPath({
     method: 'post',
     path: '/assignments',
     tags: ['Assignments'],
-    summary: 'Создать задание',
+    summary: addAccessTag('Создать задание', 'ADMIN'),
     request: {
         body: {
             content: { 'application/json': { schema: CreateAssignmentSchema } },
@@ -76,7 +77,7 @@ registry.registerPath({
     method: 'get',
     path: '/assignments/{id}',
     tags: ['Assignments'],
-    summary: 'Получить задание по ID',
+    summary: addAccessTag('Получить задание по ID', 'STUDENT'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {
@@ -91,7 +92,7 @@ registry.registerPath({
     method: 'patch',
     path: '/assignments/{id}',
     tags: ['Assignments'],
-    summary: 'Обновить задание',
+    summary: addAccessTag('Обновить задание', 'ADMIN'),
     request: {
         params: z.object({ id: z.string() }),
         body: {
@@ -111,7 +112,7 @@ registry.registerPath({
     method: 'delete',
     path: '/assignments/{id}',
     tags: ['Assignments'],
-    summary: 'Удалить задание',
+    summary: addAccessTag('Удалить задание', 'ADMIN'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         204: { description: 'Задание удалено' },

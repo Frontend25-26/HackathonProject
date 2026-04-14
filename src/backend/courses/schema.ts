@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const CourseSchema = registry.register(
     'Course',
@@ -27,7 +28,7 @@ registry.registerPath({
     method: 'get',
     path: '/courses',
     tags: ['Courses'],
-    summary: 'Список курсов',
+    summary: addAccessTag('Список курсов', 'STUDENT'),
     responses: {
         200: {
             description: 'Список курсов',
@@ -40,7 +41,7 @@ registry.registerPath({
     method: 'post',
     path: '/courses',
     tags: ['Courses'],
-    summary: 'Создать курс',
+    summary: addAccessTag('Создать курс', 'ADMIN'),
     request: {
         body: {
             content: { 'application/json': { schema: CreateCourseSchema } },
@@ -58,7 +59,7 @@ registry.registerPath({
     method: 'get',
     path: '/courses/{id}',
     tags: ['Courses'],
-    summary: 'Получить курс по ID',
+    summary: addAccessTag('Получить курс по ID', 'STUDENT'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {
@@ -73,7 +74,7 @@ registry.registerPath({
     method: 'patch',
     path: '/courses/{id}',
     tags: ['Courses'],
-    summary: 'Обновить курс',
+    summary: addAccessTag('Обновить курс', 'ADMIN'),
     request: {
         params: z.object({ id: z.string() }),
         body: {
@@ -93,7 +94,7 @@ registry.registerPath({
     method: 'delete',
     path: '/courses/{id}',
     tags: ['Courses'],
-    summary: 'Удалить курс',
+    summary: addAccessTag('Удалить курс', 'ADMIN'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         204: { description: 'Курс удалён' },

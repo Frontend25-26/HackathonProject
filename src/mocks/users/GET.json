@@ -1,0 +1,61 @@
+{
+    "_status": 200,
+    "_delay": 100,
+    "data": [
+        {
+            "id": 1,
+            "githubId": 10000001,
+            "login": "alice-dev",
+            "name": "Алиса Иванова",
+            "email": "alice@example.com",
+            "avatar": "https://avatars.githubusercontent.com/u/10000001",
+            "role": "STUDENT",
+            "createdAt": "2025-09-01T08:00:00.000Z",
+            "updatedAt": "2025-09-01T08:00:00.000Z"
+        },
+        {
+            "id": 2,
+            "githubId": 10000002,
+            "login": "mentor-boris",
+            "name": "Борис Петров",
+            "email": "boris@example.com",
+            "avatar": "https://avatars.githubusercontent.com/u/10000002",
+            "role": "MENTOR",
+            "createdAt": "2025-08-20T10:00:00.000Z",
+            "updatedAt": "2025-08-20T10:00:00.000Z"
+        },
+        {
+            "id": 3,
+            "githubId": 10000003,
+            "login": "admin-victor",
+            "name": "Виктор Сидоров",
+            "email": "victor@example.com",
+            "avatar": "https://avatars.githubusercontent.com/u/10000003",
+            "role": "ADMIN",
+            "createdAt": "2025-08-01T09:00:00.000Z",
+            "updatedAt": "2025-08-01T09:00:00.000Z"
+        },
+        {
+            "id": 4,
+            "githubId": 10000004,
+            "login": "bob-student",
+            "name": "Боб Козлов",
+            "email": null,
+            "avatar": "https://avatars.githubusercontent.com/u/10000004",
+            "role": "STUDENT",
+            "createdAt": "2025-09-03T14:00:00.000Z",
+            "updatedAt": "2025-09-03T14:00:00.000Z"
+        },
+        {
+            "id": 5,
+            "githubId": 10000005,
+            "login": "charlie-student",
+            "name": null,
+            "email": "charlie@example.com",
+            "avatar": null,
+            "role": "STUDENT",
+            "createdAt": "2025-09-10T11:00:00.000Z",
+            "updatedAt": "2025-09-10T11:00:00.000Z"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 const GhOrganizationSchema = z.object({
     login: z.string(),
@@ -40,24 +41,9 @@ export const GhAssignmentSchema = registry.register(
 
 registry.registerPath({
     method: 'get',
-    path: '/github/classrooms',
-    tags: ['GitHub Classroom'],
-    summary: 'Список classroom-классов (требует GITHUB_TOKEN)',
-    responses: {
-        200: {
-            description: 'Список классов',
-            content: {
-                'application/json': { schema: z.array(GhClassroomSchema) },
-            },
-        },
-    },
-})
-
-registry.registerPath({
-    method: 'get',
     path: '/github/classrooms/{classroomId}/assignments',
     tags: ['GitHub Classroom'],
-    summary: 'Список заданий classroom-класса',
+    summary: addAccessTag('Список заданий classroom-класса', 'ADMIN'),
     request: { params: z.object({ classroomId: z.string() }) },
     responses: {
         200: {
@@ -73,7 +59,7 @@ registry.registerPath({
     method: 'get',
     path: '/github/assignments/{assignmentId}',
     tags: ['GitHub Classroom'],
-    summary: 'Получить задание по ID (включает invite_link)',
+    summary: addAccessTag('Получить задание по ID (включает invite_link)', 'ADMIN'),
     request: { params: z.object({ assignmentId: z.string() }) },
     responses: {
         200: {

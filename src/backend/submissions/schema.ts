@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const SubmissionSchema = registry.register(
     'Submission',
@@ -54,7 +55,7 @@ registry.registerPath({
     method: 'get',
     path: '/submissions',
     tags: ['Submissions'],
-    summary: 'Список работ (фильтр по assignmentId или studentId через query)',
+    summary: addAccessTag('Список работ (фильтр по assignmentId или studentId через query)', 'STUDENT'),
     request: {
         query: z.object({
             assignmentId: z.string().optional(),
@@ -75,7 +76,7 @@ registry.registerPath({
     method: 'post',
     path: '/submissions',
     tags: ['Submissions'],
-    summary: 'Отправить работу',
+    summary: addAccessTag('Отправить работу', 'STUDENT'),
     request: {
         body: {
             content: { 'application/json': { schema: CreateSubmissionSchema } },
@@ -94,7 +95,7 @@ registry.registerPath({
     method: 'get',
     path: '/submissions/{id}',
     tags: ['Submissions'],
-    summary: 'Получить работу по ID',
+    summary: addAccessTag('Получить работу по ID', 'STUDENT'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {
@@ -109,7 +110,7 @@ registry.registerPath({
     method: 'patch',
     path: '/submissions/{id}',
     tags: ['Submissions'],
-    summary: 'Обновить статус / repoUrl работы',
+    summary: addAccessTag('Обновить статус / repoUrl работы', 'STUDENT'),
     request: {
         params: z.object({ id: z.string() }),
         body: {
