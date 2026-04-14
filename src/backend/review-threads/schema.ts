@@ -25,8 +25,8 @@ registry.registerPath({
     path: '/review-threads',
     tags: ['ReviewThreads'],
     summary: addAccessTag(
-        'Список тредов ревью (фильтр по reviewId через query)',
-        'MENTOR',
+        'Список тредов ревью (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
     ),
     request: {
         query: z.object({ reviewId: z.string().optional() }),
@@ -46,8 +46,8 @@ registry.registerPath({
     path: '/review-threads',
     tags: ['ReviewThreads'],
     summary: addAccessTag(
-        'Создать тред к файлу/строке (аналог PR review comment на GitHub)',
-        'MENTOR',
+        'Создать тред (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
     ),
     request: {
         body: {
@@ -68,7 +68,10 @@ registry.registerPath({
     method: 'get',
     path: '/review-threads/{id}',
     tags: ['ReviewThreads'],
-    summary: addAccessTag('Получить тред по ID', 'MENTOR'),
+    summary: addAccessTag(
+        'Получить тред по ID (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
+    ),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {

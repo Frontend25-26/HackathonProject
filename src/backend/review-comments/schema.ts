@@ -30,8 +30,8 @@ registry.registerPath({
     path: '/review-comments',
     tags: ['ReviewComments'],
     summary: addAccessTag(
-        'Список комментариев (фильтр по threadId через query)',
-        'MENTOR',
+        'Список комментариев (фильтр по threadId через query) (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
     ),
     request: {
         query: z.object({ threadId: z.string().optional() }),
@@ -50,7 +50,10 @@ registry.registerPath({
     method: 'post',
     path: '/review-comments',
     tags: ['ReviewComments'],
-    summary: addAccessTag('Добавить комментарий в тред', 'MENTOR'),
+    summary: addAccessTag(
+        'Добавить комментарий в тред (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
+    ),
     request: {
         body: {
             content: {
@@ -70,7 +73,10 @@ registry.registerPath({
     method: 'patch',
     path: '/review-comments/{id}',
     tags: ['ReviewComments'],
-    summary: addAccessTag('Редактировать комментарий', 'MENTOR'),
+    summary: addAccessTag(
+        'Редактировать комментарий (только автор)',
+        'STUDENT',
+    ),
     request: {
         params: z.object({ id: z.string() }),
         body: {
@@ -84,6 +90,7 @@ registry.registerPath({
             description: 'Обновлённый комментарий',
             content: { 'application/json': { schema: ReviewCommentSchema } },
         },
+        403: { description: 'Вы не можете редактировать чужие комментарии' },
         404: { description: 'Комментарий не найден' },
     },
 })
@@ -92,7 +99,10 @@ registry.registerPath({
     method: 'delete',
     path: '/review-comments/{id}',
     tags: ['ReviewComments'],
-    summary: addAccessTag('Удалить комментарий', 'MENTOR'),
+    summary: addAccessTag(
+        'Удалить комментарий (MENTOR везде, STUDENT только свои)',
+        'STUDENT | MENTOR',
+    ),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         204: { description: 'Комментарий удалён' },

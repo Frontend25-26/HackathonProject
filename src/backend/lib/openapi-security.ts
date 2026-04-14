@@ -5,13 +5,19 @@
  * к OpenAPI endpoints.
  */
 
-export type AccessLevel = 'PUBLIC' | 'STUDENT' | 'MENTOR' | 'ADMIN'
+export type AccessLevel =
+    | 'PUBLIC'
+    | 'STUDENT'
+    | 'MENTOR'
+    | 'ADMIN'
+    | 'STUDENT | MENTOR'
 
 export const ACCESS_DESCRIPTIONS: Record<AccessLevel, string> = {
     PUBLIC: 'Доступно всем без авторизации',
     STUDENT: 'Требует авторизация (любая роль)',
     MENTOR: 'Требует роль MENTOR или ADMIN',
     ADMIN: 'Требует роль ADMIN',
+    'STUDENT | MENTOR': 'Доступно STUDENT и MENTOR (с разными правами)',
 }
 
 /**
@@ -44,7 +50,9 @@ export function addAccessTag(description: string, access: AccessLevel): string {
               ? 'STUDENT'
               : access === 'MENTOR'
                 ? 'MENTOR'
-                : 'ADMIN'
+                : access === 'STUDENT | MENTOR'
+                  ? 'STUDENT | MENTOR'
+                  : 'ADMIN'
 
     return `[${tag}] ${description}`
 }
