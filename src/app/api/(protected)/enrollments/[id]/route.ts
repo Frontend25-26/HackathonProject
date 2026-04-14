@@ -5,10 +5,10 @@
  */
 
 import { NextRequest } from 'next/server'
-
-import { requireAdmin } from '@backend/lib/auth'
-import { enrollmentRepository } from '@backend/enrollments/repository'
 import { z } from 'zod'
+
+import { enrollmentRepository } from '@backend/enrollments/repository'
+import { requireAdmin } from '@backend/lib/auth'
 
 type Params = { params: Promise<{ id: string }> }
 

@@ -11,8 +11,8 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAdmin, requireAuth } from '@backend/lib/auth'
 import { Role } from '@backend/generated/prisma'
+import { requireAdmin, requireAuth } from '@backend/lib/auth'
 import { userRepository } from '@backend/users/repository'
 import { UpdateUserSchema } from '@backend/users/schema'
 

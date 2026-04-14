@@ -46,11 +46,17 @@ async function resolveDir(
     return null
 }
 
-function resolveAuthLevel(path: string[]): 'public' | 'protected' | 'mentor' | 'admin' {
+function resolveAuthLevel(
+    path: string[],
+): 'public' | 'protected' | 'mentor' | 'admin' {
     const [first] = path
 
     if (first === 'users' || first === 'github') return 'admin'
-    if (first === 'reviews' || first === 'review-threads' || first === 'review-comments')
+    if (
+        first === 'reviews' ||
+        first === 'review-threads' ||
+        first === 'review-comments'
+    )
         return 'mentor'
     if (
         first === 'me' ||
@@ -72,7 +78,9 @@ async function handler(request: NextRequest) {
         return Response.json({ error: 'route param required' }, { status: 400 })
     }
 
-    const path = route.startsWith('/') ? route.slice(1).split('/') : route.split('/')
+    const path = route.startsWith('/')
+        ? route.slice(1).split('/')
+        : route.split('/')
     const authLevel = resolveAuthLevel(path)
 
     // Проверяем авторизацию
@@ -107,10 +115,7 @@ async function handler(request: NextRequest) {
         }
     }
 
-    return Response.json(
-        { error: 'mock not found', route },
-        { status: 404 },
-    )
+    return Response.json({ error: 'mock not found', route }, { status: 404 })
 }
 
 export const GET = handler

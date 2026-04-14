@@ -8,9 +8,9 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAuth, requireAdmin } from '@backend/lib/auth'
 import { courseRepository } from '@backend/courses/repository'
 import { CreateCourseSchema } from '@backend/courses/schema'
+import { requireAuth, requireAdmin } from '@backend/lib/auth'
 
 export async function GET(request: NextRequest) {
     const auth = await requireAuth(request)

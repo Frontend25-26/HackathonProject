@@ -8,9 +8,9 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAuth, requireAdmin } from '@backend/lib/auth'
 import { assignmentRepository } from '@backend/assignments/repository'
 import { CreateAssignmentSchema } from '@backend/assignments/schema'
+import { requireAuth, requireAdmin } from '@backend/lib/auth'
 
 export async function GET(request: NextRequest) {
     const auth = await requireAuth(request)

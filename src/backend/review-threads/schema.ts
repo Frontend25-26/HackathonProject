@@ -24,7 +24,10 @@ registry.registerPath({
     method: 'get',
     path: '/review-threads',
     tags: ['ReviewThreads'],
-    summary: addAccessTag('Список тредов ревью (фильтр по reviewId через query)', 'MENTOR'),
+    summary: addAccessTag(
+        'Список тредов ревью (фильтр по reviewId через query)',
+        'MENTOR',
+    ),
     request: {
         query: z.object({ reviewId: z.string().optional() }),
     },
@@ -42,7 +45,10 @@ registry.registerPath({
     method: 'post',
     path: '/review-threads',
     tags: ['ReviewThreads'],
-    summary: addAccessTag('Создать тред к файлу/строке (аналог PR review comment на GitHub)', 'MENTOR'),
+    summary: addAccessTag(
+        'Создать тред к файлу/строке (аналог PR review comment на GitHub)',
+        'MENTOR',
+    ),
     request: {
         body: {
             content: {

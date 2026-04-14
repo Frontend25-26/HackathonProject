@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { addAccessTag } from '@backend/lib/openapi-security'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const AssignmentSchema = registry.register(
     'Assignment',
@@ -41,7 +41,10 @@ registry.registerPath({
     method: 'get',
     path: '/assignments',
     tags: ['Assignments'],
-    summary: addAccessTag('Список заданий (фильтр по courseId через query)', 'STUDENT'),
+    summary: addAccessTag(
+        'Список заданий (фильтр по courseId через query)',
+        'STUDENT',
+    ),
     request: {
         query: z.object({ courseId: z.string().optional() }),
     },

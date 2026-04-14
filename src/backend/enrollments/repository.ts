@@ -25,6 +25,13 @@ export const enrollmentRepository = {
         return prisma.enrollment.create({ data })
     },
 
+    update(id: number, data: { mentorId?: number }) {
+        return prisma.enrollment.update({
+            where: { id },
+            data,
+        })
+    },
+
     delete(id: number) {
         return prisma.enrollment.delete({ where: { id } })
     },

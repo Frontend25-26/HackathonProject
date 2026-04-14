@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { addAccessTag } from '@backend/lib/openapi-security'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const EnrollmentSchema = registry.register(
     'Enrollment',
@@ -24,7 +24,10 @@ registry.registerPath({
     method: 'get',
     path: '/enrollments',
     tags: ['Enrollments'],
-    summary: addAccessTag('Список зачислений (фильтр по courseId или studentId через query)', 'STUDENT'),
+    summary: addAccessTag(
+        'Список зачислений (фильтр по courseId или studentId через query)',
+        'STUDENT',
+    ),
     request: {
         query: z.object({
             courseId: z.string().optional(),
@@ -49,7 +52,11 @@ registry.registerPath({
     request: {
         params: z.object({ id: z.string() }),
         body: {
-            content: { 'application/json': { schema: z.object({ mentorId: z.number().int() }) } },
+            content: {
+                'application/json': {
+                    schema: z.object({ mentorId: z.number().int() }),
+                },
+            },
         },
     },
     responses: {

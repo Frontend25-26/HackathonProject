@@ -1,7 +1,5 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(grep -rn \"\\\\.replace\" src/backend/lib/*.ts)"
-    ]
-  }
+    "permissions": {
+        "allow": ["Bash(grep -rn \"\\\\.replace\" src/backend/lib/*.ts)"]
+    }
 }

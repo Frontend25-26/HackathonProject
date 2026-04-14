@@ -39,7 +39,8 @@ registry.registerPath({
     path: '/users',
     tags: ['Users'],
     summary: addAccessTag('Получить список всех пользователей', 'ADMIN'),
-    description: 'Только администраторы могут получить список всех пользователей.',
+    description:
+        'Только администраторы могут получить список всех пользователей.',
     security: [{ Authorization: [] }],
     responses: {
         200: {
@@ -113,7 +114,10 @@ registry.registerPath({
             content: { 'application/json': { schema: UserSchema } },
         },
         401: { description: 'Не аутентифицирован' },
-        403: { description: 'Нет прав: чужой профиль или попытка изменить роль без ADMIN' },
+        403: {
+            description:
+                'Нет прав: чужой профиль или попытка изменить роль без ADMIN',
+        },
         404: { description: 'Пользователь не найден' },
     },
 })

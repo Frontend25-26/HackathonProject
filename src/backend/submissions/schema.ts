@@ -55,7 +55,10 @@ registry.registerPath({
     method: 'get',
     path: '/submissions',
     tags: ['Submissions'],
-    summary: addAccessTag('Список работ (фильтр по assignmentId или studentId через query)', 'STUDENT'),
+    summary: addAccessTag(
+        'Список работ (фильтр по assignmentId или studentId через query)',
+        'STUDENT',
+    ),
     request: {
         query: z.object({
             assignmentId: z.string().optional(),

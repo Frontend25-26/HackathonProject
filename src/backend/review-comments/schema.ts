@@ -29,7 +29,10 @@ registry.registerPath({
     method: 'get',
     path: '/review-comments',
     tags: ['ReviewComments'],
-    summary: addAccessTag('Список комментариев (фильтр по threadId через query)', 'MENTOR'),
+    summary: addAccessTag(
+        'Список комментариев (фильтр по threadId через query)',
+        'MENTOR',
+    ),
     request: {
         query: z.object({ threadId: z.string().optional() }),
     },

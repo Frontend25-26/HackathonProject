@@ -11,8 +11,8 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAuth } from '@backend/lib/auth'
 import { Role } from '@backend/generated/prisma'
+import { requireAuth } from '@backend/lib/auth'
 import { submissionRepository } from '@backend/submissions/repository'
 import { UpdateSubmissionSchema } from '@backend/submissions/schema'
 
@@ -65,6 +65,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const submission = await submissionRepository.update(Number(id), parsed.data)
+    const submission = await submissionRepository.update(
+        Number(id),
+        parsed.data,
+    )
     return Response.json(submission)
 }

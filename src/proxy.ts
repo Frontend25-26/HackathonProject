@@ -19,7 +19,10 @@ export async function proxy(request: NextRequest) {
     // В режиме USE_MOCKS переписываем все API запросы на dev handler
     if (process.env.USE_MOCKS === 'true' && pathname.startsWith('/api/')) {
         // Пропускаем реальные handler'ы (не мокируем)
-        if (pathname.startsWith('/api/dev/') || pathname.startsWith('/api/docs')) {
+        if (
+            pathname.startsWith('/api/dev/') ||
+            pathname.startsWith('/api/docs')
+        ) {
             return NextResponse.next()
         }
 

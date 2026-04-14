@@ -150,7 +150,10 @@ export async function requireMentor(request: NextRequest): Promise<AuthResult> {
     const { user } = result
 
     if (user.role !== Role.MENTOR && user.role !== Role.ADMIN) {
-        return { ok: false, response: forbidden('Mentor or Admin role required') }
+        return {
+            ok: false,
+            response: forbidden('Mentor or Admin role required'),
+        }
     }
 
     return { ok: true, user }

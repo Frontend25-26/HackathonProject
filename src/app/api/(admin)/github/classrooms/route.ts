@@ -6,8 +6,8 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAdmin } from '@backend/lib/auth'
 import { classroomApi } from '@backend/github/classroom'
+import { requireAdmin } from '@backend/lib/auth'
 
 export async function GET(request: NextRequest) {
     const auth = await requireAdmin(request)

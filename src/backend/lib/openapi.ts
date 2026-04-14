@@ -34,8 +34,8 @@ export function generateOpenApiSpec() {
                       '2. Введи **JWT token** после логина через GitHub\n' +
                       '3. Нажми **"Authorize"** и закрой диалог\n' +
                       '4. Все запросы будут включать заголовок `Authorization: Bearer <token>`\n\n' +
-                      '**Пример:** `Authorization: Bearer eyJhbGc...`\n')
-},
+                      '**Пример:** `Authorization: Bearer eyJhbGc...`\n'),
+        },
         servers: [{ url: '/api' }],
     })
 
@@ -51,23 +51,24 @@ export function generateOpenApiSpec() {
     if (isDevMode) {
         // DEV режим: apiKey с ролями вместо ID
         spec.components.securitySchemes.Authorization = {
-            type: 'apiKey',
-            in: 'header',
+            type: 'apiKey' as const,
+            in: 'header' as const,
             name: 'x-mock-user-id',
             description:
                 '**Выбери роль:**\n' +
                 '- **STUDENT** — студент (доступ к /api/me, /api/courses)\n' +
                 '- **MENTOR** — ментор проекта (доступ к /api/reviews)\n' +
                 '- **ADMIN** — администратор (доступ к /api/users)',
-        } as any
+        }
     } else {
         // PROD режим: Bearer token
         spec.components.securitySchemes.Authorization = {
-            type: 'http',
-            scheme: 'bearer',
+            type: 'http' as const,
+            scheme: 'bearer' as const,
             bearerFormat: 'JWT',
-            description: 'Bearer token с информацией о пользователе и его роли (Auth.js)',
-        } as any
+            description:
+                'Bearer token с информацией о пользователе и его роли (Auth.js)',
+        }
     }
 
     return spec

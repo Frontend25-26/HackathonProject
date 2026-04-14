@@ -59,7 +59,10 @@ registry.registerPath({
     method: 'get',
     path: '/github/assignments/{assignmentId}',
     tags: ['GitHub Classroom'],
-    summary: addAccessTag('Получить задание по ID (включает invite_link)', 'ADMIN'),
+    summary: addAccessTag(
+        'Получить задание по ID (включает invite_link)',
+        'ADMIN',
+    ),
     request: { params: z.object({ assignmentId: z.string() }) },
     responses: {
         200: {

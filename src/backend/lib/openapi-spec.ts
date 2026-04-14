@@ -9,10 +9,4 @@ import '@backend/review-threads/schema'
 import '@backend/review-comments/schema'
 import '@backend/github/schema'
 
-import { registry } from './openapi'
-import { registerMockRoutes } from './openapi-mocks'
-
-// TODO: выпилить при выпиливании моков (src/mocks/)
-// registerMockRoutes()
-
 export { generateOpenApiSpec } from './openapi'

@@ -12,8 +12,8 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAuth } from '@backend/lib/auth'
 import { Role } from '@backend/generated/prisma'
+import { requireAuth } from '@backend/lib/auth'
 import { submissionRepository } from '@backend/submissions/repository'
 import { CreateSubmissionSchema } from '@backend/submissions/schema'
 
@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
         auth.user.role === Role.STUDENT
             ? auth.user.id
             : searchParams.get('studentId')
-                ? Number(searchParams.get('studentId'))
-                : undefined
+              ? Number(searchParams.get('studentId'))
+              : undefined
 
     const submissions = await submissionRepository.findAll({
         ...(assignmentId && { assignmentId: Number(assignmentId) }),

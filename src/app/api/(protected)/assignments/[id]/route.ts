@@ -9,9 +9,9 @@
 
 import { NextRequest } from 'next/server'
 
-import { requireAuth, requireAdmin } from '@backend/lib/auth'
 import { assignmentRepository } from '@backend/assignments/repository'
 import { UpdateAssignmentSchema } from '@backend/assignments/schema'
+import { requireAuth, requireAdmin } from '@backend/lib/auth'
 
 type Params = { params: Promise<{ id: string }> }
 

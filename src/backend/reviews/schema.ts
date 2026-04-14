@@ -32,7 +32,10 @@ registry.registerPath({
     method: 'get',
     path: '/reviews',
     tags: ['Reviews'],
-    summary: addAccessTag('Список ревью (фильтр по submissionId через query)', 'MENTOR'),
+    summary: addAccessTag(
+        'Список ревью (фильтр по submissionId через query)',
+        'MENTOR',
+    ),
     request: {
         query: z.object({ submissionId: z.string().optional() }),
     },
