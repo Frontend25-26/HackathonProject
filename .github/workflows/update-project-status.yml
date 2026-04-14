@@ -33,34 +33,30 @@ jobs:
             const issueNumber = parseInt(issueMatch[1], 10);
             core.info(`Найден issue #${issueNumber}, ищем в GitHub Project...`);
 
-            // GraphQL запрос для получения проекта и обновления статуса
-            const query = `
+            // Получаем issue и вытаскиваем проект из него
+            const getIssueQuery = `
               query {
-                organization(login: "Frontend25-26") {
-                  projectV2(number: 1) {
-                    id
-                    fields(first: 20) {
-                      nodes {
-                        ... on ProjectV2Field {
-                          id
-                          name
-                        }
-                        ... on ProjectV2SingleSelectField {
-                          id
-                          name
-                          options {
-                            id
-                            name
-                          }
-                        }
-                      }
-                    }
-                    items(first: 100, query: "number:${issueNumber}") {
+                repository(owner: "${owner}", name: "${repo}") {
+                  issue(number: ${issueNumber}) {
+                    projectItems(first: 10) {
                       nodes {
                         id
-                        content {
-                          ... on Issue {
-                            number
+                        project {
+                          id
+                          title
+                        }
+                        fieldValueByName(name: "Status") {
+                          ... on ProjectV2ItemFieldSingleSelectValue {
+                            field {
+                              ... on ProjectV2SingleSelectField {
+                                id
+                                options {
+                                  id
+                                  name
+                                }
+                              }
+                            }
+                            optionId
                           }
                         }
                       }
@@ -70,51 +66,45 @@ jobs:
               }
             `;
 
+            const issueResult = await github.graphql(getIssueQuery);
+            const issueProjectItems = issueResult.repository.issue.projectItems.nodes;
+
+            if (!issueProjectItems || issueProjectItems.length === 0) {
+              core.warning(`Issue #${issueNumber} не привязан ни к одному проекту`);
+              return;
+            }
+
+            const projectItem = issueProjectItems[0];
+            core.info(`✓ Найден проект "${projectItem.project.title}" для issue #${issueNumber}`);
+
+            const projectItemId = projectItem.id;
+            const projectId = projectItem.project.id;
+            const statusField = projectItem.fieldValueByName;
+
+            if (!statusField?.field?.id) {
+              core.setFailed('Поле Status не найдено для этого issue в проекте');
+              return;
+            }
+
+            const statusFieldId = statusField.field.id;
+            const inReviewOption = statusField.field.options?.find(o => o.name === 'In review');
+
+            if (!inReviewOption) {
+              const availableOptions = statusField.field.options?.map(o => o.name).join(', ') || 'нет опций';
+              core.setFailed(`Статус "In review" не найден. Доступные статусы: ${availableOptions}`);
+              return;
+            }
+
+            core.info(`✓ Статус "In review" найден, ID: ${inReviewOption.id}`);
+
             try {
-              const result = await github.graphql(query);
-
-              const project = result.organization.projectV2;
-              if (!project) {
-                core.setFailed('Проект не найден');
-                return;
-              }
-
-              core.info(`✓ Проект найден, всего полей: ${project.fields.nodes.length}`);
-
-              // Ищем поле "Status" - может быть любой из типов ProjectV2Field
-              let statusField = project.fields.nodes.find(f => f.name === 'Status');
-              if (!statusField) {
-                core.setFailed('Поле Status не найдено в проекте. Доступные поля: ' +
-                  project.fields.nodes.map(f => f.name).join(', '));
-                return;
-              }
-
-              core.info(`✓ Поле Status найдено, ID: ${statusField.id}`);
-
-              // Ищем опцию "In review"
-              const inReviewOption = statusField.options?.find(o => o.name === 'In review');
-              if (!inReviewOption) {
-                const availableOptions = statusField.options?.map(o => o.name).join(', ') || 'нет опций';
-                core.setFailed(`Статус "In review" не найден. Доступные статусы: ${availableOptions}`);
-                return;
-              }
-
-              core.info(`✓ Статус "In review" найден, ID: ${inReviewOption.id}`);
-
-              // Ищем issue в проекте
-              const issueItem = project.items.nodes.find(item => item.content?.number === issueNumber);
-              if (!issueItem) {
-                core.warning(`Issue #${issueNumber} не найден в проекте HackathonBoard`);
-                return;
-              }
-
               // Обновляем статус на "In review"
               const updateMutation = `
                 mutation {
                   updateProjectV2ItemFieldValue(input: {
-                    projectId: "${project.id}"
-                    itemId: "${issueItem.id}"
-                    fieldId: "${statusField.id}"
+                    projectId: "${projectId}"
+                    itemId: "${projectItemId}"
+                    fieldId: "${statusFieldId}"
                     value: {singleSelectOptionId: "${inReviewOption.id}"}
                   }) {
                     projectV2Item {
@@ -125,7 +115,7 @@ jobs:
               `;
 
               await github.graphql(updateMutation);
-              core.info(`✓ Issue #${issueNumber} переведён в статус "In review" в проекте HackathonBoard`);
+              core.info(`✓ Issue #${issueNumber} переведён в статус "In review" в проекте "${projectItem.project.title}"`);
 
             } catch (error) {
               core.warning(`Ошибка при обновлении проекта: ${error.message}`);
