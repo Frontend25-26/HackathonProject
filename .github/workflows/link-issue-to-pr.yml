@@ -2,7 +2,7 @@ name: Link Issue to PR
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
 
 permissions:
   pull-requests: write
@@ -31,6 +31,13 @@ jobs:
             const issueNumber = parseInt(issueMatch[1], 10);
             const prNumber = context.payload.pull_request.number;
             const { owner, repo } = context.repo;
+
+            // Проверяем, уже ли issue привязан к PR
+            const prBody = context.payload.pull_request.body || '';
+            if (prBody.includes(`#${issueNumber}`) || prBody.includes(`Закрывает #${issueNumber}`)) {
+              core.info(`✓ Issue #${issueNumber} уже привязан к PR #${prNumber}. Пропускаем.`);
+              return;
+            }
 
             try {
               // Проверяем, что issue существует
