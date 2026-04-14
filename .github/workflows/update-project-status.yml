@@ -41,9 +41,13 @@ jobs:
                     id
                     fields(first: 20) {
                       nodes {
-                        id
-                        name
+                        ... on ProjectV2Field {
+                          id
+                          name
+                        }
                         ... on ProjectV2SingleSelectField {
+                          id
+                          name
                           options {
                             id
                             name
@@ -75,19 +79,27 @@ jobs:
                 return;
               }
 
-              // Ищем поле "Status"
-              const statusField = project.fields.nodes.find(f => f.name === 'Status');
+              core.info(`✓ Проект найден, всего полей: ${project.fields.nodes.length}`);
+
+              // Ищем поле "Status" - может быть любой из типов ProjectV2Field
+              let statusField = project.fields.nodes.find(f => f.name === 'Status');
               if (!statusField) {
-                core.setFailed('Поле Status не найдено в проекте');
+                core.setFailed('Поле Status не найдено в проекте. Доступные поля: ' +
+                  project.fields.nodes.map(f => f.name).join(', '));
                 return;
               }
+
+              core.info(`✓ Поле Status найдено, ID: ${statusField.id}`);
 
               // Ищем опцию "In review"
               const inReviewOption = statusField.options?.find(o => o.name === 'In review');
               if (!inReviewOption) {
-                core.setFailed('Статус "In review" не найден в проекте');
+                const availableOptions = statusField.options?.map(o => o.name).join(', ') || 'нет опций';
+                core.setFailed(`Статус "In review" не найден. Доступные статусы: ${availableOptions}`);
                 return;
               }
+
+              core.info(`✓ Статус "In review" найден, ID: ${inReviewOption.id}`);
 
               // Ищем issue в проекте
               const issueItem = project.items.nodes.find(item => item.content?.number === issueNumber);
