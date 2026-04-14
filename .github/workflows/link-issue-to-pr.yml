@@ -80,24 +80,6 @@ jobs:
                 core.info(`✓ Обновлено описание PR #${prNumber} со ссылкой на issue`);
               }
 
-              // Привязываем PR к issue для заполнения поля Development
-              try {
-                await github.rest.issues.createLink({
-                  owner,
-                  repo,
-                  issue_number: issueNumber,
-                  body: {
-                    linked_issue_number: prNumber,
-                  },
-                });
-                core.info(`✓ PR #${prNumber} привязан к Development поля issue #${issueNumber}`);
-              } catch (linkError) {
-                // Может быть ошибка, если PR уже привязан - это не критично
-                if (!linkError.message.includes('already exists')) {
-                  core.warning(`Не удалось привязать к Development: ${linkError.message}`);
-                }
-              }
-
             } catch (error) {
               if (error.status === 404) {
                 core.warning(`Issue #${issueNumber} не найден. Название ветки указывает на то, что issue должен существовать.`);
