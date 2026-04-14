@@ -33,10 +33,10 @@ jobs:
             core.info(`📍 Найден issue #${issueNumber}, обновляем статус в проекте...`);
 
             try {
-              // 1️⃣ Получаем все проекты репозитория
+              // 1️⃣ Получаем все проекты организации
               const getProjectsQuery = `
                 query {
-                  repository(owner: "${owner}", name: "${repo}") {
+                  organization(login: "${owner}") {
                     projectsV2(first: 10) {
                       nodes {
                         id
@@ -48,7 +48,7 @@ jobs:
               `;
 
               const projectsResult = await github.graphql(getProjectsQuery);
-              const projects = projectsResult.repository.projectsV2.nodes;
+              const projects = projectsResult.organization.projectsV2.nodes;
 
               if (projects.length === 0) {
                 core.warning('⚠️ Проектов в репозитории не найдено');
