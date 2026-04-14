@@ -1,0 +1,30 @@
+{
+    "_status": 200,
+    "_delay": 100,
+    "data": [
+        {
+            "id": 1,
+            "title": "Сортировка слиянием",
+            "description": "Реализуйте алгоритм сортировки слиянием на TypeScript. Покройте тестами.",
+            "classroomUrl": "https://classroom.github.com/a/merge-sort-ts",
+            "maxGrade": 100,
+            "dueDate": "2025-10-15T23:59:59.000Z",
+            "courseId": 1,
+            "createdById": 3,
+            "createdAt": "2025-09-10T10:00:00.000Z",
+            "updatedAt": "2025-09-10T10:00:00.000Z"
+        },
+        {
+            "id": 2,
+            "title": "REST API на Next.js",
+            "description": "Создайте полноценный REST API с авторизацией, Prisma и OpenAPI-документацией.",
+            "classroomUrl": "https://classroom.github.com/a/nextjs-rest-api",
+            "maxGrade": 100,
+            "dueDate": "2025-11-01T23:59:59.000Z",
+            "courseId": 2,
+            "createdById": 3,
+            "createdAt": "2025-09-20T09:00:00.000Z",
+            "updatedAt": "2025-09-20T09:00:00.000Z"
+        }
+    ]
+}

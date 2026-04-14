@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const ReviewThreadSchema = registry.register(
     'ReviewThread',
@@ -23,7 +24,10 @@ registry.registerPath({
     method: 'get',
     path: '/review-threads',
     tags: ['ReviewThreads'],
-    summary: 'Список тредов ревью (фильтр по reviewId через query)',
+    summary: addAccessTag(
+        'Список тредов ревью (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
+    ),
     request: {
         query: z.object({ reviewId: z.string().optional() }),
     },
@@ -41,7 +45,10 @@ registry.registerPath({
     method: 'post',
     path: '/review-threads',
     tags: ['ReviewThreads'],
-    summary: 'Создать тред к файлу/строке (аналог PR review comment на GitHub)',
+    summary: addAccessTag(
+        'Создать тред (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
+    ),
     request: {
         body: {
             content: {
@@ -61,7 +68,10 @@ registry.registerPath({
     method: 'get',
     path: '/review-threads/{id}',
     tags: ['ReviewThreads'],
-    summary: 'Получить тред по ID',
+    summary: addAccessTag(
+        'Получить тред по ID (MENTOR везде, STUDENT только в своих review)',
+        'STUDENT | MENTOR',
+    ),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {
@@ -76,7 +86,7 @@ registry.registerPath({
     method: 'delete',
     path: '/review-threads/{id}',
     tags: ['ReviewThreads'],
-    summary: 'Удалить тред',
+    summary: addAccessTag('Удалить тред', 'MENTOR'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         204: { description: 'Тред удалён' },

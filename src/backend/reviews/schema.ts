@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { registry } from '@backend/lib/openapi'
+import { addAccessTag } from '@backend/lib/openapi-security'
 
 export const ReviewSchema = registry.register(
     'Review',
@@ -31,7 +32,10 @@ registry.registerPath({
     method: 'get',
     path: '/reviews',
     tags: ['Reviews'],
-    summary: 'Список ревью (фильтр по submissionId через query)',
+    summary: addAccessTag(
+        'Список ревью (фильтр по submissionId через query)',
+        'MENTOR',
+    ),
     request: {
         query: z.object({ submissionId: z.string().optional() }),
     },
@@ -47,7 +51,7 @@ registry.registerPath({
     method: 'post',
     path: '/reviews',
     tags: ['Reviews'],
-    summary: 'Создать ревью',
+    summary: addAccessTag('Создать ревью', 'MENTOR'),
     request: {
         body: {
             content: { 'application/json': { schema: CreateReviewSchema } },
@@ -66,7 +70,7 @@ registry.registerPath({
     method: 'get',
     path: '/reviews/{id}',
     tags: ['Reviews'],
-    summary: 'Получить ревью по ID',
+    summary: addAccessTag('Получить ревью по ID', 'MENTOR'),
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: {
@@ -81,7 +85,7 @@ registry.registerPath({
     method: 'patch',
     path: '/reviews/{id}',
     tags: ['Reviews'],
-    summary: 'Обновить ревью',
+    summary: addAccessTag('Обновить ревью', 'MENTOR'),
     request: {
         params: z.object({ id: z.string() }),
         body: {

@@ -10,7 +10,8 @@ type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 const MOCKS_DIR = join(process.cwd(), 'src/mocks')
 const HTTP_METHODS: HttpMethod[] = ['get', 'post', 'put', 'patch', 'delete']
 
-function toOpenApiPath(fsPath: string): string {
+function toOpenApiPath(fsPath: string | undefined): string {
+    if (!fsPath) return ''
     return fsPath.replace(/\[(.+?)\]/g, '{$1}')
 }
 
