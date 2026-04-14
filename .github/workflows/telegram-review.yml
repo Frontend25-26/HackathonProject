@@ -45,9 +45,36 @@ jobs:
               return;
             }
 
-            const selectedReviewer = reviewers[Math.floor(Math.random() * reviewers.length)];
-            const githubReviewer = selectedReviewer?.github;
-            const telegramReviewer = selectedReviewer?.telegram;
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+
+            // Проверяем есть ли уже назначенные ревьюеры
+            const existingReviewers = context.payload.pull_request.requested_reviewers || [];
+            let githubReviewer;
+            let telegramReviewer;
+            let isExistingReviewer = false;
+
+            if (existingReviewers.length > 0) {
+              // Есть уже назначенные ревьюеры - берём первого
+              const existingReviewerLogin = existingReviewers[0].login;
+              const existingReviewerData = reviewers.find(r => r.github === existingReviewerLogin);
+
+              if (existingReviewerData) {
+                githubReviewer = existingReviewerData.github;
+                telegramReviewer = existingReviewerData.telegram;
+                isExistingReviewer = true;
+                core.info(`✓ Ревьюер @${githubReviewer} уже назначен на PR`);
+              } else {
+                core.warning(`Существующий ревьюер @${existingReviewerLogin} не найден в TELEGRAM_REVIEWERS, используем случайного`);
+              }
+            }
+
+            // Если ревьюер не найден или его нет - выбираем случайного
+            if (!githubReviewer) {
+              const selectedReviewer = reviewers[Math.floor(Math.random() * reviewers.length)];
+              githubReviewer = selectedReviewer?.github;
+              telegramReviewer = selectedReviewer?.telegram;
+            }
 
             if (!githubReviewer) {
               core.setFailed('Each TELEGRAM_REVIEWERS entry must include a github field');
@@ -58,9 +85,6 @@ jobs:
               core.setFailed('Each TELEGRAM_REVIEWERS entry must include a telegram field');
               return;
             }
-
-            const { owner, repo } = context.repo;
-            const prNumber = context.payload.pull_request.number;
             const prTitle = context.payload.pull_request.title;
             const prBranch = context.payload.pull_request.head.ref;
             const prUrl = context.payload.pull_request.html_url;
@@ -80,23 +104,28 @@ jobs:
               }
             }
 
-            const reviewerResponse = await github.rest.pulls.requestReviewers({
-              owner,
-              repo,
-              pull_number: prNumber,
-              reviewers: [githubReviewer],
-            });
+            // Если это не существующий ревьюер - назначаем его
+            if (!isExistingReviewer) {
+              const reviewerResponse = await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number: prNumber,
+                reviewers: [githubReviewer],
+              });
 
-            if (!reviewerResponse.data.requested_reviewers?.some(user => user.login === githubReviewer)) {
-              core.setFailed(`Failed to request GitHub reviewer @${githubReviewer}`);
-              return;
+              if (!reviewerResponse.data.requested_reviewers?.some(user => user.login === githubReviewer)) {
+                core.setFailed(`Ошибка при назначении ревьюера @${githubReviewer}`);
+                return;
+              }
             }
 
+            // Формируем сообщение в телеграм
+            const reviewerStatus = isExistingReviewer ? '(уже назначен)' : '(новый ревьюер)';
             const text =
               `Review requested for PR: ${prTitle}\n` +
               `Branch: ${prBranch}\n` +
               `Author: @${prAuthor}\n` +
-              `Reviewer: ${telegramReviewer}\n` +
+              `Reviewer: ${telegramReviewer} ${reviewerStatus}\n` +
               `${prUrl}`;
 
             const sendResponse = await fetch(
