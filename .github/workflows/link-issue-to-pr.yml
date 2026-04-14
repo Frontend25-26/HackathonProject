@@ -34,7 +34,7 @@ jobs:
 
             // Проверяем, уже ли issue привязан к PR
             const prBody = context.payload.pull_request.body || '';
-            if (prBody.includes(`#${issueNumber}`) || prBody.includes(`Закрывает #${issueNumber}`)) {
+            if (prBody.includes(`closes #${issueNumber}`) || prBody.includes(`Closes #${issueNumber}`)) {
               core.info(`✓ Issue #${issueNumber} уже привязан к PR #${prNumber}. Пропускаем.`);
               return;
             }
@@ -61,9 +61,9 @@ jobs:
 
               core.info(`✓ Добавлен комментарий в issue #${issueNumber} со ссылкой на PR #${prNumber}`);
 
-              // Добавляем номер issue в описание PR, если его там ещё нет
+              // Добавляем номер issue в описание PR (используем английское ключевое слово для автоматического закрытия)
               const prBody = context.payload.pull_request.body || '';
-              const issueLink = `Закрывает #${issueNumber}`;
+              const issueLink = `Closes #${issueNumber}`;
 
               if (!prBody.includes(`#${issueNumber}`)) {
                 const updatedBody = prBody
@@ -78,6 +78,24 @@ jobs:
                 });
 
                 core.info(`✓ Обновлено описание PR #${prNumber} со ссылкой на issue`);
+              }
+
+              // Привязываем PR к issue для заполнения поля Development
+              try {
+                await github.rest.issues.createLink({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: {
+                    linked_issue_number: prNumber,
+                  },
+                });
+                core.info(`✓ PR #${prNumber} привязан к Development поля issue #${issueNumber}`);
+              } catch (linkError) {
+                // Может быть ошибка, если PR уже привязан - это не критично
+                if (!linkError.message.includes('already exists')) {
+                  core.warning(`Не удалось привязать к Development: ${linkError.message}`);
+                }
               }
 
             } catch (error) {
