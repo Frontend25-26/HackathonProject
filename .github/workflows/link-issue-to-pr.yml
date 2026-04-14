@@ -1,0 +1,89 @@
+name: Link Issue to PR
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  link-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Извлечь номер issue и привязать к PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const headRef = context.payload.pull_request.head.ref;
+
+            // Извлекаем номер issue из названия ветки по паттернам: feat/{n}, fix/{n}, refactor/{n}
+            const issueMatch = headRef.match(/^(?:feat|fix|refactor)\/(\d+)/);
+
+            if (!issueMatch) {
+              core.info(`Ветка "${headRef}" не соответствует паттерну (feat|fix|refactor)/{номер-issue}`);
+              return;
+            }
+
+            const issueNumber = parseInt(issueMatch[1], 10);
+            const prNumber = context.payload.pull_request.number;
+            const { owner, repo } = context.repo;
+
+            // Проверяем, уже ли issue привязан к PR
+            const prBody = context.payload.pull_request.body || '';
+            if (prBody.includes(`closes #${issueNumber}`) || prBody.includes(`Closes #${issueNumber}`)) {
+              core.info(`✓ Issue #${issueNumber} уже привязан к PR #${prNumber}. Пропускаем.`);
+              return;
+            }
+
+            try {
+              // Проверяем, что issue существует
+              const issueResponse = await github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: issueNumber,
+              });
+
+              core.info(`✓ Найден issue #${issueNumber}: "${issueResponse.data.title}"`);
+
+              // Создаём комментарий в issue со ссылкой на PR
+              const commentBody = `**PR:** #${prNumber}\n\nЭтот PR связан с веткой: \`${headRef}\``;
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: commentBody,
+              });
+
+              core.info(`✓ Добавлен комментарий в issue #${issueNumber} со ссылкой на PR #${prNumber}`);
+
+              // Добавляем номер issue в описание PR (используем английское ключевое слово для автоматического закрытия)
+              const prBody = context.payload.pull_request.body || '';
+              const issueLink = `Closes #${issueNumber}`;
+
+              if (!prBody.includes(`#${issueNumber}`)) {
+                const updatedBody = prBody
+                  ? `${prBody}\n\n${issueLink}`
+                  : issueLink;
+
+                await github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: prNumber,
+                  body: updatedBody,
+                });
+
+                core.info(`✓ Обновлено описание PR #${prNumber} со ссылкой на issue`);
+              }
+
+            } catch (error) {
+              if (error.status === 404) {
+                core.warning(`Issue #${issueNumber} не найден. Название ветки указывает на то, что issue должен существовать.`);
+              } else {
+                core.setFailed(`Ошибка: ${error.message}`);
+              }
+            }

@@ -1,0 +1,164 @@
+name: Обновить статус в проекте при ревью
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  issues: read
+  pull-requests: read
+
+jobs:
+  update-project-status:
+    if: github.event.label.name == 'needs-review'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Перевести issue в "In review" в GitHub Project
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PROJECT_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const prBody = context.payload.pull_request.body || '';
+
+            // Извлекаем номер issue из "Closes #58"
+            const issueMatch = prBody.match(/[Cc]loses\s+#(\d+)/);
+            if (!issueMatch) {
+              core.info('Issue не найден в описании PR. Пропускаем.');
+              return;
+            }
+
+            const issueNumber = parseInt(issueMatch[1], 10);
+            core.info(`📍 Найден issue #${issueNumber}, обновляем статус в проекте...`);
+
+            try {
+              // 1️⃣ Получаем все проекты организации
+              const getProjectsQuery = `
+                query {
+                  organization(login: "${owner}") {
+                    projectsV2(first: 10) {
+                      nodes {
+                        id
+                        title
+                      }
+                    }
+                  }
+                }
+              `;
+
+              const projectsResult = await github.graphql(getProjectsQuery);
+              core.info(`📊 Результат запроса проектов: ${JSON.stringify(projectsResult, null, 2)}`);
+
+              const projects = projectsResult.organization?.projectsV2?.nodes || [];
+
+              if (projects.length === 0) {
+                core.warning('⚠️ Проектов в организации не найдено');
+                return;
+              }
+
+              core.info(`✓ Найдено проектов: ${projects.length}`);
+
+              // 2️⃣ Для каждого проекта ищем item с нашим issue
+              let projectId, itemId;
+
+              for (const project of projects) {
+                core.info(`  Проверяю проект: "${project.title}"...`);
+
+                const getItemsQuery = `
+                  query {
+                    node(id: "${project.id}") {
+                      ... on ProjectV2 {
+                        items(first: 100) {
+                          nodes {
+                            id
+                            content {
+                              ... on Issue {
+                                number
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                `;
+
+                const itemsResult = await github.graphql(getItemsQuery);
+                const items = itemsResult.node.items.nodes;
+
+                const foundItem = items.find(item => item.content?.number === issueNumber);
+                if (foundItem) {
+                  projectId = project.id;
+                  itemId = foundItem.id;
+                  core.info(`✓ Найден issue #${issueNumber} в проекте "${project.title}"`);
+                  break;
+                }
+              }
+
+              if (!projectId || !itemId) {
+                core.warning(`⚠️ Issue #${issueNumber} не найден ни в одном проекте`);
+                return;
+              }
+
+              // 3️⃣ Получаем поле Status и его опции
+              const getFieldsQuery = `
+                query {
+                  node(id: "${projectId}") {
+                    ... on ProjectV2 {
+                      fields(first: 20) {
+                        nodes {
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                              id
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+
+              const fieldsResult = await github.graphql(getFieldsQuery);
+              const fields = fieldsResult.node.fields.nodes;
+
+              const statusField = fields.find(f => f.name === 'Status');
+              if (!statusField) {
+                core.setFailed('❌ Поле Status не найдено в проекте');
+                return;
+              }
+
+              const inReviewOption = statusField.options.find(o => o.name === 'In review');
+              if (!inReviewOption) {
+                core.setFailed('❌ Статус "In review" не найден в проекте');
+                return;
+              }
+
+              core.info(`✓ Найдено поле Status и статус "In review"`);
+
+              // 4️⃣ Обновляем статус
+              const updateMutation = `
+                mutation {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: "${projectId}"
+                    itemId: "${itemId}"
+                    fieldId: "${statusField.id}"
+                    value: {singleSelectOptionId: "${inReviewOption.id}"}
+                  }) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }
+              `;
+
+              await github.graphql(updateMutation);
+              core.info(`✅ Issue #${issueNumber} переведён в статус "In review"`);
+
+            } catch (error) {
+              core.setFailed(`❌ Ошибка: ${error.message}`);
+            }
