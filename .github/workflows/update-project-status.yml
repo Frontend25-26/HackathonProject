@@ -48,10 +48,12 @@ jobs:
               `;
 
               const projectsResult = await github.graphql(getProjectsQuery);
-              const projects = projectsResult.organization.projectsV2.nodes;
+              core.info(`📊 Результат запроса проектов: ${JSON.stringify(projectsResult, null, 2)}`);
+
+              const projects = projectsResult.organization?.projectsV2?.nodes || [];
 
               if (projects.length === 0) {
-                core.warning('⚠️ Проектов в репозитории не найдено');
+                core.warning('⚠️ Проектов в организации не найдено');
                 return;
               }
 
