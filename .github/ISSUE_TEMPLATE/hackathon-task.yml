@@ -1,6 +1,6 @@
 name: Задача хакатона
 description: Задача после декомпозиции на груминге
-labels: [hackathon-1]
+labels: [hackathon-2]
 projects: ['Frontend25-26/1']
 type: Task
 body:
