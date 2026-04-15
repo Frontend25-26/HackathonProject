@@ -53,6 +53,7 @@ body:
       label: Хакатон
       options:
         - Хакатон №1 - 28 марта
+        - Хакатон №2 - 25 апреля
         - Бэклог
     validations:
       required: true
