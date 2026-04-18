@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function proxy(request: NextRequest) {
+export async function proxy(_: NextRequest) {
     // В режиме USE_MOCKS переписываем все API запросы на dev handler
     // if (process.env.USE_MOCKS === 'true' && pathname.startsWith('/api/')) {
     //     // Пропускаем реальные handler'ы (не мокируем)
