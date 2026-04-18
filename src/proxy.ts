@@ -14,6 +14,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest) {
+    console.log("NEW REQUEST =================")
+    console.log(request)
     const { pathname } = request.nextUrl
 
     // В режиме USE_MOCKS переписываем все API запросы на dev handler
@@ -21,14 +23,24 @@ export async function proxy(request: NextRequest) {
         // Пропускаем реальные handler'ы (не мокируем)
         if (
             pathname.startsWith('/api/dev/') ||
-            pathname.startsWith('/api/docs')
+            pathname.startsWith('/api/docs') ||
+            pathname.startsWith('/api/auth/')
         ) {
-            return NextResponse.next()
+            console.log("NEXT REQUEST =================")
+            const r = NextResponse.next()
+            console.log(r)
+            return r
         }
+
+        console.log(request)
 
         const route = pathname.slice('/api'.length)
         const newUrl = request.nextUrl.clone()
         newUrl.pathname = '/api/dev/use-mocks'
+
+        console.log(`Pathname: ${pathname}`)
+        console.log(`Route: ${route}`)
+        console.log(`newurl: ${newUrl}`)
 
         // Передаем route через custom header (query параметры не работают с rewrite)
         const headers = new Headers(request.headers)
