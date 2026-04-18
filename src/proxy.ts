@@ -14,51 +14,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-    console.log("NEW REQUEST =================")
-    console.log(request)
-    const { pathname } = request.nextUrl
-
     // В режиме USE_MOCKS переписываем все API запросы на dev handler
-    if (process.env.USE_MOCKS === 'true' && pathname.startsWith('/api/')) {
-        // Пропускаем реальные handler'ы (не мокируем)
-        if (
-            pathname.startsWith('/api/dev/') ||
-            pathname.startsWith('/api/docs') ||
-            pathname.startsWith('/api/auth/')
-        ) {
-            console.log("NEXT REQUEST =================")
-            const r = NextResponse.next()
-            console.log(r)
-            return r
-        }
+    // if (process.env.USE_MOCKS === 'true' && pathname.startsWith('/api/')) {
+    //     // Пропускаем реальные handler'ы (не мокируем)
+    //     if (
+    //         pathname.startsWith('/api/dev/') ||
+    //         pathname.startsWith('/api/docs') ||
+    //         pathname.startsWith('/api/auth/')
+    //     ) {
+    //         const r = NextResponse.next()
+    //         return r
+    //     }
 
-        console.log(request)
+    //     console.log(request)
 
-        const route = pathname.slice('/api'.length)
-        const newUrl = request.nextUrl.clone()
-        newUrl.pathname = '/api/dev/use-mocks'
+    //     const route = pathname.slice('/api'.length)
+    //     const newUrl = request.nextUrl.clone()
+    //     newUrl.pathname = '/api/dev/use-mocks'
 
-        console.log(`Pathname: ${pathname}`)
-        console.log(`Route: ${route}`)
-        console.log(`newurl: ${newUrl}`)
+    //     // Передаем route через custom header (query параметры не работают с rewrite)
+    //     const headers = new Headers(request.headers)
+    //     headers.set('x-mock-route', route)
+    //     headers.set('x-mock-method', request.method)
 
-        // Передаем route через custom header (query параметры не работают с rewrite)
-        const headers = new Headers(request.headers)
-        headers.set('x-mock-route', route)
-        headers.set('x-mock-method', request.method)
+    //     // Логируем перехват с ролью пользователя (если передана)
+    //     const role = headers.get('x-mock-user-id') || 'без авторизации'
+    //     console.log(`🟢 MOCK: ${request.method} ${route} (${role})`)
 
-        // Логируем перехват с ролью пользователя (если передана)
-        const role = headers.get('x-mock-user-id') || 'без авторизации'
-        console.log(`🟢 MOCK: ${request.method} ${route} (${role})`)
+    //     const newRequest = new NextRequest(newUrl, {
+    //         method: request.method,
+    //         headers,
+    //         body: request.body,
+    //     })
 
-        const newRequest = new NextRequest(newUrl, {
-            method: request.method,
-            headers,
-            body: request.body,
-        })
-
-        return NextResponse.rewrite(newUrl, { request: newRequest })
-    }
+    //     return NextResponse.rewrite(newUrl, { request: newRequest })
+    // }
 
     return NextResponse.next()
 }

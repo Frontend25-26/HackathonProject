@@ -2,19 +2,25 @@ import { Role } from '@backend/generated/prisma'
 import { prisma } from '@backend/lib/prisma'
 
 export const userRepository = {
-    findAll() {
-        return prisma.user.findMany({ orderBy: { createdAt: 'desc' } })
+    async findAll() {
+        return await prisma.user.findMany({ orderBy: { createdAt: 'desc' } })
     },
 
-    findById(id: number) {
-        return prisma.user.findUnique({ where: { id } })
+    async findById(id: number) {
+        return await prisma.user.findUnique({ where: { id } })
     },
 
-    findByGithubId(githubId: number) {
-        return prisma.user.findUnique({ where: { githubId } })
+    async findByGithubId(githubId: number) {
+        try {
+            const user = await prisma.user.findUnique({ where: { githubId } })
+            return user
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     },
 
-    create(data: {
+    async create(data: {
         githubId: number
         login: string
         name?: string
@@ -22,7 +28,7 @@ export const userRepository = {
         avatar?: string
         role?: Role
     }) {
-        return prisma.user.create({ data })
+        return await prisma.user.create({ data })
     },
 
     update(

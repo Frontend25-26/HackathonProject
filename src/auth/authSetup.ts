@@ -15,16 +15,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...authConfig.callbacks,
 
         async signIn({ profile }) {
-            console.log("PROFILE ==========================")
-            console.log(profile)
             if (!profile?.id || !profile?.login) return false
 
             const githubId = Number(profile.id)
             const login = profile.login as string
 
             const existing = await userRepository.findByGithubId(githubId)
-
-            console.log("EXISTING ????")
+            console.log("EXISTING ????", existing)
 
             if (!existing) {
                 let role
