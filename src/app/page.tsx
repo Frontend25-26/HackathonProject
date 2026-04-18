@@ -19,7 +19,7 @@ export default async function Home() {
             {session?.user ? (
                 <div>
                     <p>
-                        {session.user.name}
+                        {JSON.stringify(session.user)}
                         {session.user.image && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img

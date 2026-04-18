@@ -3,6 +3,7 @@ services:
     image: mysql:8.4
     container_name: hackathon_db
     restart: unless-stopped
+    command: --mysql-native-password=ON
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
