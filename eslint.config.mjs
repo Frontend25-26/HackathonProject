@@ -38,6 +38,12 @@ export default defineConfig([
             ],
             'import/newline-after-import': ['error', { count: 1 }],
             'sort-imports': 'off',
+<<<<<<< HEAD
+=======
+            'no-restricted-imports': ['error', {
+                patterns: ['**/app/**', '**/pages/**', '**/processes/**', '**/widgets/**',]
+            }],
+>>>>>>> dad2958 (feat: add folders and add in eslint.config.mjs)
         },
         settings: {
             'import/resolver': {
