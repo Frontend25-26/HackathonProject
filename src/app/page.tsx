@@ -3,9 +3,8 @@ import { Session } from 'next-auth'
 import { auth, signIn, signOut } from '@/auth/authSetup'
 import { userRepository } from '@backend/users/repository'
 
-
 export default async function Home() {
-    const session = await auth() as Session
+    const session = (await auth()) as Session
 
     let meData = null
     if (session?.user?.userId) {
@@ -29,11 +28,8 @@ export default async function Home() {
                                 alt="user-icon"
                             />
                         )}
-
                     </p>
-                    <p>
-                        {session.user.role ?? '—'}
-                    </p>
+                    <p>{session.user.role ?? '—'}</p>
                     <pre>{JSON.stringify(meData, null, 2)}</pre>
                     <form
                         action={async () => {
