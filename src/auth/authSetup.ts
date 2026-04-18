@@ -1,13 +1,9 @@
-import dns from 'node:dns'
-
 import NextAuth from 'next-auth'
 
 import { resolveRoleFromGitHubTeams } from '@backend/github/classroom'
 import { userRepository } from '@backend/users/repository'
 
 import { authConfig } from './auth.config'
-
-dns.setDefaultResultOrder('ipv4first')
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
