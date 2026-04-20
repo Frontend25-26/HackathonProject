@@ -1,0 +1,17 @@
+.sidebar-icon {
+    color: #555727;
+}
+
+.sidebar-element {
+    color: #566166;
+}
+
+.sidebar-element:active {
+    background: #E1E9EE;
+    color: #4D44E3;
+}
+
+.sidebar-element:hover {
+    background: #E1E9EE;
+    color: #4D44E3;
+}
