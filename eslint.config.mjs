@@ -40,16 +40,30 @@ export default defineConfig([
             ],
             'import/newline-after-import': ['error', { count: 1 }],
             'sort-imports': 'off',
-            'boundaries/element-types': [2, {
-                default: 'disallow',
-                rules: [
-                    { from: 'app', allow: ['widgets', 'features', 'entities', 'shared'] },
-                    { from: 'widgets', allow: ['features', 'entities', 'shared'] },
-                    { from: 'features', allow: ['entities', 'shared'] },
-                    { from: 'entities', allow: ['shared'] },
-                    { from: 'shared', allow: [] },
-                ]
-            }],
+            'boundaries/element-types': [
+                2,
+                {
+                    default: 'disallow',
+                    rules: [
+                        {
+                            from: 'app',
+                            allow: [
+                                'widgets',
+                                'features',
+                                'entities',
+                                'shared',
+                            ],
+                        },
+                        {
+                            from: 'widgets',
+                            allow: ['features', 'entities', 'shared'],
+                        },
+                        { from: 'features', allow: ['entities', 'shared'] },
+                        { from: 'entities', allow: ['shared'] },
+                        { from: 'shared', allow: [] },
+                    ],
+                },
+            ],
         },
         settings: {
             'import/resolver': {
