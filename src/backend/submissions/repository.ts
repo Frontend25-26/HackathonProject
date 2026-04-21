@@ -1,4 +1,5 @@
 import { CiStatus, SubmissionStatus } from '@backend/generated/prisma'
+
 import { prisma } from '@backend/lib/prisma'
 
 export const submissionRepository = {
