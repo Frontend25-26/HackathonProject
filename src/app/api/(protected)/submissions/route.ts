@@ -10,9 +10,9 @@
  *         из токена, не из тела запроса).
  */
 
-import { Role } from '@backend/generated/prisma'
 import { NextRequest } from 'next/server'
 
+import { Role } from '@backend/generated/prisma'
 import { requireAuth } from '@backend/lib/auth'
 import { submissionRepository } from '@backend/submissions/repository'
 import { CreateSubmissionSchema } from '@backend/submissions/schema'
