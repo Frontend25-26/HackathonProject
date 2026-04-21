@@ -12,6 +12,7 @@ export default defineConfig([
     ...tseslint.configs.recommended,
     {
         files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
+        ignores: ['src/backend/**'],
         plugins: {
             import: importPlugins,
             boundaries: boundaries,
@@ -40,7 +41,7 @@ export default defineConfig([
             ],
             'import/newline-after-import': ['error', { count: 1 }],
             'sort-imports': 'off',
-            'boundaries/element-types': [
+            'boundaries/dependencies': [
                 2,
                 {
                     default: 'disallow',
@@ -70,11 +71,11 @@ export default defineConfig([
                 typescript: true,
             },
             'boundaries/elements': [
-                { type: 'app', pattern: 'app/*', mode: 'full' },
-                { type: 'widgets', pattern: 'widgets/*', mode: 'full' },
-                { type: 'features', pattern: 'features/*', mode: 'full' },
-                { type: 'entities', pattern: 'entities/*', mode: 'full' },
-                { type: 'shared', pattern: 'shared/*', mode: 'full' },
+                { type: 'app', pattern: 'src/app/*', mode: 'full' },
+                { type: 'widgets', pattern: 'src/widgets/*', mode: 'full' },
+                { type: 'features', pattern: 'src/features/*', mode: 'full' },
+                { type: 'entities', pattern: 'src/entities/*', mode: 'full' },
+                { type: 'shared', pattern: 'src/shared/*', mode: 'full' },
             ],
         },
     },
