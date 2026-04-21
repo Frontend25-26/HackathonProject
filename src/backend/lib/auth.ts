@@ -14,8 +14,9 @@
  *   return userRepository.findByGithubId(Number(session.user.githubId))
  */
 
-import { Role } from '@backend/generated/prisma'
 import { NextRequest } from 'next/server'
+
+import { Role } from '@backend/generated/prisma'
 
 // ─── Типы ────────────────────────────────────────────────────────────────────
 
