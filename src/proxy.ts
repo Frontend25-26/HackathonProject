@@ -26,17 +26,17 @@ const rolesMatcher = {
 
 export function proxy(request: NextRequest) {
 
-    const url = request.nextUrl.pathname;
-    const role = Roles.Student;
+    const url = request.nextUrl.pathname
+    const role = Roles.Student
 
-    const requiredRole = url.split("/").at(1);
+    const requiredRole = url.split("/").at(1)
 
     for (const possibleRole in rolesMatcher[role]) {
         if (requiredRole === rolesMatcher[role][possibleRole]) {
-            return;
+            return
         }
     }
-    const errorMessage = 'Reading ' + url + ' cannot be done with role ' + rolesNames[role];
+    const errorMessage = 'Reading ' + url + ' cannot be done with role ' + rolesNames[role]
     return Response.json(
         { success: false, message: errorMessage },
         { status: 403 }
