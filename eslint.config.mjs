@@ -1,8 +1,8 @@
 import { defineConfig } from 'eslint/config'
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import boundaries from 'eslint-plugin-boundaries'
 import importPlugins from 'eslint-plugin-import'
 import tseslint from 'typescript-eslint'
-import boundaries from 'eslint-plugin-boundaries'
 
 import eslintignore from './eslintignore.mjs'
 
