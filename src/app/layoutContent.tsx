@@ -1,10 +1,10 @@
-"use client"
-import { ThemeProvider } from "@gravity-ui/uikit"
+'use client'
+import { ThemeProvider } from '@gravity-ui/uikit'
 import Image from 'next/image'
 
-import "@gravity-ui/uikit/styles/fonts.css"
-import "@gravity-ui/uikit/styles/styles.css"
-import "./layout.css"
+import '@gravity-ui/uikit/styles/fonts.css'
+import '@gravity-ui/uikit/styles/styles.css'
+import './layout.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -15,13 +15,13 @@ export const metadata: Metadata = {
 enum Roles {
     Admin,
     Mentor,
-    Student
+    Student,
 }
 
 interface UserProps {
-    name: string;
-    role: Roles;
-    image: string;
+    name: string
+    role: Roles
+    image: string
 }
 
 const getUserRole = (): Roles => {
@@ -32,7 +32,7 @@ const getUserProps = (): UserProps => {
     return {
         name: 'Иван Иванов',
         role: getUserRole(),
-        image: 'avatar.svg'
+        image: 'avatar.svg',
     }
 }
 
@@ -71,34 +71,48 @@ const UserPanel: React.FC = () => {
     const roleStyles = getRoleStyles(props.role)
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', margin: 0, marginRight: '12px', textAlign: 'right' }}>
-                <div style={{ fontSize: '14px', fontWeight: '600' }}>{props.name}</div>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '8px',
+                alignItems: 'center',
+            }}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    margin: 0,
+                    marginRight: '12px',
+                    textAlign: 'right',
+                }}
+            >
+                <div style={{ fontSize: '14px', fontWeight: '600' }}>
+                    {props.name}
+                </div>
 
                 <div>
-                    <div style={{
-                        display: 'inline-block',
-                        backgroundColor: roleStyles.backgroundColor,
-                        color: roleStyles.color,
-                        padding: '4px 8px',
-                        borderRadius: '12px',
-                        fontWeight: 'bold',
-                        fontSize: '12px',
-                        lineHeight: '15px',
-                        letterSpacing: '0.5px',
-                        textTransform: 'uppercase',
-                    }}>
+                    <div
+                        style={{
+                            display: 'inline-block',
+                            backgroundColor: roleStyles.backgroundColor,
+                            color: roleStyles.color,
+                            padding: '4px 8px',
+                            borderRadius: '12px',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            lineHeight: '15px',
+                            letterSpacing: '0.5px',
+                            textTransform: 'uppercase',
+                        }}
+                    >
                         {roleStyles.displayRoleName}
                     </div>
                 </div>
             </div>
 
-            <Image
-                src={props.image}
-                alt={'avatar'}
-                width={40}
-                height={40}
-            />
+            <Image src={props.image} alt={'avatar'} width={40} height={40} />
         </div>
     )
 }
@@ -117,11 +131,26 @@ function Header() {
                 zIndex: 1,
                 marginLeft: 240,
                 boxShadow: '0px 20px 40px 0px #2A34390F',
-                backdropFilter:'blur(12px)',
+                backdropFilter: 'blur(12px)',
             }}
         >
-            <div style={{display: 'flex', gap: '16px', flexDirection:'row', marginLeft: 'auto', alignItems: 'center'}}>
-                <div style={{display: 'flex', flexDirection: 'row', gap: '32px', marginRight: '24px'}}>
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '16px',
+                    flexDirection: 'row',
+                    marginLeft: 'auto',
+                    alignItems: 'center',
+                }}
+            >
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: '32px',
+                        marginRight: '24px',
+                    }}
+                >
                     <Image
                         src={'notification.svg'}
                         alt={'notification'}
@@ -138,8 +167,13 @@ function Header() {
                     />
                 </div>
 
-                <div style={{borderLeft: '1px solid #e6e6e6', paddingLeft: '32px'}}>
-                    <UserPanel/>
+                <div
+                    style={{
+                        borderLeft: '1px solid #e6e6e6',
+                        paddingLeft: '32px',
+                    }}
+                >
+                    <UserPanel />
                 </div>
             </div>
         </header>
@@ -147,14 +181,21 @@ function Header() {
 }
 
 interface ImageWithTextProps {
-    image: string;
-    text: string;
+    image: string
+    text: string
 }
 
 const ImageWithText: React.FC<ImageWithTextProps> = ({ image, text }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', textAlign: 'center', padding: '10px', paddingLeft: '20px' }}
-             className={'sidebar-element'}
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                textAlign: 'center',
+                padding: '10px',
+                paddingLeft: '20px',
+            }}
+            className={'sidebar-element'}
         >
             <Image
                 src={image}
@@ -163,39 +204,49 @@ const ImageWithText: React.FC<ImageWithTextProps> = ({ image, text }) => {
                 height={18}
                 className={'sidebar-icon'}
             />
-            <p style={{fontSize: '14px', margin: 0, marginLeft: '20px' }}>{text}</p>
+            <p style={{ fontSize: '14px', margin: 0, marginLeft: '20px' }}>
+                {text}
+            </p>
         </div>
     )
 }
 
 interface sidebarElement {
-    image: string,
-    text: string,
-    hideRoles: Roles[],
+    image: string
+    text: string
+    hideRoles: Roles[]
 }
 
 const upperSidebarData: sidebarElement[] = [
-    {image: 'panel.svg', text: 'Панель', hideRoles: []},
-    {image: 'tasks-list.svg', text: 'Задания', hideRoles: []},
-    {image: 'mentors.svg', text: 'Менторы', hideRoles: [Roles.Student, Roles.Mentor]},
-    {image: 'students.svg', text: 'Студенты', hideRoles: [Roles.Student, Roles.Mentor]},
-    {image: 'options.svg', text: 'Настройки', hideRoles: []},
+    { image: 'panel.svg', text: 'Панель', hideRoles: [] },
+    { image: 'tasks-list.svg', text: 'Задания', hideRoles: [] },
+    {
+        image: 'mentors.svg',
+        text: 'Менторы',
+        hideRoles: [Roles.Student, Roles.Mentor],
+    },
+    {
+        image: 'students.svg',
+        text: 'Студенты',
+        hideRoles: [Roles.Student, Roles.Mentor],
+    },
+    { image: 'options.svg', text: 'Настройки', hideRoles: [] },
 ]
 
 const lowerSidebarData: sidebarElement[] = [
-    {image: 'faq.svg', text: 'FAQ', hideRoles: []},
-    {image: 'exit.svg', text: 'Выход', hideRoles: []},
+    { image: 'faq.svg', text: 'FAQ', hideRoles: [] },
+    { image: 'exit.svg', text: 'Выход', hideRoles: [] },
 ]
 
 function Sidebar() {
     const role = getUserRole()
 
-    const filteredUpperSidebarData = upperSidebarData.filter((sidebarElement) =>
-        !sidebarElement.hideRoles.includes(role)
+    const filteredUpperSidebarData = upperSidebarData.filter(
+        (sidebarElement) => !sidebarElement.hideRoles.includes(role),
     )
 
-    const filteredLowerSidebarData = lowerSidebarData.filter((sidebarElement) =>
-        !sidebarElement.hideRoles.includes(role)
+    const filteredLowerSidebarData = lowerSidebarData.filter(
+        (sidebarElement) => !sidebarElement.hideRoles.includes(role),
     )
 
     return (
@@ -214,8 +265,21 @@ function Sidebar() {
                 zIndex: 100,
             }}
         >
-            <div style={{ paddingLeft: '24px', paddingTop: '24px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: '-0.9px' }}>
+            <div
+                style={{
+                    paddingLeft: '24px',
+                    paddingTop: '24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <div
+                    style={{
+                        fontWeight: 900,
+                        fontSize: 18,
+                        letterSpacing: '-0.9px',
+                    }}
+                >
                     FRONTEND HW
                 </div>
                 <div style={{ fontSize: 12, color: '#566166' }}>
@@ -223,18 +287,30 @@ function Sidebar() {
                 </div>
             </div>
 
-            <nav style={{marginTop: '32px', marginLeft: '8px'}}>
+            <nav style={{ marginTop: '32px', marginLeft: '8px' }}>
                 {filteredUpperSidebarData.map((sidebarElement) => (
                     <div key={sidebarElement.image}>
-                        <ImageWithText image={sidebarElement.image} text={sidebarElement.text} />
+                        <ImageWithText
+                            image={sidebarElement.image}
+                            text={sidebarElement.text}
+                        />
                     </div>
                 ))}
             </nav>
 
-            <nav style={{ marginTop: 'auto', marginLeft: '8px', marginBottom: '16px' }}>
+            <nav
+                style={{
+                    marginTop: 'auto',
+                    marginLeft: '8px',
+                    marginBottom: '16px',
+                }}
+            >
                 {filteredLowerSidebarData.map((sidebarElement) => (
                     <div key={sidebarElement.image}>
-                        <ImageWithText image={sidebarElement.image} text={sidebarElement.text} />
+                        <ImageWithText
+                            image={sidebarElement.image}
+                            text={sidebarElement.text}
+                        />
                     </div>
                 ))}
             </nav>
@@ -243,27 +319,27 @@ function Sidebar() {
 }
 
 export function LayoutContent({
-                                  children,
-                              }: Readonly<{
+    children,
+}: Readonly<{
     children: React.ReactNode
 }>) {
     return (
         <html>
-        <body>
-        <ThemeProvider theme="light">
-            <Header />
-            <Sidebar />
-            <main
-                style={{
-                    marginLeft: 240,
-                    padding: "24px",
-                    minHeight: "calc(100vh)",
-                }}
-            >
-                {children}
-            </main>
-        </ThemeProvider>
-        </body>
+            <body>
+                <ThemeProvider theme="light">
+                    <Header />
+                    <Sidebar />
+                    <main
+                        style={{
+                            marginLeft: 240,
+                            padding: '24px',
+                            minHeight: 'calc(100vh)',
+                        }}
+                    >
+                        {children}
+                    </main>
+                </ThemeProvider>
+            </body>
         </html>
     )
 }
