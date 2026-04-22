@@ -1,19 +1,13 @@
 import { FC } from 'react'
 
-interface StudentProps {
-    id: number
-    name?: string
-}
-
-const Page: FC<StudentProps> = (props) => {
-    const propName = props.name
+const StudentMainPage: FC = () => {
     return (
         <div>
             <main>
-                <h1>Hello, student {propName}!</h1>
+                <h1>Hello, student!</h1>
             </main>
         </div>
     )
 }
 
-export default Page
+export default StudentMainPage

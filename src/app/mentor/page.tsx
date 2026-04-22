@@ -1,19 +1,13 @@
 import { FC } from 'react'
 
-interface MentorProps {
-    id: number
-    name?: string
-}
-
-const Page: FC<MentorProps> = (props) => {
-    const propName = props.name
+const MentorMainPage: FC = () => {
     return (
         <div>
             <main>
-                <h1>Hello, mentor {propName}!</h1>
+                <h1>Hello, mentor!</h1>
             </main>
         </div>
     )
 }
 
-export default Page
+export default MentorMainPage
