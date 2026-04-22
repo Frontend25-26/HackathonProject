@@ -1,6 +1,6 @@
 import { Session } from 'next-auth'
 
-import { auth, signIn, signOut } from '@/auth/authSetup'
+import { auth, signIn, signOut } from '@/features/auth/authSetup'
 import { userRepository } from '@backend/users/repository'
 
 export default async function Home() {
