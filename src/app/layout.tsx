@@ -1,11 +1,10 @@
 import { Person } from '@gravity-ui/icons'
-import Image from 'next/image'
 import { Session } from 'next-auth'
 import { JSX } from 'react'
 
 import { Roles } from '@/app/shared/types/roles'
 import { LayoutContent } from '@/app/widgets/layout/layoutContent'
-import { auth } from '@/auth/authSetup'
+import { auth } from '@/features/auth/authSetup'
 import { userRepository } from '@backend/users/repository'
 
 import type { Metadata } from 'next'
@@ -49,12 +48,12 @@ export default async function RootLayout({
         }
         if (meData.avatar) {
             user.image = (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                     src={meData.avatar}
-                    width="40"
-                    height="40"
-                    alt="Аватар"
-                    className={'avatar-icon'}
+                    height={40}
+                    width={40}
+                    alt="user-icon"
                 />
             )
         }
