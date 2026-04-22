@@ -41,27 +41,57 @@ export default defineConfig([
             ],
             'import/newline-after-import': ['error', { count: 1 }],
             'sort-imports': 'off',
+            'boundaries/no-unknown-files': 'error',
             'boundaries/dependencies': [
                 2,
                 {
                     default: 'disallow',
                     rules: [
                         {
-                            from: 'app',
-                            allow: [
-                                'widgets',
-                                'features',
-                                'entities',
-                                'shared',
-                            ],
+                            from: { type: 'app' },
+                            allow: {
+                                to: {
+                                    type: [
+                                        'widgets',
+                                        'features',
+                                        'entities',
+                                        'shared',
+                                    ],
+                                },
+                            },
                         },
                         {
-                            from: 'widgets',
-                            allow: ['features', 'entities', 'shared'],
+                            from: { type: 'widgets' },
+                            allow: {
+                                to: {
+                                    type: ['features', 'entities', 'shared'],
+                                },
+                            },
                         },
-                        { from: 'features', allow: ['entities', 'shared'] },
-                        { from: 'entities', allow: ['shared'] },
-                        { from: 'shared', allow: [] },
+                        {
+                            from: { type: 'features' },
+                            allow: {
+                                to: {
+                                    type: ['entities', 'shared'],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'entities' },
+                            allow: {
+                                to: {
+                                    type: ['shared'],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'shared' },
+                            allow: {
+                                to: {
+                                    type: [],
+                                },
+                            },
+                        },
                     ],
                 },
             ],
@@ -71,11 +101,11 @@ export default defineConfig([
                 typescript: true,
             },
             'boundaries/elements': [
-                { type: 'app', pattern: 'src/app/*', mode: 'full' },
-                { type: 'widgets', pattern: 'src/widgets/*', mode: 'full' },
-                { type: 'features', pattern: 'src/features/*', mode: 'full' },
-                { type: 'entities', pattern: 'src/entities/*', mode: 'full' },
-                { type: 'shared', pattern: 'src/shared/*', mode: 'full' },
+                { type: 'app', pattern: 'src/app', mode: 'folder' },
+                { type: 'widgets', pattern: 'src/widgets', mode: 'folder' },
+                { type: 'features', pattern: 'src/features', mode: 'folder' },
+                { type: 'entities', pattern: 'src/entities', mode: 'folder' },
+                { type: 'shared', pattern: 'src/shared', mode: 'folder' },
             ],
         },
     },
