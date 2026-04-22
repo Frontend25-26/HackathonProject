@@ -11,7 +11,7 @@ export default defineConfig([
     ...nextCoreWebVitals,
     ...tseslint.configs.recommended,
     {
-        files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
+        files: ['src/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
         ignores: ['src/backend/**'],
         plugins: {
             import: importPlugins,
