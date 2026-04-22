@@ -12,7 +12,7 @@ export default defineConfig([
     ...tseslint.configs.recommended,
     {
         files: ['src/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
-        ignores: ['src/backend/**'],
+        ignores: ['src/backend/**', 'src/proxy.ts'],
         plugins: {
             import: importPlugins,
             boundaries: boundaries,
@@ -89,6 +89,14 @@ export default defineConfig([
                             allow: {
                                 to: {
                                     type: [],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'widgets' },
+                            allow: {
+                                to: {
+                                    type: ['shared'],
                                 },
                             },
                         },

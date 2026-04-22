@@ -12,9 +12,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { Session } from 'next-auth'
 
-import { Roles } from '@/app/shared/types/roles'
+import { Roles } from '@/shared/types/roles'
 import { auth } from '@/features/auth/authSetup'
 import { userRepository } from '@backend/users/repository'
 
@@ -31,16 +30,22 @@ export const config = {
 }
 
 const rolesRights = {
-    [Roles.Admin]: ['admin'],
-    [Roles.Mentor]: ['mentor'],
+    [Roles.Admin]: ['admin', 'mentor', 'student'],
+    [Roles.Mentor]: ['mentor', 'student'],
     [Roles.Student]: ['student'],
-    [Roles.Unauthorised]: [],
+    [Roles.Unauthorised]: [''],
 }
 
 const rolesMatcher = {
     ADMIN: Roles.Admin,
     MENTOR: Roles.Mentor,
     STUDENT: Roles.Student,
+}
+
+function getRedirect(request: NextRequest, path: string) {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = path
+    return NextResponse.redirect(redirectUrl)
 }
 
 export async function proxy(request: NextRequest) {
@@ -81,28 +86,31 @@ export async function proxy(request: NextRequest) {
     // }
     const url = request.nextUrl.pathname
 
-    const session = (await auth()) as Session
+    const session = await auth()
+
+    if (!session) {
+        return getRedirect(request, '/')
+    }
 
     let meData = null
-    if (session?.user?.userId) {
+    if (session.user?.userId) {
         meData = await userRepository.findById(session.user.userId)
     }
 
     let role = Roles.Unauthorised
     if (meData && meData.role) {
-        role = rolesMatcher[meData.role] || Roles.Unauthorised
+        role = rolesMatcher[meData.role] ?? Roles.Unauthorised
     }
 
-    const requiredRole = url.split('/').at(1)
-
-    for (const possibleRole in rolesRights[role]) {
-        if (requiredRole === rolesRights[role][possibleRole]) {
-            return NextResponse.next()
-        }
+    if (role === Roles.Unauthorised) {
+        return getRedirect(request, '/')
     }
-    const errorMessage = 'Reading ' + url + ' cannot be done with role ' + role
-    return Response.json(
-        { success: false, message: errorMessage },
-        { status: 403 },
-    )
+
+    const requiredRole = url.split('/').at(1)!
+
+    if (rolesRights[role].includes(requiredRole)) {
+        return NextResponse.next()
+    }
+
+    return getRedirect(request, '/forbidden')
 }

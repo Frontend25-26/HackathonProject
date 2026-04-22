@@ -1,15 +1,24 @@
 import { Bell, CircleQuestion } from '@gravity-ui/icons'
+import { Label } from '@gravity-ui/uikit'
 import { FC } from 'react'
 
-import { Roles } from '@/app/shared/types/roles'
-import styles from '@/app/widgets/layout/layout.module.css'
+import { Roles } from '@/shared/types/roles'
 
-import { UserProps } from '../../layout'
+import styles from './layout.module.css'
+import { UserProps } from './layoutContent'
 
 interface RoleDisplay {
     displayRoleName: string
-    backgroundColor: string
-    color: string
+    theme:
+        | 'normal'
+        | 'info'
+        | 'danger'
+        | 'warning'
+        | 'success'
+        | 'utility'
+        | 'unknown'
+        | 'clear'
+        | undefined
 }
 
 type RoleMatcher = Record<Roles, RoleDisplay>
@@ -17,23 +26,19 @@ type RoleMatcher = Record<Roles, RoleDisplay>
 const roleMatcher: RoleMatcher = {
     Student: {
         displayRoleName: 'Студент',
-        backgroundColor: '#D4A0FF',
-        color: '#4F1C7B',
+        theme: 'utility',
     },
     Mentor: {
         displayRoleName: 'Ментор',
-        backgroundColor: '#34B5FA33',
-        color: '#34B5FA',
+        theme: 'info',
     },
     Admin: {
         displayRoleName: 'Администратор',
-        backgroundColor: '#FF9E9E',
-        color: '#D50000',
+        theme: 'danger',
     },
     Unauthorised: {
         displayRoleName: 'Гость',
-        backgroundColor: '#f5f5f5',
-        color: '#000000',
+        theme: 'normal',
     },
 }
 
@@ -44,16 +49,10 @@ const UserPanel: FC<{ user: UserProps }> = ({ user }) => {
         <div className={styles.userPanel}>
             <div className={styles.userPanelInfo}>
                 <div className={styles.userPanelName}>{user.name}</div>
-                <div>
-                    <div
-                        className={styles.userPanelRole}
-                        style={{
-                            backgroundColor: roleStyles.backgroundColor,
-                            color: roleStyles.color,
-                        }}
-                    >
+                <div className={styles.userPanelRole}>
+                    <Label theme={roleStyles.theme}>
                         {roleStyles.displayRoleName}
-                    </div>
+                    </Label>
                 </div>
             </div>
 
