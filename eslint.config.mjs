@@ -1,5 +1,6 @@
 import { defineConfig } from 'eslint/config'
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import boundaries from 'eslint-plugin-boundaries'
 import importPlugins from 'eslint-plugin-import'
 import tseslint from 'typescript-eslint'
 
@@ -10,9 +11,11 @@ export default defineConfig([
     ...nextCoreWebVitals,
     ...tseslint.configs.recommended,
     {
-        files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
+        files: ['src/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
+        ignores: ['src/backend/**'],
         plugins: {
             import: importPlugins,
+            boundaries: boundaries,
         },
         rules: {
             semi: ['error', 'never'],
@@ -38,11 +41,72 @@ export default defineConfig([
             ],
             'import/newline-after-import': ['error', { count: 1 }],
             'sort-imports': 'off',
+            'boundaries/no-unknown-files': 'error',
+            'boundaries/dependencies': [
+                2,
+                {
+                    default: 'disallow',
+                    rules: [
+                        {
+                            from: { type: 'app' },
+                            allow: {
+                                to: {
+                                    type: [
+                                        'widgets',
+                                        'features',
+                                        'entities',
+                                        'shared',
+                                    ],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'widgets' },
+                            allow: {
+                                to: {
+                                    type: ['features', 'entities', 'shared'],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'features' },
+                            allow: {
+                                to: {
+                                    type: ['entities', 'shared'],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'entities' },
+                            allow: {
+                                to: {
+                                    type: ['shared'],
+                                },
+                            },
+                        },
+                        {
+                            from: { type: 'shared' },
+                            allow: {
+                                to: {
+                                    type: [],
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
         },
         settings: {
             'import/resolver': {
                 typescript: true,
             },
+            'boundaries/elements': [
+                { type: 'app', pattern: 'src/app', mode: 'folder' },
+                { type: 'widgets', pattern: 'src/widgets', mode: 'folder' },
+                { type: 'features', pattern: 'src/features', mode: 'folder' },
+                { type: 'entities', pattern: 'src/entities', mode: 'folder' },
+                { type: 'shared', pattern: 'src/shared', mode: 'folder' },
+            ],
         },
     },
     {
