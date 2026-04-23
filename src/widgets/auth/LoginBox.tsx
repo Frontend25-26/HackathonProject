@@ -1,12 +1,13 @@
-'use client'
-import { LogoGithub } from '@gravity-ui/icons'
-import { Button, Card, Text, ThemeProvider } from '@gravity-ui/uikit'
-import React from 'react'
+'use client';
+import { LogoGithub } from '@gravity-ui/icons';
+import { Button, Card, Text, ThemeProvider } from '@gravity-ui/uikit';
+// eslint-disable-next-line no-restricted-imports
+import React from 'react';
 
-import { loginWithGithub } from '@/features/loginAction/action'
-import './style.css'
+import { loginWithGithub } from '@/features/loginAction/action';
+import './style.css';
 
-const LoginPage: React.FC = () => {
+const LoginBox: React.FC = () => {
     return (
         <ThemeProvider theme="light">
             <div className="box">
@@ -29,7 +30,7 @@ const LoginPage: React.FC = () => {
                 </Card>
             </div>
         </ThemeProvider>
-    )
-}
+    );
+};
 
-export default LoginPage
+export default LoginBox;

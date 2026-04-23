@@ -1,55 +1,12 @@
-import Image from 'next/image';
-import { Session } from 'next-auth';
+'use client';
+import { ThemeProvider } from '@gravity-ui/uikit';
+// eslint-disable-next-line no-restricted-imports
+import React from 'react';
 
-import { auth, signIn, signOut } from '@/features/auth/authSetup';
-import { userRepository } from '@backend/users/repository';
+import LoginBox from '@/widgets/auth/LoginBox';
 
-export default async function LoginPage() {
-    const session = (await auth()) as Session;
+const LoginPage: React.FC = () => {
+    return <LoginBox></LoginBox>;
+};
 
-    let meData = null;
-    if (session?.user?.userId) {
-        meData = await userRepository.findById(session.user.userId);
-        console.log(`[auth] logged in as githubId: ${session.user.githubId}`);
-        console.log('[auth] /api/me data:', meData);
-    }
-
-    return (
-        <main className="main">
-            {session?.user ? (
-                <div>
-                    <p>
-                        {JSON.stringify(session.user)}
-                        {session.user.image && (
-                            <Image
-                                src={session.user.image}
-                                height={40}
-                                width={40}
-                                alt="user-icon"
-                            />
-                        )}
-                    </p>
-                    <p>{session.user.role ?? '—'}</p>
-                    <pre>{JSON.stringify(meData, null, 2)}</pre>
-                    <form
-                        action={async () => {
-                            'use server';
-                            await signOut();
-                        }}
-                    >
-                        <button type="submit">Sign out</button>
-                    </form>
-                </div>
-            ) : (
-                <form
-                    action={async () => {
-                        'use server';
-                        await signIn('github');
-                    }}
-                >
-                    <button type="submit">Sign in with GitHub</button>
-                </form>
-            )}
-        </main>
-    );
-}
+export default LoginPage;
