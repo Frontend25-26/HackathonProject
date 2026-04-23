@@ -1,14 +1,11 @@
 import { redirect } from 'next/navigation';
+import { ReactNode } from 'react';
 
 import { auth } from '@/features/auth/authSetup';
 import { LayoutContent } from '@/widgets/layout';
 import { userRepository } from '@backend/users/repository';
 
-export default async function AppLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default async function AppLayout({ children }: { children: ReactNode }) {
     const session = await auth();
 
     if (!session) {

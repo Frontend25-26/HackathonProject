@@ -104,6 +104,19 @@ export default defineConfig([
                     ],
                 },
             ],
+            'no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: 'react',
+                            importNames: ['default'],
+                            message:
+                                "Запрещён default import React. Используй named imports: import { FC, useState } from 'react'",
+                        },
+                    ],
+                },
+            ],
         },
         settings: {
             'import/resolver': {
