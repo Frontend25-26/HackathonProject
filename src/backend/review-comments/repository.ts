@@ -1,4 +1,4 @@
-import { prisma } from '@backend/lib/prisma'
+import { prisma } from '@backend/lib/prisma';
 
 export const reviewCommentRepository = {
     findAll(filters?: { threadId?: number }) {
@@ -7,22 +7,22 @@ export const reviewCommentRepository = {
                 ? { threadId: filters.threadId }
                 : undefined,
             orderBy: { createdAt: 'asc' },
-        })
+        });
     },
 
     findById(id: number) {
-        return prisma.reviewComment.findUnique({ where: { id } })
+        return prisma.reviewComment.findUnique({ where: { id } });
     },
 
     create(data: { body: string; threadId: number; authorId: number }) {
-        return prisma.reviewComment.create({ data })
+        return prisma.reviewComment.create({ data });
     },
 
     update(id: number, data: { body: string }) {
-        return prisma.reviewComment.update({ where: { id }, data })
+        return prisma.reviewComment.update({ where: { id }, data });
     },
 
     delete(id: number) {
-        return prisma.reviewComment.delete({ where: { id } })
+        return prisma.reviewComment.delete({ where: { id } });
     },
-}
+};

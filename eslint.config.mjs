@@ -1,10 +1,10 @@
-import { defineConfig } from 'eslint/config'
-import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
-import boundaries from 'eslint-plugin-boundaries'
-import importPlugins from 'eslint-plugin-import'
-import tseslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import boundaries from 'eslint-plugin-boundaries';
+import importPlugins from 'eslint-plugin-import';
+import tseslint from 'typescript-eslint';
 
-import eslintignore from './eslintignore.mjs'
+import eslintignore from './eslintignore.mjs';
 
 export default defineConfig([
     eslintignore,
@@ -12,13 +12,14 @@ export default defineConfig([
     ...tseslint.configs.recommended,
     {
         files: ['src/**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,mdx}'],
-        ignores: ['src/backend/**'],
+        ignores: ['src/backend/**', 'src/proxy.ts'],
         plugins: {
             import: importPlugins,
             boundaries: boundaries,
         },
         rules: {
-            semi: ['error', 'never'],
+            semi: ['error', 'always'],
+            'no-extra-semi': 'error',
             'import/order': [
                 'error',
                 {
@@ -92,6 +93,27 @@ export default defineConfig([
                                 },
                             },
                         },
+                        {
+                            from: { type: 'widgets' },
+                            allow: {
+                                to: {
+                                    type: ['shared'],
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
+            'no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: 'react',
+                            importNames: ['default'],
+                            message:
+                                "Запрещён default import React. Используй named imports: import { FC, useState } from 'react'",
+                        },
                     ],
                 },
             ],
@@ -123,4 +145,4 @@ export default defineConfig([
             ],
         },
     },
-])
+]);

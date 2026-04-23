@@ -12,20 +12,20 @@
  * т.к. middleware будет верифицировать реальную сессию.
  */
 
-import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server';
 
-import { requireAuth } from '@backend/lib/auth'
-import { userRepository } from '@backend/users/repository' // используется в режиме БД
+import { requireAuth } from '@backend/lib/auth';
+import { userRepository } from '@backend/users/repository'; // используется в режиме БД
 
 export async function GET(request: NextRequest) {
-    const auth = await requireAuth(request)
-    if (!auth.ok) return auth.response
+    const auth = await requireAuth(request);
+    if (!auth.ok) return auth.response;
 
-    const user = await userRepository.findById(auth.user.id)
+    const user = await userRepository.findById(auth.user.id);
 
     if (!user) {
-        return Response.json({ error: 'User not found' }, { status: 404 })
+        return Response.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return Response.json(user)
+    return Response.json(user);
 }

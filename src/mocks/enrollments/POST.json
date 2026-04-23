@@ -1,9 +1,0 @@
-{
-    "_status": 201,
-    "_delay": 150,
-    "id": 4,
-    "courseId": 3,
-    "studentId": 5,
-    "mentorId": null,
-    "createdAt": "2026-04-09T12:00:00.000Z"
-}

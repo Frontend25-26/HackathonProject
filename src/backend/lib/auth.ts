@@ -14,20 +14,20 @@
  *   return userRepository.findByGithubId(Number(session.user.githubId))
  */
 
-import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server';
 
-import { Role } from '@backend/generated/prisma'
+import { Role } from '@backend/generated/prisma';
 
 // ─── Типы ────────────────────────────────────────────────────────────────────
 
 export type AuthUser = {
-    id: number
-    role: Role
-}
+    id: number;
+    role: Role;
+};
 
 export type AuthResult =
     | { ok: true; user: AuthUser }
-    | { ok: false; response: Response }
+    | { ok: false; response: Response };
 
 // ─── Вспомогательные ─────────────────────────────────────────────────────────
 
@@ -35,14 +35,14 @@ export type AuthResult =
  * Создаёт стандартный 401 ответ.
  */
 export function unauthorized(message = 'Unauthorized'): Response {
-    return Response.json({ error: message }, { status: 401 })
+    return Response.json({ error: message }, { status: 401 });
 }
 
 /**
  * Создаёт стандартный 403 ответ.
  */
 export function forbidden(message = 'Forbidden'): Response {
-    return Response.json({ error: message }, { status: 403 })
+    return Response.json({ error: message }, { status: 403 });
 }
 
 // ─── Получение пользователя ───────────────────────────────────────────────────
@@ -60,11 +60,11 @@ export function forbidden(message = 'Forbidden'): Response {
  * Для тестирования ОБЯЗАТЕЛЬНО передавай заголовок!
  */
 function getMockUser(request: NextRequest): AuthUser | null {
-    const roleHeader = request.headers.get('x-mock-user-id')
+    const roleHeader = request.headers.get('x-mock-user-id');
 
     // Без заголовка — не авторизован
     if (!roleHeader) {
-        return null
+        return null;
     }
 
     // Mock данные пользователей для тестирования
@@ -72,9 +72,9 @@ function getMockUser(request: NextRequest): AuthUser | null {
         STUDENT: { id: 1, role: Role.STUDENT },
         MENTOR: { id: 2, role: Role.MENTOR },
         ADMIN: { id: 3, role: Role.ADMIN },
-    }
+    };
 
-    return mockUsers[roleHeader.toUpperCase()] ?? null
+    return mockUsers[roleHeader.toUpperCase()] ?? null;
 }
 
 /**
@@ -82,21 +82,21 @@ function getMockUser(request: NextRequest): AuthUser | null {
  * которые middleware проставляет после верификации сессии.
  */
 function getUserFromHeaders(request: NextRequest): AuthUser | null {
-    const idHeader = request.headers.get('x-user-id')
-    const roleHeader = request.headers.get('x-user-role')
+    const idHeader = request.headers.get('x-user-id');
+    const roleHeader = request.headers.get('x-user-role');
 
-    if (!idHeader || !roleHeader) return null
+    if (!idHeader || !roleHeader) return null;
 
-    const id = Number(idHeader)
-    if (isNaN(id)) return null
+    const id = Number(idHeader);
+    if (isNaN(id)) return null;
 
     // Проверяем валидность роли
-    const validRoles = ['STUDENT', 'MENTOR', 'ADMIN']
-    if (!validRoles.includes(roleHeader)) return null
+    const validRoles = ['STUDENT', 'MENTOR', 'ADMIN'];
+    if (!validRoles.includes(roleHeader)) return null;
 
-    const role = roleHeader as Role
+    const role = roleHeader as Role;
 
-    return { id, role }
+    return { id, role };
 }
 
 /**
@@ -110,10 +110,10 @@ export async function getCurrentUser(
     request: NextRequest,
 ): Promise<AuthUser | null> {
     if (process.env.USE_MOCKS === 'true') {
-        return getMockUser(request)
+        return getMockUser(request);
     }
 
-    return getUserFromHeaders(request)
+    return getUserFromHeaders(request);
 }
 
 // ─── Гарды ───────────────────────────────────────────────────────────────────
@@ -130,50 +130,50 @@ export async function getCurrentUser(
  * ```
  */
 export async function requireAuth(request: NextRequest): Promise<AuthResult> {
-    const user = await getCurrentUser(request)
+    const user = await getCurrentUser(request);
 
     if (!user) {
-        return { ok: false, response: unauthorized() }
+        return { ok: false, response: unauthorized() };
     }
 
-    return { ok: true, user }
+    return { ok: true, user };
 }
 
 /**
  * Требует роль MENTOR или ADMIN.
  */
 export async function requireMentor(request: NextRequest): Promise<AuthResult> {
-    const result = await requireAuth(request)
+    const result = await requireAuth(request);
 
-    if (!result.ok) return result
+    if (!result.ok) return result;
 
-    const { user } = result
+    const { user } = result;
 
     if (user.role !== Role.MENTOR && user.role !== Role.ADMIN) {
         return {
             ok: false,
             response: forbidden('Mentor or Admin role required'),
-        }
+        };
     }
 
-    return { ok: true, user }
+    return { ok: true, user };
 }
 
 /**
  * Требует роль ADMIN.
  */
 export async function requireAdmin(request: NextRequest): Promise<AuthResult> {
-    const result = await requireAuth(request)
+    const result = await requireAuth(request);
 
-    if (!result.ok) return result
+    if (!result.ok) return result;
 
-    const { user } = result
+    const { user } = result;
 
     if (user.role !== Role.ADMIN) {
-        return { ok: false, response: forbidden('Admin role required') }
+        return { ok: false, response: forbidden('Admin role required') };
     }
 
-    return { ok: true, user }
+    return { ok: true, user };
 }
 
 // ─── Хелперы для ownership ────────────────────────────────────────────────────
@@ -183,8 +183,8 @@ export async function requireAdmin(request: NextRequest): Promise<AuthResult> {
  * (или имеет роль MENTOR/ADMIN, которая даёт обход ограничения).
  */
 export function isOwnerOrMentor(user: AuthUser, ownerId: number): boolean {
-    if (user.role === Role.MENTOR || user.role === Role.ADMIN) return true
-    return user.id === ownerId
+    if (user.role === Role.MENTOR || user.role === Role.ADMIN) return true;
+    return user.id === ownerId;
 }
 
 /**
@@ -195,5 +195,5 @@ export function buildUserHeaders(user: AuthUser): Record<string, string> {
     return {
         'x-user-id': String(user.id),
         'x-user-role': user.role,
-    }
+    };
 }

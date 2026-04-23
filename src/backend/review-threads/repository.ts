@@ -1,4 +1,4 @@
-import { prisma } from '@backend/lib/prisma'
+import { prisma } from '@backend/lib/prisma';
 
 export const reviewThreadRepository = {
     findAll(filters?: { reviewId?: number }) {
@@ -7,18 +7,18 @@ export const reviewThreadRepository = {
                 ? { reviewId: filters.reviewId }
                 : undefined,
             orderBy: { createdAt: 'asc' },
-        })
+        });
     },
 
     findById(id: number) {
-        return prisma.reviewThread.findUnique({ where: { id } })
+        return prisma.reviewThread.findUnique({ where: { id } });
     },
 
     create(data: { filePath: string; line: number; reviewId: number }) {
-        return prisma.reviewThread.create({ data })
+        return prisma.reviewThread.create({ data });
     },
 
     delete(id: number) {
-        return prisma.reviewThread.delete({ where: { id } })
+        return prisma.reviewThread.delete({ where: { id } });
     },
-}
+};
