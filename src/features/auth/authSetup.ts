@@ -46,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const dbUser = await userRepository.findByGithubId(githubId);
                 if (dbUser) {
                     token.userId = dbUser.id;
+                    token.role = dbUser.role;
                     token.githubId = githubId;
                 }
             }
