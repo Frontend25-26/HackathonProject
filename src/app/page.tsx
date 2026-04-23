@@ -35,7 +35,7 @@ export default async function Home() {
                         action={async () => {
                             'use server'
                             await signOut({
-                                redirectTo: "/login",
+                                redirectTo: '/login',
                             })
                         }}
                     >

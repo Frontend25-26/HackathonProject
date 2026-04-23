@@ -4,7 +4,7 @@ import '@gravity-ui/uikit/styles/fonts.css'
 import '@gravity-ui/uikit/styles/styles.css'
 
 // eslint-disable-next-line import/order
-import Providers from "./providers"
+import Providers from './providers'
 
 export const metadata: Metadata = {
     title: 'Create Next App',

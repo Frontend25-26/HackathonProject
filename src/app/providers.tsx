@@ -1,13 +1,7 @@
-"use client"
+'use client'
 
-import { ThemeProvider } from "@gravity-ui/uikit"
+import { ThemeProvider } from '@gravity-ui/uikit'
 
-export default function Providers({ children, }: {
-    children: React.ReactNode
-}) {
-    return (
-        <ThemeProvider theme="light">
-            {children}
-        </ThemeProvider>
-    )
+export default function Providers({ children }: { children: React.ReactNode }) {
+    return <ThemeProvider theme="light">{children}</ThemeProvider>
 }
