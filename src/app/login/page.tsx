@@ -3,7 +3,7 @@ import { LogoGithub } from '@gravity-ui/icons'
 import { Button, Card, Text, ThemeProvider } from '@gravity-ui/uikit'
 import React from 'react'
 
-import { loginWithGithub } from './action'
+import { loginWithGithub } from '@/features/loginAction/action'
 import './style.css'
 
 const LoginPage: React.FC = () => {
