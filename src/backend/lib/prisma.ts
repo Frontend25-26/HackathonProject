@@ -1,10 +1,10 @@
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
-import { PrismaClient } from '@backend/generated/prisma'
+import { PrismaClient } from '@backend/generated/prisma';
 
 const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined
-}
+    prisma: PrismaClient | undefined;
+};
 
 const adapter = new PrismaMariaDb({
     host: process.env['MYSQL_HOST'],
@@ -14,10 +14,10 @@ const adapter = new PrismaMariaDb({
     port: process.env['MYSQL_PORT']
         ? parseInt(process.env['MYSQL_PORT'])
         : undefined,
-})
+});
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter })
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = prisma
+    globalForPrisma.prisma = prisma;
 }

@@ -1,4 +1,4 @@
-import { globalIgnores } from 'eslint/config'
+import { globalIgnores } from 'eslint/config';
 
 export default globalIgnores([
     '**/.*/**/*', // Default of ESLint legacy config
@@ -9,4 +9,4 @@ export default globalIgnores([
     '**/dist/**/*',
     '.prettierignore', // Config file, not markdown
     'src/backend/generated/**/*', // Generated code
-])
+]);

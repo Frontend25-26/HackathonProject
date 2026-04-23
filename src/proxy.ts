@@ -1,24 +1,35 @@
-// eslint-disable-next-line boundaries/no-unknown-files
-import { NextResponse } from 'next/server'
-
-import { auth } from '@/features/auth/authSetup'
-
-export default auth((req) => {
-    const isLoggedIn = !!req.auth
-    const pathname = req.nextUrl.pathname
-    const isLoginPage = pathname === '/login'
-
-    if (!isLoggedIn && !isLoginPage) {
-        return NextResponse.redirect(new URL('/login', req.url))
-    }
-
-    if (isLoggedIn && isLoginPage) {
-        return NextResponse.redirect(new URL('/', req.url))
-    }
-
-    return NextResponse.next()
-})
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from './features/auth/authSetup';
 
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: ['/admin/:path*', '/mentor/:path*', '/student/:path*'],
+};
+
+const rolesRights: Record<string, string[]> = {
+    ADMIN: ['admin', 'mentor', 'student'],
+    MENTOR: ['mentor', 'student'],
+    STUDENT: ['student'],
+};
+
+function getRedirect(request: NextRequest, path: string) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = path;
+    return NextResponse.redirect(redirectUrl);
+}
+
+export async function proxy(request: NextRequest) {
+    const session = await auth();
+
+    if (!session) {
+        return getRedirect(request, '/login');
+    }
+
+    const requestedSegment = request.nextUrl.pathname.split('/').at(1) ?? '';
+    const allowedSegments = rolesRights[session.user.role] ?? [];
+
+    if (allowedSegments.includes(requestedSegment)) {
+        return NextResponse.next();
+    }
+
+    return getRedirect(request, '/forbidden');
 }

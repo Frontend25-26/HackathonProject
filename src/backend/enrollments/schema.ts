@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const EnrollmentSchema = registry.register(
     'Enrollment',
@@ -12,13 +12,13 @@ export const EnrollmentSchema = registry.register(
         mentorId: z.number().int().nullable(),
         createdAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateEnrollmentSchema = z.object({
     courseId: z.number().int(),
     studentId: z.number().int(),
     mentorId: z.number().int().optional(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -42,7 +42,7 @@ registry.registerPath({
             },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -66,4 +66,4 @@ registry.registerPath({
         },
         404: { description: 'Зачисление не найдено' },
     },
-})
+});

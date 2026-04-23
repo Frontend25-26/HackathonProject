@@ -2,16 +2,16 @@ import {
     OpenAPIRegistry,
     OpenApiGeneratorV3,
     extendZodWithOpenApi,
-} from '@asteasolutions/zod-to-openapi'
-import { z } from 'zod'
+} from '@asteasolutions/zod-to-openapi';
+import { z } from 'zod';
 
-extendZodWithOpenApi(z)
+extendZodWithOpenApi(z);
 
-export const registry = new OpenAPIRegistry()
+export const registry = new OpenAPIRegistry();
 
 export function generateOpenApiSpec() {
-    const isDevMode = process.env.USE_MOCKS === 'true'
-    const generator = new OpenApiGeneratorV3(registry.definitions)
+    const isDevMode = process.env.USE_MOCKS === 'true';
+    const generator = new OpenApiGeneratorV3(registry.definitions);
 
     const spec = generator.generateDocument({
         openapi: '3.0.0',
@@ -37,14 +37,14 @@ export function generateOpenApiSpec() {
                       '**Пример:** `Authorization: Bearer eyJhbGc...`\n'),
         },
         servers: [{ url: '/api' }],
-    })
+    });
 
     // Добавляем security schemes вручную
     if (!spec.components) {
-        spec.components = {}
+        spec.components = {};
     }
     if (!spec.components.securitySchemes) {
-        spec.components.securitySchemes = {}
+        spec.components.securitySchemes = {};
     }
 
     // В зависимости от режима добавляем разные схемы авторизации
@@ -59,7 +59,7 @@ export function generateOpenApiSpec() {
                 '- **STUDENT** — студент (доступ к /api/me, /api/courses)\n' +
                 '- **MENTOR** — ментор проекта (доступ к /api/reviews)\n' +
                 '- **ADMIN** — администратор (доступ к /api/users)',
-        }
+        };
     } else {
         // PROD режим: Bearer token
         spec.components.securitySchemes.Authorization = {
@@ -68,8 +68,8 @@ export function generateOpenApiSpec() {
             bearerFormat: 'JWT',
             description:
                 'Bearer token с информацией о пользователе и его роли (Auth.js)',
-        }
+        };
     }
 
-    return spec
+    return spec;
 }

@@ -59,22 +59,22 @@ export const <entity>Repository = {
 
 ```ts
 // src/backend/<entity>/schema.ts
-import { z } from 'zod'
-import { registry } from '@backend/lib/openapi'
+import { z } from 'zod';
+import { registry } from '@backend/lib/openapi';
 
 export const EntitySchema = registry.register(
     'Entity',
     z.object({
         /* поля */
     }),
-)
+);
 
 export const CreateEntitySchema = z.object({
     /* ... */
-})
+});
 export const UpdateEntitySchema = z.object({
     /* ... */
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -84,7 +84,7 @@ registry.registerPath({
     responses: {
         /* ... */
     },
-})
+});
 ```
 
 - Zod-схемы для валидации request body
@@ -163,10 +163,10 @@ model User {
 **Использование:**
 
 ```ts
-import { resolveRoleFromGitHubTeams } from '@backend/github/classroom'
+import { resolveRoleFromGitHubTeams } from '@backend/github/classroom';
 
-const role = await resolveRoleFromGitHubTeams('octocat')
-await userRepository.update(userId, { role })
+const role = await resolveRoleFromGitHubTeams('octocat');
+await userRepository.update(userId, { role });
 ```
 
 **Требования:**
@@ -235,24 +235,24 @@ PATCH /users/{id}
 3. **Обновить `/api/me` в `src/app/api/me/route.ts`:**
 
     ```ts
-    import { auth } from '@/auth'
+    import { auth } from '@/auth';
 
     export async function GET() {
-        const session = await auth()
+        const session = await auth();
 
         if (!session?.user?.githubId) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 })
+            return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const user = await userRepository.findByGithubId(
             Number(session.user.githubId),
-        )
+        );
 
         if (!user) {
-            return Response.json({ error: 'User not found' }, { status: 404 })
+            return Response.json({ error: 'User not found' }, { status: 404 });
         }
 
-        return Response.json(user)
+        return Response.json(user);
     }
     ```
 
@@ -263,13 +263,13 @@ PATCH /users/{id}
         // ... валидация ...
 
         // Если пользователь новый — определить роль из GitHub Teams
-        let role = data.role
+        let role = data.role;
         if (!role) {
-            role = await resolveRoleFromGitHubTeams(data.login)
+            role = await resolveRoleFromGitHubTeams(data.login);
         }
 
-        const user = await userRepository.create({ ...data, role })
-        return Response.json(user, { status: 201 })
+        const user = await userRepository.create({ ...data, role });
+        return Response.json(user, { status: 201 });
     }
     ```
 
@@ -338,51 +338,51 @@ npm run db:generate
 
 ```ts
 // src/backend/new-entity/repository.ts
-import { prisma } from '@backend/lib/prisma'
+import { prisma } from '@backend/lib/prisma';
 
 export const newEntityRepository = {
     findAll() {
-        return prisma.newEntity.findMany()
+        return prisma.newEntity.findMany();
     },
     findById(id) {
-        return prisma.newEntity.findUnique({ where: { id } })
+        return prisma.newEntity.findUnique({ where: { id } });
     },
     create(data) {
-        return prisma.newEntity.create({ data })
+        return prisma.newEntity.create({ data });
     },
     update(id, data) {
-        return prisma.newEntity.update({ where: { id }, data })
+        return prisma.newEntity.update({ where: { id }, data });
     },
     delete(id) {
-        return prisma.newEntity.delete({ where: { id } })
+        return prisma.newEntity.delete({ where: { id } });
     },
-}
+};
 ```
 
 ### 3. Создать schema
 
 ```ts
 // src/backend/new-entity/schema.ts
-import { z } from 'zod'
-import { registry } from '@backend/lib/openapi'
+import { z } from 'zod';
+import { registry } from '@backend/lib/openapi';
 
 export const NewEntitySchema = registry.register(
     'NewEntity',
     z.object({
         /* поля */
     }),
-)
+);
 
 export const CreateNewEntitySchema = z.object({
     /* ... */
-})
+});
 
 registry.registerPath({
     method: 'get',
     path: '/new-entities',
     tags: ['NewEntities'],
     // ...
-})
+});
 ```
 
 ### 4. Создать route handlers
@@ -396,7 +396,7 @@ registry.registerPath({
 
 ```ts
 // src/backend/lib/openapi-spec.ts
-import '@backend/new-entity/schema' // ← добавить эту строку
+import '@backend/new-entity/schema'; // ← добавить эту строку
 ```
 
 ### 6. Проверить

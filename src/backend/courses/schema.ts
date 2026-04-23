@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const CourseSchema = registry.register(
     'Course',
@@ -12,17 +12,17 @@ export const CourseSchema = registry.register(
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateCourseSchema = z.object({
     title: z.string().min(1),
     description: z.string().optional(),
-})
+});
 
 export const UpdateCourseSchema = z.object({
     title: z.string().min(1).optional(),
     description: z.string().optional(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -35,7 +35,7 @@ registry.registerPath({
             content: { 'application/json': { schema: z.array(CourseSchema) } },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -53,7 +53,7 @@ registry.registerPath({
             content: { 'application/json': { schema: CourseSchema } },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -68,7 +68,7 @@ registry.registerPath({
         },
         404: { description: 'Курс не найден' },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -88,7 +88,7 @@ registry.registerPath({
         },
         404: { description: 'Курс не найден' },
     },
-})
+});
 
 registry.registerPath({
     method: 'delete',
@@ -100,4 +100,4 @@ registry.registerPath({
         204: { description: 'Курс удалён' },
         404: { description: 'Курс не найден' },
     },
-})
+});

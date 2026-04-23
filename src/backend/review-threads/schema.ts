@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const ReviewThreadSchema = registry.register(
     'ReviewThread',
@@ -12,13 +12,13 @@ export const ReviewThreadSchema = registry.register(
         reviewId: z.number().int(),
         createdAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateReviewThreadSchema = z.object({
     filePath: z.string().min(1),
     line: z.number().int().min(1),
     reviewId: z.number().int(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -39,7 +39,7 @@ registry.registerPath({
             },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -62,7 +62,7 @@ registry.registerPath({
             content: { 'application/json': { schema: ReviewThreadSchema } },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -80,7 +80,7 @@ registry.registerPath({
         },
         404: { description: 'Тред не найден' },
     },
-})
+});
 
 registry.registerPath({
     method: 'delete',
@@ -92,4 +92,4 @@ registry.registerPath({
         204: { description: 'Тред удалён' },
         404: { description: 'Тред не найден' },
     },
-})
+});

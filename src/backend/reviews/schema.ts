@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const ReviewSchema = registry.register(
     'Review',
@@ -14,19 +14,19 @@ export const ReviewSchema = registry.register(
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateReviewSchema = z.object({
     grade: z.number().int().min(0),
     generalComment: z.string().optional(),
     submissionId: z.number().int(),
     mentorId: z.number().int(),
-})
+});
 
 export const UpdateReviewSchema = z.object({
     grade: z.number().int().min(0).optional(),
     generalComment: z.string().optional(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -45,7 +45,7 @@ registry.registerPath({
             content: { 'application/json': { schema: z.array(ReviewSchema) } },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -64,7 +64,7 @@ registry.registerPath({
         },
         409: { description: 'Ревью для этой работы уже существует' },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -79,7 +79,7 @@ registry.registerPath({
         },
         404: { description: 'Ревью не найдено' },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -99,4 +99,4 @@ registry.registerPath({
         },
         404: { description: 'Ревью не найдено' },
     },
-})
+});
