@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const UserSchema = registry.register(
     'User',
@@ -16,7 +16,7 @@ export const UserSchema = registry.register(
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateUserSchema = z.object({
     githubId: z.number().int(),
@@ -25,14 +25,14 @@ export const CreateUserSchema = z.object({
     email: z.string().optional(),
     avatar: z.string().optional(),
     role: z.enum(['STUDENT', 'MENTOR', 'ADMIN']).optional(),
-})
+});
 
 export const UpdateUserSchema = z.object({
     name: z.string().optional(),
     email: z.string().optional(),
     avatar: z.string().optional(),
     role: z.enum(['STUDENT', 'MENTOR', 'ADMIN']).optional(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -50,7 +50,7 @@ registry.registerPath({
         401: { description: 'Не аутентифицирован' },
         403: { description: 'Требуется роль ADMIN' },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -70,7 +70,7 @@ registry.registerPath({
         },
         409: { description: 'Пользователь с таким githubId уже существует' },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -92,7 +92,7 @@ registry.registerPath({
         403: { description: 'Требуется роль ADMIN' },
         404: { description: 'Пользователь не найден' },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -120,4 +120,4 @@ registry.registerPath({
         },
         404: { description: 'Пользователь не найден' },
     },
-})
+});

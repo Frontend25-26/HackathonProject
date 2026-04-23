@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const ReviewCommentSchema = registry.register(
     'ReviewComment',
@@ -13,17 +13,17 @@ export const ReviewCommentSchema = registry.register(
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateReviewCommentSchema = z.object({
     body: z.string().min(1),
     threadId: z.number().int(),
     authorId: z.number().int(),
-})
+});
 
 export const UpdateReviewCommentSchema = z.object({
     body: z.string().min(1),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -44,7 +44,7 @@ registry.registerPath({
             },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -67,7 +67,7 @@ registry.registerPath({
             content: { 'application/json': { schema: ReviewCommentSchema } },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -93,7 +93,7 @@ registry.registerPath({
         403: { description: 'Вы не можете редактировать чужие комментарии' },
         404: { description: 'Комментарий не найден' },
     },
-})
+});
 
 registry.registerPath({
     method: 'delete',
@@ -108,4 +108,4 @@ registry.registerPath({
         204: { description: 'Комментарий удалён' },
         404: { description: 'Комментарий не найден' },
     },
-})
+});

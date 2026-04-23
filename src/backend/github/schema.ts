@@ -1,12 +1,12 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 const GhOrganizationSchema = z.object({
     login: z.string(),
     avatar_url: z.string(),
-})
+});
 
 export const GhClassroomSchema = registry.register(
     'GhClassroom',
@@ -17,7 +17,7 @@ export const GhClassroomSchema = registry.register(
         url: z.string(),
         organization: GhOrganizationSchema,
     }),
-)
+);
 
 export const GhAssignmentSchema = registry.register(
     'GhAssignment',
@@ -37,7 +37,7 @@ export const GhAssignmentSchema = registry.register(
         passing: z.number().int(),
         failing: z.number().int(),
     }),
-)
+);
 
 registry.registerPath({
     method: 'get',
@@ -53,7 +53,7 @@ registry.registerPath({
             },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -70,4 +70,4 @@ registry.registerPath({
             content: { 'application/json': { schema: GhAssignmentSchema } },
         },
     },
-})
+});

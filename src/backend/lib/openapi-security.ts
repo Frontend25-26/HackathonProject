@@ -10,7 +10,7 @@ export type AccessLevel =
     | 'STUDENT'
     | 'MENTOR'
     | 'ADMIN'
-    | 'STUDENT | MENTOR'
+    | 'STUDENT | MENTOR';
 
 export const ACCESS_DESCRIPTIONS: Record<AccessLevel, string> = {
     PUBLIC: 'Доступно всем без авторизации',
@@ -18,13 +18,13 @@ export const ACCESS_DESCRIPTIONS: Record<AccessLevel, string> = {
     MENTOR: 'Требует роль MENTOR или ADMIN',
     ADMIN: 'Требует роль ADMIN',
     'STUDENT | MENTOR': 'Доступно STUDENT и MENTOR (с разными правами)',
-}
+};
 
 /**
  * Создаёт описание доступа для OpenAPI документации
  */
 export function getAccessDescription(access: AccessLevel): string {
-    return ACCESS_DESCRIPTIONS[access]
+    return ACCESS_DESCRIPTIONS[access];
 }
 
 /**
@@ -32,11 +32,11 @@ export function getAccessDescription(access: AccessLevel): string {
  */
 export function getSecurityRequirement(access: AccessLevel) {
     if (access === 'PUBLIC') {
-        return {} // Нет требований
+        return {}; // Нет требований
     }
 
     // Для всех остальных используем bearer token
-    return { bearerAuth: [] }
+    return { bearerAuth: [] };
 }
 
 /**
@@ -52,7 +52,7 @@ export function addAccessTag(description: string, access: AccessLevel): string {
                 ? 'MENTOR'
                 : access === 'STUDENT | MENTOR'
                   ? 'STUDENT | MENTOR'
-                  : 'ADMIN'
+                  : 'ADMIN';
 
-    return `[${tag}] ${description}`
+    return `[${tag}] ${description}`;
 }

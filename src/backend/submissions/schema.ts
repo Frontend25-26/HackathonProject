@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
 
 export const SubmissionSchema = registry.register(
     'Submission',
@@ -27,13 +27,13 @@ export const SubmissionSchema = registry.register(
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
-)
+);
 
 export const CreateSubmissionSchema = z.object({
     repoUrl: z.string().url(),
     assignmentId: z.number().int(),
     studentId: z.number().int(),
-})
+});
 
 export const UpdateSubmissionSchema = z.object({
     repoUrl: z.string().url().optional(),
@@ -49,7 +49,7 @@ export const UpdateSubmissionSchema = z.object({
             'APPROVED',
         ])
         .optional(),
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -73,7 +73,7 @@ registry.registerPath({
             },
         },
     },
-})
+});
 
 registry.registerPath({
     method: 'post',
@@ -92,7 +92,7 @@ registry.registerPath({
         },
         409: { description: 'Студент уже сдал эту работу' },
     },
-})
+});
 
 registry.registerPath({
     method: 'get',
@@ -107,7 +107,7 @@ registry.registerPath({
         },
         404: { description: 'Работа не найдена' },
     },
-})
+});
 
 registry.registerPath({
     method: 'patch',
@@ -127,4 +127,4 @@ registry.registerPath({
         },
         404: { description: 'Работа не найдена' },
     },
-})
+});

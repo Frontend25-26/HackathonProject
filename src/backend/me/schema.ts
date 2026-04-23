@@ -1,6 +1,6 @@
-import { registry } from '@backend/lib/openapi'
-import { addAccessTag } from '@backend/lib/openapi-security'
-import { UserSchema } from '@backend/users/schema'
+import { registry } from '@backend/lib/openapi';
+import { addAccessTag } from '@backend/lib/openapi-security';
+import { UserSchema } from '@backend/users/schema';
 
 registry.registerPath({
     method: 'get',
@@ -20,4 +20,4 @@ registry.registerPath({
         401: { description: 'Не аутентифицирован' },
         404: { description: 'Пользователь не найден' },
     },
-})
+});

@@ -1,7 +1,0 @@
-{
-    "_status": 200,
-    "users": [
-        { "name": "alice", "email": "alice@example.com" },
-        { "name": "bob", "email": "bob@example.com" }
-    ]
-}

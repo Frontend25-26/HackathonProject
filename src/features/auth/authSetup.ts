@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth'
+import NextAuth from 'next-auth';
 
-import { resolveRoleFromGitHubTeams } from '@backend/github/classroom'
-import { userRepository } from '@backend/users/repository'
+import { resolveRoleFromGitHubTeams } from '@backend/github/classroom';
+import { userRepository } from '@backend/users/repository';
 
-import { authConfig } from './auth.config'
+import { authConfig } from './auth.config';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
@@ -11,18 +11,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...authConfig.callbacks,
 
         async signIn({ profile }) {
-            if (!profile?.id || !profile?.login) return false
+            if (!profile?.id || !profile?.login) return false;
 
-            const githubId = Number(profile.id)
-            const login = profile.login as string
+            const githubId = Number(profile.id);
+            const login = profile.login as string;
 
-            const existing = await userRepository.findByGithubId(githubId)
-            console.log('EXISTING ????', existing)
+            const existing = await userRepository.findByGithubId(githubId);
+            console.log('EXISTING ????', existing);
 
             if (!existing) {
-                let role
+                let role;
                 try {
-                    role = await resolveRoleFromGitHubTeams(login)
+                    role = await resolveRoleFromGitHubTeams(login);
                 } catch {
                     // GITHUB_TOKEN не задан или нет прав — роль по умолчанию STUDENT
                 }
@@ -34,27 +34,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email: (profile.email as string) || undefined,
                     avatar: (profile.avatar_url as string) || undefined,
                     role,
-                })
+                });
             }
 
-            return true
+            return true;
         },
 
         async jwt({ token, profile }) {
             if (profile) {
-                const githubId = Number(profile.id)
-                const dbUser = await userRepository.findByGithubId(githubId)
+                const githubId = Number(profile.id);
+                const dbUser = await userRepository.findByGithubId(githubId);
                 if (dbUser) {
-                    token.userId = dbUser.id
-                    token.role = dbUser.role
-                    token.githubId = githubId
+                    token.userId = dbUser.id;
+                    token.role = dbUser.role;
+                    token.githubId = githubId;
                 }
             }
-            return token
+            return token;
         },
     },
 
     // pages: {
     //     signIn: '/login',
     // },
-})
+});

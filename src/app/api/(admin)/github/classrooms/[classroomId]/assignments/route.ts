@@ -4,26 +4,26 @@
  * Группа: (admin) — требует роль ADMIN.
  */
 
-import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server';
 
-import { classroomApi } from '@backend/github/classroom'
-import { requireAdmin } from '@backend/lib/auth'
+import { classroomApi } from '@backend/github/classroom';
+import { requireAdmin } from '@backend/lib/auth';
 
-type Params = { params: Promise<{ classroomId: string }> }
+type Params = { params: Promise<{ classroomId: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireAdmin(request)
-    if (!auth.ok) return auth.response
+    const auth = await requireAdmin(request);
+    if (!auth.ok) return auth.response;
 
-    const { classroomId } = await params
+    const { classroomId } = await params;
 
     try {
         const assignments = await classroomApi.listAssignments(
             Number(classroomId),
-        )
-        return Response.json(assignments)
+        );
+        return Response.json(assignments);
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'GitHub API error'
-        return Response.json({ error: message }, { status: 502 })
+        const message = err instanceof Error ? err.message : 'GitHub API error';
+        return Response.json({ error: message }, { status: 502 });
     }
 }
