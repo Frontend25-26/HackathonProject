@@ -16,6 +16,8 @@ const rolesRights: Record<string, string[]> = {
     STUDENT: ['student'],
 };
 
+const PROTECTED_SEGMENTS = ['admin', 'mentor', 'student'];
+
 function getRedirect(request: NextRequest, path: string) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = path;
@@ -25,17 +27,17 @@ function getRedirect(request: NextRequest, path: string) {
 export default auth((req) => {
     const session = req.auth;
     const pathname = req.nextUrl.pathname;
-    const isLoginPage = pathname === '/login';
 
-    if (!session) {
-        if (!isLoginPage) {
-            return getRedirect(req, '/login');
+    if (pathname === '/login') {
+        if (session) {
+            return getRedirect(req, '/');
         }
+
         return NextResponse.next();
     }
 
-    if (isLoginPage) {
-        return getRedirect(req, '/');
+    if (!session) {
+        return getRedirect(req, '/login');
     }
 
     const requestedSegment = pathname.split('/').at(1) ?? '';
@@ -43,7 +45,7 @@ export default auth((req) => {
 
     if (
         requestedSegment &&
-        ['admin', 'mentor', 'student'].includes(requestedSegment) &&
+        PROTECTED_SEGMENTS.includes(requestedSegment) &&
         !allowedSegments.includes(requestedSegment)
     ) {
         return getRedirect(req, '/forbidden');

@@ -3,10 +3,14 @@ import '@gravity-ui/uikit/styles/fonts.css';
 import '@gravity-ui/uikit/styles/styles.css';
 import { ReactNode } from 'react';
 
+import { ClientLayout } from './ClientLayout';
+
 export default function RootLayout({ children }: { children: ReactNode }) {
     return (
         <html>
-            <body>{children}</body>
+            <body>
+                <ClientLayout>{children}</ClientLayout>
+            </body>
         </html>
     );
 }

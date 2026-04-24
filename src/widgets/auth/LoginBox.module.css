@@ -1,0 +1,28 @@
+.login-box {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box__card {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: var(--g-spacing-4);
+    padding: var(--g-spacing-4);
+}
+
+.login-box__button {
+    margin-top: var(--g-spacing-4);
+}
+
+.login-box__button-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--g-spacing-2);
+    height: 100%;
+}

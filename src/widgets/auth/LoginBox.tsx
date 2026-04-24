@@ -1,36 +1,38 @@
 'use client';
 import { LogoGithub } from '@gravity-ui/icons';
-import { Button, Card, Text, ThemeProvider } from '@gravity-ui/uikit';
-// eslint-disable-next-line no-restricted-imports
-import React from 'react';
+import { Button, Card, Text } from '@gravity-ui/uikit';
+import { FC } from 'react';
 
 import { loginWithGithub } from '@/features/loginAction/action';
-import './style.css';
 
-const LoginBox: React.FC = () => {
+import styles from './LoginBox.module.css';
+
+export const LoginBox: FC = () => {
     return (
-        <ThemeProvider theme="light">
-            <div className="box">
-                <Card type="container" view="raised" className="login-card">
-                    <Text variant="header-2">Frontend HW</Text>
-                    <Text variant="subheader-2">
-                        Платформа проверки домашних заданий
-                    </Text>
+        <div className={styles['login-box']}>
+            <Card
+                type="container"
+                view="raised"
+                size="m"
+                className={styles['login-box__card']}
+            >
+                <Text variant="header-2">Frontend HW</Text>
+                <Text variant="subheader-2">
+                    Платформа проверки домашних заданий
+                </Text>
 
-                    <Button
-                        size="l"
-                        width="max"
-                        onClick={loginWithGithub}
-                        className="login-button"
-                    >
-                        <LogoGithub className="github-logo"></LogoGithub>
+                <Button
+                    size="l"
+                    width="max"
+                    onClick={loginWithGithub}
+                    className={styles['login-box__button']}
+                >
+                    <span className={styles['login-box__button-text']}>
+                        <LogoGithub height={20} />
                         <Text variant="subheader-2">Войти через GitHub</Text>
-                    </Button>
-                    <hr />
-                </Card>
-            </div>
-        </ThemeProvider>
+                    </span>
+                </Button>
+            </Card>
+        </div>
     );
 };
-
-export default LoginBox;

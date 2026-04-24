@@ -1,12 +1,9 @@
-'use client';
-import { ThemeProvider } from '@gravity-ui/uikit';
-// eslint-disable-next-line no-restricted-imports
-import React from 'react';
+import { FC } from 'react';
 
-import LoginBox from '@/widgets/auth/LoginBox';
+import { LoginBox } from '@/widgets/auth';
 
-const LoginPage: React.FC = () => {
-    return <LoginBox></LoginBox>;
+const LoginPage: FC = () => {
+    return <LoginBox />;
 };
 
 export default LoginPage;
