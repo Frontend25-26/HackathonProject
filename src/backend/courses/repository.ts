@@ -1,23 +1,23 @@
 import { prisma } from '@backend/lib/prisma';
 
 export const courseRepository = {
-    findAll() {
-        return prisma.course.findMany({ orderBy: { createdAt: 'desc' } });
+    async findAll() {
+        return await prisma.course.findMany({ orderBy: { createdAt: 'desc' } });
     },
 
-    findById(id: number) {
-        return prisma.course.findUnique({ where: { id } });
+    async findById(id: number) {
+        return await prisma.course.findUnique({ where: { id } });
     },
 
-    create(data: { title: string; description?: string }) {
-        return prisma.course.create({ data });
+    async create(data: { title: string; description?: string }) {
+        return await prisma.course.create({ data });
     },
 
-    update(id: number, data: { title?: string; description?: string }) {
-        return prisma.course.update({ where: { id }, data });
+    async update(id: number, data: { title?: string; description?: string }) {
+        return await prisma.course.update({ where: { id }, data });
     },
 
-    delete(id: number) {
-        return prisma.course.delete({ where: { id } });
+    async delete(id: number) {
+        return await prisma.course.delete({ where: { id } });
     },
 };
