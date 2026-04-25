@@ -7,14 +7,14 @@
 
 ## Технологии
 
-| Что | Что используем |
-|-----|----------------|
-| Фреймворк | Next.js 16 (App Router) |
-| Язык | TypeScript (strict mode) |
-| UI-библиотека | Gravity UI |
-| Тема / стили | ThemeProvider из Gravity UI, globals.css |
-| Состояние | Zustand |
-| Данные с сервера | fetch к собственным API-роутам Next.js |
+| Что              | Что используем                           |
+| ---------------- | ---------------------------------------- |
+| Фреймворк        | Next.js 16 (App Router)                  |
+| Язык             | TypeScript (strict mode)                 |
+| UI-библиотека    | Gravity UI                               |
+| Тема / стили     | ThemeProvider из Gravity UI, globals.css |
+| Состояние        | Zustand                                  |
+| Данные с сервера | fetch к собственным API-роутам Next.js   |
 
 ---
 
@@ -144,18 +144,23 @@ interface UserCardProps {
 }
 
 export const UserCard: FC<UserCardProps> = ({ name, role }) => {
-    return <div>{name} — {role}</div>;
+    return (
+        <div>
+            {name} — {role}
+        </div>
+    );
 };
 ```
 
 ```tsx
 // Плохо — default export вне page.tsx, нет типов
-export default function({ name }) {
+export default function ({ name }) {
     return <div>{name}</div>;
 }
 ```
 
 Почему именованный экспорт лучше:
+
 - При импорте IDE сразу подсказывает правильное имя — нельзя случайно назвать компонент иначе
 - Легко найти все места использования через "Find References"
 - `export default` зарезервирован для страниц — это соглашение сразу говорит "это page.tsx"
@@ -198,7 +203,10 @@ interface CourseCardProps {
 }
 
 // 5. Сам компонент
-export const CourseCard: FC<CourseCardProps> = ({ course, size = CardSize.Small }) => {
+export const CourseCard: FC<CourseCardProps> = ({
+    course,
+    size = CardSize.Small,
+}) => {
     // 5a. Хуки (useState, useEffect, useRef, кастомные)
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -247,6 +255,7 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, children }) => {
 ### Директива `'use client'`
 
 Добавляй `'use client'` только тогда, когда компоненту нужны:
+
 - хуки (`useState`, `useEffect`, `useContext` и т.д.)
 - браузерные события (`onClick`, `onChange`)
 - доступ к `window`, `document`
@@ -294,6 +303,7 @@ if (status === SubmissionStatus.Pending) { ... }
 ```
 
 Почему строковые значения (не числовые):
+
 - Читаемы в логах, сети и БД: `"pending"`, а не `2`
 - Не сломаются при добавлении нового значения в середину
 
@@ -317,6 +327,7 @@ const chunks = items.slice(0, PREVIEW_ITEMS_COUNT);
 ```
 
 Константы объявляй рядом с тем местом, где они используются:
+
 - Только в одном компоненте → объяви перед компонентом в том же файле
 - В нескольких файлах → вынеси в `src/shared/constants.ts`
 
@@ -332,9 +343,7 @@ const chunks = items.slice(0, PREVIEW_ITEMS_COUNT);
 ```tsx
 import { ThemeProvider } from '@gravity-ui/uikit';
 
-<ThemeProvider theme="dark">
-    {children}
-</ThemeProvider>
+<ThemeProvider theme="dark">{children}</ThemeProvider>;
 ```
 
 ---
@@ -412,12 +421,12 @@ export const CourseCard: FC<CourseCardProps> = ({ title, description }) => {
 
 ```tsx
 // Через шаблонную строку
-<div className={`${styles.card} ${styles.cardActive}`} />
+<div className={`${styles.card} ${styles.cardActive}`} />;
 
 // Через библиотеку clsx (предпочтительно при условиях)
 import clsx from 'clsx';
 
-<div className={clsx(styles.card, { [styles.cardActive]: isActive })} />
+<div className={clsx(styles.card, { [styles.cardActive]: isActive })} />;
 ```
 
 ### Правила именования классов в CSS
@@ -427,10 +436,16 @@ import clsx from 'clsx';
 
 ```css
 /* Плохо — описывает как выглядит */
-.redBoldText { color: red; font-weight: bold; }
+.redBoldText {
+    color: red;
+    font-weight: bold;
+}
 
 /* Хорошо — описывает что это */
-.errorMessage { color: var(--g-color-text-danger); font-weight: 600; }
+.errorMessage {
+    color: var(--g-color-text-danger);
+    font-weight: 600;
+}
 ```
 
 ---
@@ -510,18 +525,19 @@ import { userRepository } from '../../../backend/users/repository';
 ```
 
 Настроенные алиасы:
+
 - `@/*` → `src/*`
 - `@backend/*` → `src/backend/*`
 
 ### Именование
 
-| Что | Стиль | Пример |
-|-----|-------|--------|
-| Переменные, функции | `camelCase` | `currentUser`, `fetchCourses` |
-| Компоненты, типы, интерфейсы | `PascalCase` | `UserCard`, `CourseProps` |
-| Константы | `UPPER_SNAKE_CASE` | `ALL_ROLES`, `MAX_GRADE` |
-| Файлы компонентов | `PascalCase.tsx` | `Sidebar.tsx` |
-| Файлы утилит | `camelCase.ts` | `formatDate.ts` |
+| Что                          | Стиль              | Пример                        |
+| ---------------------------- | ------------------ | ----------------------------- |
+| Переменные, функции          | `camelCase`        | `currentUser`, `fetchCourses` |
+| Компоненты, типы, интерфейсы | `PascalCase`       | `UserCard`, `CourseProps`     |
+| Константы                    | `UPPER_SNAKE_CASE` | `ALL_ROLES`, `MAX_GRADE`      |
+| Файлы компонентов            | `PascalCase.tsx`   | `Sidebar.tsx`                 |
+| Файлы утилит                 | `camelCase.ts`     | `formatDate.ts`               |
 
 ---
 
@@ -534,6 +550,7 @@ npm run lint:fix
 ```
 
 Основные правила:
+
 - Отступы: **4 пробела** (не табы)
 - Одинарные кавычки: `'string'`
 - Точки с запятой: обязательны

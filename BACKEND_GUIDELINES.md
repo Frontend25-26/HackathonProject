@@ -7,14 +7,14 @@
 
 ## Технологии
 
-| Что | Что используем |
-|-----|----------------|
-| Фреймворк | Next.js API Routes (Route Handlers) |
-| ORM | Prisma 7 |
-| База данных | MariaDB / MySQL |
-| Валидация | Zod |
-| Авторизация | NextAuth 5 (GitHub OAuth) |
-| API-документация | OpenAPI (через `zod-to-openapi`) |
+| Что              | Что используем                      |
+| ---------------- | ----------------------------------- |
+| Фреймворк        | Next.js API Routes (Route Handlers) |
+| ORM              | Prisma 7                            |
+| База данных      | MariaDB / MySQL                     |
+| Валидация        | Zod                                 |
+| Авторизация      | NextAuth 5 (GitHub OAuth)           |
+| API-документация | OpenAPI (через `zod-to-openapi`)    |
 
 ---
 
@@ -38,6 +38,7 @@ src/
 ```
 
 Каждый **домен** (users, courses, assignments...) содержит два файла:
+
 - `repository.ts` — операции с базой данных
 - `schema.ts` — Zod-схемы + регистрация OpenAPI
 
@@ -102,11 +103,11 @@ export const POST = async (request: NextRequest): Promise<Response> => {
 
 Функции-гарды живут в [src/backend/lib/auth.ts](src/backend/lib/auth.ts).
 
-| Функция | Кто проходит |
-|---------|--------------|
-| `requireAuth(request)` | Любой авторизованный пользователь |
-| `requireMentor(request)` | MENTOR или ADMIN |
-| `requireAdmin(request)` | Только ADMIN |
+| Функция                             | Кто проходит                      |
+| ----------------------------------- | --------------------------------- |
+| `requireAuth(request)`              | Любой авторизованный пользователь |
+| `requireMentor(request)`            | MENTOR или ADMIN                  |
+| `requireAdmin(request)`             | Только ADMIN                      |
 | `isOwnerOrMentor(request, ownerId)` | Владелец ресурса или MENTOR/ADMIN |
 
 Все функции возвращают **дискриминированный union**:
@@ -315,11 +316,11 @@ registry.registerPath({
 
 Когда `USE_MOCKS=true` в `.env`, авторизация работает через заголовок `x-mock-user-id`:
 
-| Значение заголовка | Роль |
-|-------------------|------|
-| `1` | STUDENT |
-| `2` | MENTOR |
-| `3` | ADMIN |
+| Значение заголовка | Роль    |
+| ------------------ | ------- |
+| `1`                | STUDENT |
+| `2`                | MENTOR  |
+| `3`                | ADMIN   |
 
 В Swagger-UI (в dev-режиме) это настраивается автоматически — не нужно вводить токен.
 
@@ -327,25 +328,25 @@ registry.registerPath({
 
 ## Именование
 
-| Что | Стиль | Пример |
-|-----|-------|--------|
-| Переменные, функции | `camelCase` | `courseRepository`, `findById` |
-| Типы, интерфейсы | `PascalCase` | `AuthResult`, `CreateCourseSchema` |
-| Константы | `UPPER_SNAKE_CASE` | `USE_MOCKS`, `ALL_ROLES` |
-| Файлы | `camelCase.ts` | `repository.ts`, `schema.ts` |
+| Что                 | Стиль              | Пример                             |
+| ------------------- | ------------------ | ---------------------------------- |
+| Переменные, функции | `camelCase`        | `courseRepository`, `findById`     |
+| Типы, интерфейсы    | `PascalCase`       | `AuthResult`, `CreateCourseSchema` |
+| Константы           | `UPPER_SNAKE_CASE` | `USE_MOCKS`, `ALL_ROLES`           |
+| Файлы               | `camelCase.ts`     | `repository.ts`, `schema.ts`       |
 
 ---
 
 ## Типичные HTTP-статусы
 
-| Ситуация | Статус |
-|----------|--------|
-| Успешный GET / PATCH | `200` |
-| Успешный POST (создание) | `201` |
-| Неверные данные от клиента | `400` |
-| Нет авторизации (не залогинен) | `401` |
-| Нет прав (залогинен, но роль не та) | `403` |
-| Запись не найдена | `404` |
+| Ситуация                            | Статус |
+| ----------------------------------- | ------ |
+| Успешный GET / PATCH                | `200`  |
+| Успешный POST (создание)            | `201`  |
+| Неверные данные от клиента          | `400`  |
+| Нет авторизации (не залогинен)      | `401`  |
+| Нет прав (залогинен, но роль не та) | `403`  |
+| Запись не найдена                   | `404`  |
 
 ---
 
