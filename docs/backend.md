@@ -11,8 +11,7 @@ src/backend/
 ├── lib/
 │   ├── prisma.ts            # PrismaClient singleton с MariaDB адаптером
 │   ├── openapi.ts           # OpenAPIRegistry и генератор спецификации
-│   ├── openapi-spec.ts      # Агрегатор всех schema импортов
-│   └── openapi-mocks.ts     # Сканер src/mocks/ для Swagger UI
+│   └── openapi-spec.ts      # Агрегатор всех schema импортов
 │
 ├── <entity>/
 │   ├── repository.ts        # CRUD операции через Prisma
@@ -190,13 +189,7 @@ PATCH /users/{id}
 ## Ручка GET /api/me
 
 Возвращает профиль **текущего пользователя** с ролью.
-
-### Поведение
-
-| Режим           | USE_MOCKS | Ответ                                        |
-| --------------- | --------- | -------------------------------------------- |
-| **Development** | `true`    | 200 — первый пользователь из БД (с его role) |
-| **Production**  | `false`   | 401 — требует аутентификации через Auth.js   |
+Требует валидной NextAuth-сессии (cookie). Без сессии — 401.
 
 ### Response
 
@@ -307,15 +300,14 @@ PATCH /users/{id}
 
 ## Переменные окружения бэкенда
 
-| Переменная           | Описание                                            | Пример                                                             |
-| -------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
-| `DATABASE_URL`       | Connection string MySQL/MariaDB                     | `mysql://user:pass@localhost:3900/db?allowPublicKeyRetrieval=true` |
-| `GITHUB_TOKEN`       | GitHub Personal Access Token (для GitHub API)       | Скоп: `read:org`                                                   |
-| `GITHUB_ORG`         | GitHub Organization (для определения ролей)         | `Frontend25-26`                                                    |
-| `USE_MOCKS`          | Использовать мок-responses вместо реальных запросов | `true` \| `false`                                                  |
-| `AUTH_GITHUB_ID`     | GitHub App ID (для Auth.js)                         | _(не установлено)_                                                 |
-| `AUTH_GITHUB_SECRET` | GitHub App Secret (для Auth.js)                     | _(не установлено)_                                                 |
-| `AUTH_SECRET`        | Секретный ключ для Auth.js                          | _(не установлено)_                                                 |
+| Переменная           | Описание                                      | Пример                                                             |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`       | Connection string MySQL/MariaDB               | `mysql://user:pass@localhost:3900/db?allowPublicKeyRetrieval=true` |
+| `GITHUB_TOKEN`       | GitHub Personal Access Token (для GitHub API) | Скоп: `read:org`                                                   |
+| `GITHUB_ORG`         | GitHub Organization (для определения ролей)   | `Frontend25-26`                                                    |
+| `AUTH_GITHUB_ID`     | GitHub App ID (для Auth.js)                   | _(не установлено)_                                                 |
+| `AUTH_GITHUB_SECRET` | GitHub App Secret (для Auth.js)               | _(не установлено)_                                                 |
+| `AUTH_SECRET`        | Секретный ключ для Auth.js                    | _(не установлено)_                                                 |
 
 ---
 

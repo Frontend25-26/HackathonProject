@@ -18,7 +18,7 @@ import { submissionRepository } from '@backend/submissions/repository';
 import { CreateSubmissionSchema } from '@backend/submissions/schema';
 
 export async function GET(request: NextRequest) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { searchParams } = request.nextUrl;
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const body: unknown = await request.json();

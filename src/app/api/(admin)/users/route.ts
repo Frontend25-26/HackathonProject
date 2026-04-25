@@ -13,8 +13,8 @@ import { requireAdmin } from '@backend/lib/auth';
 import { userRepository } from '@backend/users/repository';
 import { CreateUserSchema } from '@backend/users/schema';
 
-export async function GET(request: NextRequest) {
-    const auth = await requireAdmin(request);
+export async function GET() {
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const users = await userRepository.findAll();
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const body: unknown = await request.json();

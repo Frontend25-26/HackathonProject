@@ -12,7 +12,7 @@ import { requireAdmin } from '@backend/lib/auth';
 type Params = { params: Promise<{ classroomId: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const { classroomId } = await params;

@@ -1,24 +1,14 @@
 /**
  * GET /api/me — текущий пользователь и его роль
  *
- * Группа: (protected) — требует любой аутентифицированный пользователь.
- * Авторизация проверяется middleware в src/middleware.ts.
- *
- * Заголовки, проставленные middleware:
- *  x-user-id   — id текущего пользователя
- *  x-user-role — роль (STUDENT | MENTOR | ADMIN)
- *
- * TODO(#19): После подключения Auth.js убрать USE_MOCKS ветку,
- * т.к. middleware будет верифицировать реальную сессию.
+ * Группа: (protected) — требует валидной NextAuth-сессии.
  */
 
-import { NextRequest } from 'next/server';
-
 import { requireAuth } from '@backend/lib/auth';
-import { userRepository } from '@backend/users/repository'; // используется в режиме БД
+import { userRepository } from '@backend/users/repository';
 
-export async function GET(request: NextRequest) {
-    const auth = await requireAuth(request);
+export async function GET() {
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const user = await userRepository.findById(auth.user.id);

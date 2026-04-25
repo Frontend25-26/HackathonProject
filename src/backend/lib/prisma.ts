@@ -14,6 +14,9 @@ const adapter = new PrismaMariaDb({
     port: process.env['MYSQL_PORT']
         ? parseInt(process.env['MYSQL_PORT'])
         : undefined,
+    // MySQL 8 по умолчанию использует caching_sha2_password — без этой опции
+    // драйвер не может получить RSA-ключ для безопасной передачи пароля.
+    allowPublicKeyRetrieval: true,
 });
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });

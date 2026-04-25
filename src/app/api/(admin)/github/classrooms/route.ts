@@ -4,13 +4,11 @@
  * Группа: (admin) — требует роль ADMIN.
  */
 
-import { NextRequest } from 'next/server';
-
 import { classroomApi } from '@backend/github/classroom';
 import { requireAdmin } from '@backend/lib/auth';
 
-export async function GET(request: NextRequest) {
-    const auth = await requireAdmin(request);
+export async function GET() {
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     try {

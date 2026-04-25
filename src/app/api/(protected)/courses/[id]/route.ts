@@ -16,7 +16,7 @@ import { requireAuth, requireAdmin } from '@backend/lib/auth';
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
@@ -51,7 +51,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
