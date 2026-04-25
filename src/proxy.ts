@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from './features/auth/authSetup';
 
 export const config = {
-    matcher: ['/admin/:path*', '/mentor/:path*', '/student/:path*'],
+    matcher: [
+        '/admin/:path*',
+        '/mentor/:path*',
+        '/student/:path*',
+        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    ],
 };
 
 const rolesRights: Record<string, string[]> = {
@@ -11,25 +16,40 @@ const rolesRights: Record<string, string[]> = {
     STUDENT: ['student'],
 };
 
+const PROTECTED_SEGMENTS = ['admin', 'mentor', 'student'];
+
 function getRedirect(request: NextRequest, path: string) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = path;
     return NextResponse.redirect(redirectUrl);
 }
 
-export async function proxy(request: NextRequest) {
-    const session = await auth();
+export default auth((req) => {
+    const session = req.auth;
+    const pathname = req.nextUrl.pathname;
 
-    if (!session) {
-        return getRedirect(request, '/login');
-    }
+    if (pathname === '/login') {
+        if (session) {
+            return getRedirect(req, '/');
+        }
 
-    const requestedSegment = request.nextUrl.pathname.split('/').at(1) ?? '';
-    const allowedSegments = rolesRights[session.user.role] ?? [];
-
-    if (allowedSegments.includes(requestedSegment)) {
         return NextResponse.next();
     }
 
-    return getRedirect(request, '/forbidden');
-}
+    if (!session) {
+        return getRedirect(req, '/login');
+    }
+
+    const requestedSegment = pathname.split('/').at(1) ?? '';
+    const allowedSegments = rolesRights[session.user.role] ?? [];
+
+    if (
+        requestedSegment &&
+        PROTECTED_SEGMENTS.includes(requestedSegment) &&
+        !allowedSegments.includes(requestedSegment)
+    ) {
+        return getRedirect(req, '/forbidden');
+    }
+
+    return NextResponse.next();
+});

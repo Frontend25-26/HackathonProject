@@ -9,6 +9,8 @@ import { AsideHeader, FooterItem } from '@gravity-ui/navigation';
 import { signOut } from 'next-auth/react';
 import { FC, PropsWithChildren, useState } from 'react';
 
+import { Theme, useTheme } from '@/features/theme';
+
 import { MenuItemConfig, primaryMenu, secondaryMenu } from '../model/menu';
 
 import { UserFooterItem } from './UserFooterItem';
@@ -20,17 +22,17 @@ const toAsideItems = (items: MenuItemConfig[], role: Role): MenuItemConfig[] =>
 
 interface SidebarProps extends PropsWithChildren {
     user: User | null;
-    isDark: boolean;
     onToggleTheme: () => void;
 }
 
 export const Sidebar: FC<SidebarProps> = ({
     user,
-    isDark,
     onToggleTheme,
     children,
 }) => {
     const [compact, setCompact] = useState(false);
+    const theme = useTheme((state) => state.theme);
+    const isDark = theme === Theme.DARK;
 
     if (!user) {
         return children;

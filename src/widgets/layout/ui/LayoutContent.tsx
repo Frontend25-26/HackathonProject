@@ -1,7 +1,9 @@
 'use client';
 
-import { Box, type Theme, ThemeProvider } from '@gravity-ui/uikit';
-import { FC, PropsWithChildren, useState } from 'react';
+import { Box } from '@gravity-ui/uikit';
+import { FC, PropsWithChildren } from 'react';
+
+import { Theme, useTheme } from '@/features/theme';
 
 import { Sidebar } from './Sidebar';
 
@@ -12,21 +14,13 @@ interface LayoutContentProps extends PropsWithChildren {
 }
 
 export const LayoutContent: FC<LayoutContentProps> = ({ user, children }) => {
-    const [theme, setTheme] = useState<Theme>('dark');
-    const toggleTheme = () =>
-        setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    const { toggleTheme } = useTheme();
 
     return (
-        <ThemeProvider theme={theme}>
-            <Sidebar
-                user={user}
-                isDark={theme === 'dark'}
-                onToggleTheme={toggleTheme}
-            >
-                <Box as="main" spacing={{ p: 6 }}>
-                    {children}
-                </Box>
-            </Sidebar>
-        </ThemeProvider>
+        <Sidebar user={user} onToggleTheme={toggleTheme}>
+            <Box as="main" spacing={{ p: 6 }}>
+                {children}
+            </Box>
+        </Sidebar>
     );
 };
