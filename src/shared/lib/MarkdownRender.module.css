@@ -1,0 +1,62 @@
+.markdown-box {
+    code {
+        background: var(--g-color-base-generic);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+
+    pre {
+        background: var(--g-color-base-generic);
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        line-height: 1.5;
+    }
+
+    pre code {
+        background: transparent;
+        padding: 0;
+    }
+
+    blockquote {
+        border-left: 4px solid var(--g-color-line-generic);
+        margin: 0;
+        padding-left: 16px;
+        color: var(--g-color-text-secondary);
+    }
+
+    table {
+        border-collapse: collapse;
+        width: max-content;
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    thead {
+        background: var(--g-color-base-generic);
+    }
+
+    th,
+    td {
+        border: 1px solid var(--g-color-line-generic);
+        padding: 6px 13px;
+        text-align: left;
+    }
+
+    h1 {
+        margin-top: var(--g-spacing-8);
+        margin-bottom: var(--g-spacing-5);
+    }
+
+    h2 {
+        margin-top: var(--g-spacing-7);
+        margin-bottom: var(--g-spacing-4);
+    }
+
+    h3 {
+        margin-top: var(--g-spacing-6);
+        margin-bottom: var(--g-spacing-3);
+    }
+}
