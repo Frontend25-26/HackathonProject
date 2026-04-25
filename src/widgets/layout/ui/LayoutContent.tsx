@@ -3,7 +3,7 @@
 import { Box } from '@gravity-ui/uikit';
 import { FC, PropsWithChildren } from 'react';
 
-import { useTheme } from '@/features/theme';
+import { Theme, useTheme } from '@/features/theme';
 
 import { Sidebar } from './Sidebar';
 
@@ -14,14 +14,10 @@ interface LayoutContentProps extends PropsWithChildren {
 }
 
 export const LayoutContent: FC<LayoutContentProps> = ({ user, children }) => {
-    const { theme, toggleTheme } = useTheme();
+    const { toggleTheme } = useTheme();
 
     return (
-        <Sidebar
-            user={user}
-            isDark={theme === 'dark'}
-            onToggleTheme={toggleTheme}
-        >
+        <Sidebar user={user} onToggleTheme={toggleTheme}>
             <Box as="main" spacing={{ p: 6 }}>
                 {children}
             </Box>

@@ -1,6 +1,7 @@
-import { Theme } from '@gravity-ui/uikit';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+import { Theme } from './types';
 
 interface ThemeState {
     theme: Theme;
@@ -10,10 +11,10 @@ interface ThemeState {
 export const useTheme = create<ThemeState>()(
     persist(
         (set) => ({
-            theme: 'dark',
+            theme: Theme.DARK,
             toggleTheme: () =>
                 set(({ theme }) => ({
-                    theme: theme === 'dark' ? 'light' : 'dark',
+                    theme: theme === Theme.DARK ? Theme.LIGHT : Theme.DARK,
                 })),
         }),
         { name: 'theme-storage' },
