@@ -12,7 +12,7 @@ import { reviewThreadRepository } from '@backend/review-threads/repository';
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     // Только MENTOR/ADMIN может удалять треды

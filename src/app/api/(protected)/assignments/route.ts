@@ -13,7 +13,7 @@ import { CreateAssignmentSchema } from '@backend/assignments/schema';
 import { requireAuth, requireAdmin } from '@backend/lib/auth';
 
 export async function GET(request: NextRequest) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { searchParams } = request.nextUrl;
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const body: unknown = await request.json();

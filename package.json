@@ -11,7 +11,17 @@
         "db:migrate": "prisma migrate dev",
         "db:migrate:deploy": "prisma migrate deploy",
         "db:generate": "prisma generate",
-        "db:studio": "prisma studio"
+        "db:studio": "prisma studio",
+        "prepare": "husky"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md,yml,yaml,css}": [
+            "prettier --write"
+        ]
     },
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^8.5.0",
@@ -42,6 +52,8 @@
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.4.0",
         "postcss-preset-env": "^11.2.0",
         "prettier": "^3.8.1",
         "prisma": "^7.6.0",

@@ -17,7 +17,7 @@ const UpdateEnrollmentSchema = z.object({
 });
 
 export async function PATCH(request: NextRequest, { params }: Params) {
-    const auth = await requireAdmin(request);
+    const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;

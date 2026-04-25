@@ -19,7 +19,7 @@ import { UpdateSubmissionSchema } from '@backend/submissions/schema';
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;

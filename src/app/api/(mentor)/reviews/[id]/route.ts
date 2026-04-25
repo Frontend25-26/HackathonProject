@@ -14,7 +14,7 @@ import { UpdateReviewSchema } from '@backend/reviews/schema';
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const auth = await requireMentor(request);
+    const auth = await requireMentor();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
-    const auth = await requireMentor(request);
+    const auth = await requireMentor();
     if (!auth.ok) return auth.response;
 
     const { id } = await params;

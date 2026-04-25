@@ -16,7 +16,7 @@ import { reviewRepository } from '@backend/reviews/repository';
 import { CreateReviewSchema } from '@backend/reviews/schema';
 
 export async function GET(request: NextRequest) {
-    const auth = await requireMentor(request);
+    const auth = await requireMentor();
     if (!auth.ok) return auth.response;
 
     const { searchParams } = request.nextUrl;
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const auth = await requireMentor(request);
+    const auth = await requireMentor();
     if (!auth.ok) return auth.response;
 
     const body: unknown = await request.json();
