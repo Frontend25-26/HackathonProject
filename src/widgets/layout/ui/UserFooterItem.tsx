@@ -2,7 +2,10 @@
 
 import { FooterItem } from '@gravity-ui/navigation';
 import { Avatar } from '@gravity-ui/uikit';
+import Link from 'next/link';
 import { FC } from 'react';
+
+import PlainLink from './PlainLink.module.css';
 
 import type { Role, User } from '@/entities/user';
 
@@ -45,7 +48,14 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
                             borderColor={getRoleColor(user.role)}
                         />
                     ),
-                    title: userName,
+                    title: (
+                        <Link
+                            href={'/user/' + user.id}
+                            className={PlainLink.plainLink}
+                        >
+                            {userName}
+                        </Link>
+                    ),
                 })
             }
         />
