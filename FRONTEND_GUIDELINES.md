@@ -35,6 +35,33 @@ src/
 `features` — из `entities`, `entities` — из `shared`. Обратные импорты запрещены.
 ESLint с плагином `boundaries` проверяет это автоматически.
 
+### `index.ts` в каждом слайсе
+
+Каждый слайс (папка внутри слоя) экспортирует наружу только то, что нужно другим слоям — через `index.ts`. Внутренние файлы не импортируются напрямую.
+
+```
+widgets/
+└── course-card/
+    ├── CourseCard.tsx         # внутренний файл
+    ├── CourseCard.module.css  # внутренний файл
+    └── index.ts               # публичное API слайса
+```
+
+```ts
+// widgets/course-card/index.ts
+export { CourseCard } from './CourseCard';
+```
+
+```ts
+// Хорошо — импортируем через index.ts
+import { CourseCard } from '@/widgets/course-card';
+
+// Плохо — лезем внутрь слайса напрямую
+import { CourseCard } from '@/widgets/course-card/CourseCard';
+```
+
+Это даёт возможность переименовывать и реорганизовывать файлы внутри слайса, не ломая импорты в других местах.
+
 ---
 
 ## Принципы написания кода
@@ -252,6 +279,52 @@ export const Sidebar: FC<SidebarProps> = ({ isOpen, children }) => {
 };
 ```
 
+### Максимально используй Server Components (SSR)
+
+По умолчанию все компоненты в Next.js — серверные. Данные загружаются на сервере и пользователь сразу видит готовую страницу без мерцания.
+
+**Стратегия**: делай как можно больше на сервере, `'use client'` добавляй только там где без него не обойтись.
+
+```tsx
+// Плохо — данные грузятся на клиенте, пользователь видит пустую страницу
+'use client';
+export const CoursePage: FC = () => {
+    const [courses, setCourses] = useState<Course[]>([]);
+    useEffect(() => {
+        apiFetch<Course[]>('/api/courses').then(setCourses);
+    }, []);
+    return <CourseList courses={courses} />;
+};
+
+// Хорошо — данные загружаются на сервере, страница приходит уже заполненной
+// page.tsx (Server Component — нет 'use client')
+export default async function CoursePage() {
+    const courses = await apiFetch<Course[]>('/api/courses');
+    return <CourseList courses={courses} />;
+}
+```
+
+Передавай данные из серверного компонента в клиентский через пропсы:
+
+```tsx
+// page.tsx — серверный, загружает данные один раз
+export default async function CoursePage() {
+    const courses = await apiFetch<Course[]>('/api/courses');
+    return <CourseFilter courses={courses} />;
+}
+
+// CourseFilter.tsx — клиентский, только интерактивность
+'use client';
+interface CourseFilterProps {
+    courses: Course[];
+}
+export const CourseFilter: FC<CourseFilterProps> = ({ courses }) => {
+    const [query, setQuery] = useState<string>('');
+    const filtered = courses.filter((c) => c.title.includes(query));
+    return <>{/* ... */}</>;
+};
+```
+
 ### Директива `'use client'`
 
 Добавляй `'use client'` только тогда, когда компоненту нужны:
@@ -452,16 +525,42 @@ import clsx from 'clsx';
 
 ## Запросы к API
 
-Все запросы идут к собственным API-роутам (`/api/...`). Используй стандартный `fetch`:
+Все запросы идут к собственным API-роутам (`/api/...`). Используй хелпер `apiFetch` из `@/shared/api` — **не пиши `fetch` напрямую**.
+
+`apiFetch` автоматически:
+- проставляет `Content-Type: application/json`
+- пробрасывает cookies (включая сессию NextAuth) — как на клиенте, так и на сервере
+- бросает `ApiError` с HTTP-статусом при неуспешном ответе, а не молча возвращает объект ошибки
 
 ```ts
-const response = await fetch('/api/courses');
-if (!response.ok) throw new Error('Failed to fetch courses');
-const courses = await response.json();
+import { apiFetch, ApiError } from '@/shared/api';
+
+// GET без параметров
+const courses = await apiFetch<Course[]>('/api/courses');
+
+// GET с query-параметрами
+const assignments = await apiFetch<Assignment[]>('/api/assignments', {
+    query: { courseId: 42 },
+});
+
+// POST с телом
+const created = await apiFetch<Course>('/api/courses', {
+    method: 'POST',
+    body: { title: 'Новый курс', mentorId: 1 },
+});
+
+// Обработка ошибки
+try {
+    const course = await apiFetch<Course>('/api/courses/999');
+} catch (e) {
+    if (e instanceof ApiError) {
+        console.error(e.status, e.data); // 404, { error: 'Not found' }
+    }
+}
 ```
 
-В `'use client'`-компонентах данные можно загружать через `useEffect` или SWR.
-В Server Components — напрямую `await fetch(...)` или вызов репозитория.
+В `'use client'`-компонентах вызывай `apiFetch` внутри `useEffect` или обработчиков событий.
+В Server Components — вызывай напрямую: `await apiFetch(...)`, origin и cookies подставятся автоматически.
 
 ---
 
@@ -582,9 +681,13 @@ import { formatDate } from './utils';
 
 ## Что проверять перед коммитом
 
+Линтер запускается **автоматически при каждом коммите** через pre-commit хук — руками запускать не нужно. Если хук упал, коммит не создастся, пока не исправишь ошибки.
+
+Для ручной проверки или фикса:
+
 ```bash
 npm run lint       # ESLint + Prettier + TypeScript
 npm run lint:fix   # Автофикс форматирования и простых ошибок
 ```
 
-Если линтер ругается — исправь, не добавляй `// eslint-disable`.
+Если линтер ругается — исправь причину, не добавляй `// eslint-disable`.
