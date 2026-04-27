@@ -39,6 +39,8 @@ jobs:
               pull_number: prNumber,
             });
 
+            console.log(pr);
+
             const prBody = pr.body || '';
             const prTitle = pr.title || '';
 
