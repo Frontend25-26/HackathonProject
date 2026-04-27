@@ -3,7 +3,7 @@
 import { Box } from '@gravity-ui/uikit';
 import { FC, PropsWithChildren } from 'react';
 
-import { Theme, useTheme } from '@/features/theme';
+import { useTheme } from '@/features/theme';
 
 import { Sidebar } from './Sidebar';
 
