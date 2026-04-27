@@ -1,20 +1,21 @@
 import { prisma } from '@backend/lib/prisma';
+import { Assignment } from '@backend/generated/prisma';
 
-export const assignmentRepository = {
-    findAll(filters?: { courseId?: number }) {
+class AssignmentRepository {
+    async findAll(filters?: { courseId?: number }): Promise<Assignment[]> {
         return prisma.assignment.findMany({
             where: filters?.courseId
                 ? { courseId: filters.courseId }
                 : undefined,
             orderBy: { createdAt: 'desc' },
         });
-    },
+    }
 
-    findById(id: number) {
+    async findById(id: number): Promise<Assignment | null> {
         return prisma.assignment.findUnique({ where: { id } });
-    },
+    }
 
-    create(data: {
+    async create(data: {
         title: string;
         description: string;
         classroomUrl: string;
@@ -22,11 +23,11 @@ export const assignmentRepository = {
         dueDate: Date;
         courseId: number;
         createdById: number;
-    }) {
+    }): Promise<Assignment> {
         return prisma.assignment.create({ data });
-    },
+    }
 
-    update(
+    async update(
         id: number,
         data: {
             title?: string;
@@ -35,11 +36,13 @@ export const assignmentRepository = {
             maxGrade?: number;
             dueDate?: Date;
         },
-    ) {
+    ): Promise<Assignment> {
         return prisma.assignment.update({ where: { id }, data });
-    },
+    }
 
-    delete(id: number) {
+    async delete(id: number): Promise<Assignment> {
         return prisma.assignment.delete({ where: { id } });
-    },
-};
+    }
+}
+
+export const assignmentRepository = new AssignmentRepository();

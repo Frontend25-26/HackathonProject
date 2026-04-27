@@ -1,24 +1,23 @@
-import { Role } from '@backend/generated/prisma';
+import { Role, User } from '@backend/generated/prisma';
 import { prisma } from '@backend/lib/prisma';
 
-export const userRepository = {
-    async findAll() {
-        return await prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
-    },
+class UserRepository {
+    async findAll(): Promise<User[]> {
+        return prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
+    }
 
-    async findById(id: number) {
-        return await prisma.user.findUnique({ where: { id } });
-    },
+    async findById(id: number): Promise<User | null> {
+        return prisma.user.findUnique({ where: { id } });
+    }
 
-    async findByGithubId(githubId: number) {
+    async findByGithubId(githubId: number): Promise<User | null> {
         try {
-            const user = await prisma.user.findUnique({ where: { githubId } });
-            return user;
+            return prisma.user.findUnique({ where: { githubId } });
         } catch (error) {
             console.error(error);
             return null;
         }
-    },
+    }
 
     async create(data: {
         githubId: number;
@@ -27,14 +26,16 @@ export const userRepository = {
         email?: string;
         avatar?: string;
         role?: Role;
-    }) {
-        return await prisma.user.create({ data });
-    },
+    }): Promise<User> {
+        return prisma.user.create({ data });
+    }
 
-    update(
+    async update(
         id: number,
         data: { name?: string; email?: string; avatar?: string; role?: Role },
-    ) {
+    ): Promise<User> {
         return prisma.user.update({ where: { id }, data });
-    },
-};
+    }
+}
+
+export const userRepository = new UserRepository();
