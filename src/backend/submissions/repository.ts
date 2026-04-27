@@ -1,9 +1,4 @@
-import {
-    CiStatus,
-    Prisma,
-    Submission,
-    SubmissionStatus,
-} from '@backend/generated/prisma';
+import { CiStatus, Prisma, SubmissionStatus } from '@backend/generated/prisma';
 import { prisma } from '@backend/lib/prisma';
 
 const studentInclude = {

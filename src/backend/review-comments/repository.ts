@@ -32,4 +32,4 @@ class ReviewCommentsRepository {
     }
 }
 
-export const reviewCommentsRepository = new ReviewCommentsRepository();
+export const reviewCommentRepository = new ReviewCommentsRepository();
