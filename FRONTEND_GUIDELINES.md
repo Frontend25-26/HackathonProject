@@ -314,7 +314,7 @@ export default async function CoursePage() {
 }
 
 // CourseFilter.tsx — клиентский, только интерактивность
-'use client';
+('use client');
 interface CourseFilterProps {
     courses: Course[];
 }
@@ -528,6 +528,7 @@ import clsx from 'clsx';
 Все запросы идут к собственным API-роутам (`/api/...`). Используй хелпер `apiFetch` из `@/shared/api` — **не пиши `fetch` напрямую**.
 
 `apiFetch` автоматически:
+
 - проставляет `Content-Type: application/json`
 - пробрасывает cookies (включая сессию NextAuth) — как на клиенте, так и на сервере
 - бросает `ApiError` с HTTP-статусом при неуспешном ответе, а не молча возвращает объект ошибки
