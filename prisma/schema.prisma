@@ -30,7 +30,6 @@ model User {
 model Course {
   id          Int          @id @default(autoincrement())
   title       String
-  description String?
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   assignments Assignment[]

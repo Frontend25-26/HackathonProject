@@ -1,6 +1,17 @@
 import { CiStatus, SubmissionStatus } from '@backend/generated/prisma';
 import { prisma } from '@backend/lib/prisma';
 
+const studentInclude = {
+    student: {
+        select: {
+            id: true,
+            name: true,
+            login: true,
+            avatar: true,
+        },
+    },
+} as const;
+
 export const submissionRepository = {
     findAll(filters?: { assignmentId?: number; studentId?: number }) {
         return prisma.submission.findMany({
@@ -10,12 +21,16 @@ export const submissionRepository = {
                 }),
                 ...(filters?.studentId && { studentId: filters.studentId }),
             },
+            include: studentInclude,
             orderBy: { createdAt: 'desc' },
         });
     },
 
     findById(id: number) {
-        return prisma.submission.findUnique({ where: { id } });
+        return prisma.submission.findUnique({
+            where: { id },
+            include: studentInclude,
+        });
     },
 
     findByAssignmentAndStudent(assignmentId: number, studentId: number) {

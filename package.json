@@ -12,6 +12,7 @@
         "db:migrate:deploy": "prisma migrate deploy",
         "db:generate": "prisma generate",
         "db:studio": "prisma studio",
+        "db:seed": "tsx prisma/seed.ts",
         "prepare": "husky"
     },
     "lint-staged": {
@@ -64,6 +65,7 @@
         "postcss-preset-env": "^11.2.0",
         "prettier": "^3.8.1",
         "prisma": "^7.6.0",
+        "tsx": "^4.19.2",
         "typescript": "^5",
         "typescript-eslint": "^8.57.2"
     }
