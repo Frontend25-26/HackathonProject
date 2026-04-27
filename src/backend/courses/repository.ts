@@ -9,11 +9,11 @@ export const courseRepository = {
         return await prisma.course.findUnique({ where: { id } });
     },
 
-    async create(data: { title: string; description?: string }) {
+    async create(data: { title: string }) {
         return await prisma.course.create({ data });
     },
 
-    async update(id: number, data: { title?: string; description?: string }) {
+    async update(id: number, data: { title?: string }) {
         return await prisma.course.update({ where: { id }, data });
     },
 

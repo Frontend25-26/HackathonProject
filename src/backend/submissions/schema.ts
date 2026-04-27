@@ -3,6 +3,13 @@ import { z } from 'zod';
 import { registry } from '@backend/lib/openapi';
 import { addAccessTag } from '@backend/lib/openapi-security';
 
+const SubmissionStudentSchema = z.object({
+    id: z.number().int(),
+    name: z.string().nullable(),
+    login: z.string(),
+    avatar: z.string().nullable(),
+});
+
 export const SubmissionSchema = registry.register(
     'Submission',
     z.object({
@@ -24,6 +31,7 @@ export const SubmissionSchema = registry.register(
         ]),
         assignmentId: z.number().int(),
         studentId: z.number().int(),
+        student: SubmissionStudentSchema,
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),
