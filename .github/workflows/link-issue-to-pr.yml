@@ -14,61 +14,86 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Извлечь номер issue и привязать к PR
+      - name: Extract issue and sync PR
         uses: actions/github-script@v7
         with:
           script: |
             const headRef = context.payload.pull_request.head.ref;
-
-            // Извлекаем номер issue из названия ветки по паттернам: feat/{n}, fix/{n}, refactor/{n}
-            const issueMatch = headRef.match(/^(?:feat|fix|refactor)\/(\d+)/);
-
-            if (!issueMatch) {
-              core.info(`Ветка "${headRef}" не соответствует паттерну (feat|fix|refactor)/{номер-issue}`);
-              return;
-            }
-
-            const issueNumber = parseInt(issueMatch[1], 10);
             const prNumber = context.payload.pull_request.number;
             const { owner, repo } = context.repo;
 
-            // Проверяем, уже ли issue привязан к PR
-            const prBody = context.payload.pull_request.body || '';
-            if (prBody.includes(`closes #${issueNumber}`) || prBody.includes(`Closes #${issueNumber}`)) {
-              core.info(`✓ Issue #${issueNumber} уже привязан к PR #${prNumber}. Пропускаем.`);
+            // Поддержка более гибких веток
+            const issueMatch = headRef.match(/^(?:feat|fix|refactor|chore|bugfix|ci|docs)\/(\d+)/);
+
+            if (!issueMatch) {
+              core.info(`Branch "${headRef}" does not match pattern`);
               return;
             }
 
+            const issueNumber = Number(issueMatch[1]);
+
+            // Получаем актуальное состояние PR (важно для избежания race condition)
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: prNumber,
+            });
+
+            console.log(pr);
+
+            const prBody = pr.body || '';
+            const prTitle = pr.title || '';
+
+            const marker = `linked-issue:${issueNumber}`;
+            const closesText = `Closes #${issueNumber}`;
+
+            const alreadyLinked =
+              prBody.includes(marker) ||
+              new RegExp(`(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\\s+#${issueNumber}`, 'i')
+                .test(prBody);
+
             try {
-              // Проверяем, что issue существует
-              const issueResponse = await github.rest.issues.get({
+              // Проверяем issue
+              const { data: issue } = await github.rest.issues.get({
                 owner,
                 repo,
                 issue_number: issueNumber,
               });
 
-              core.info(`✓ Найден issue #${issueNumber}: "${issueResponse.data.title}"`);
+              core.info(`Found issue #${issueNumber}: ${issue.title}`);
 
-              // Создаём комментарий в issue со ссылкой на PR
-              const commentBody = `**PR:** #${prNumber}\n\nЭтот PR связан с веткой: \`${headRef}\``;
-
-              await github.rest.issues.createComment({
+              // 1. Добавляем комментарий (идемпотентно)
+              const comments = await github.rest.issues.listComments({
                 owner,
                 repo,
                 issue_number: issueNumber,
-                body: commentBody,
               });
 
-              core.info(`✓ Добавлен комментарий в issue #${issueNumber} со ссылкой на PR #${prNumber}`);
+              const commentExists = comments.data.some(c =>
+                c.body?.includes(`PR: #${prNumber}`)
+              );
 
-              // Добавляем номер issue в описание PR (используем английское ключевое слово для автоматического закрытия)
-              const prBody = context.payload.pull_request.body || '';
-              const issueLink = `Closes #${issueNumber}`;
+              if (!commentExists) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  body: `**PR:** #${prNumber}\n\nBranch: \`${headRef}\``,
+                });
 
-              if (!prBody.includes(`#${issueNumber}`)) {
-                const updatedBody = prBody
-                  ? `${prBody}\n\n${issueLink}`
-                  : issueLink;
+                core.info(`Comment added to issue #${issueNumber}`);
+              } else {
+                core.info(`Comment already exists, skipping`);
+              }
+
+              // 2. Обновляем PR body (Closes + marker)
+              if (!alreadyLinked) {
+                const updatedBody = [
+                  prBody,
+                  '',
+                  `${closesText}`,
+                  `<!-- ${marker} -->`,
+                ].join('\n').trim();
 
                 await github.rest.pulls.update({
                   owner,
@@ -77,13 +102,30 @@ jobs:
                   body: updatedBody,
                 });
 
-                core.info(`✓ Обновлено описание PR #${prNumber} со ссылкой на issue`);
+                core.info(`PR body updated`);
+              } else {
+                core.info(`PR already linked to issue`);
+              }
+
+              // 3. Обновляем title PR = title issue
+              if (prTitle !== issue.title) {
+                await github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: prNumber,
+                  title: issue.title,
+                });
+
+                core.info(`PR title updated to: "${issue.title}"`);
               }
 
             } catch (error) {
-              if (error.status === 404) {
-                core.warning(`Issue #${issueNumber} не найден. Название ветки указывает на то, что issue должен существовать.`);
-              } else {
-                core.setFailed(`Ошибка: ${error.message}`);
+              const status = error.status || error.response?.status;
+
+              if (status === 404) {
+                core.warning(`Issue #${issueNumber} not found`);
+                return;
               }
+
+              core.setFailed(`Unexpected error: ${error.message}`);
             }

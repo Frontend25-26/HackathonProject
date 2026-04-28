@@ -60,7 +60,7 @@ import { requireAuth, requireMentor } from '@backend/lib/auth';
 
 export const GET = async (request: NextRequest): Promise<Response> => {
     // 1. Проверяем авторизацию
-    const auth = await requireAuth(request);
+    const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
     // 2. Получаем данные
@@ -72,7 +72,7 @@ export const GET = async (request: NextRequest): Promise<Response> => {
 
 export const POST = async (request: NextRequest): Promise<Response> => {
     // 1. Проверяем роль (только ментор или выше)
-    const auth = await requireMentor(request);
+    const auth = await requireMentor();
     if (!auth.ok) return auth.response;
 
     // 2. Валидируем тело запроса
@@ -103,12 +103,12 @@ export const POST = async (request: NextRequest): Promise<Response> => {
 
 Функции-гарды живут в [src/backend/lib/auth.ts](src/backend/lib/auth.ts).
 
-| Функция                             | Кто проходит                      |
-| ----------------------------------- | --------------------------------- |
-| `requireAuth(request)`              | Любой авторизованный пользователь |
-| `requireMentor(request)`            | MENTOR или ADMIN                  |
-| `requireAdmin(request)`             | Только ADMIN                      |
-| `isOwnerOrMentor(request, ownerId)` | Владелец ресурса или MENTOR/ADMIN |
+| Функция                          | Кто проходит                      |
+| -------------------------------- | --------------------------------- |
+| `requireAuth()`                  | Любой авторизованный пользователь |
+| `requireMentor()`                | MENTOR или ADMIN                  |
+| `requireAdmin()`                 | Только ADMIN                      |
+| `isOwnerOrMentor(user, ownerId)` | Владелец ресурса или MENTOR/ADMIN |
 
 Все функции возвращают **дискриминированный union**:
 
@@ -121,7 +121,7 @@ type AuthResult =
 Поэтому паттерн всегда одинаковый:
 
 ```ts
-const auth = await requireAdmin(request);
+const auth = await requireAdmin();
 if (!auth.ok) return auth.response; // автоматически 401 или 403
 // здесь auth.user гарантированно существует
 ```
@@ -219,7 +219,6 @@ import { z } from 'zod';
 export const CourseSchema = z.object({
     id: z.number().int(),
     title: z.string(),
-    description: z.string(),
     mentorId: z.number().int(),
     createdAt: z.string().datetime(),
 });
@@ -227,7 +226,6 @@ export const CourseSchema = z.object({
 // Схема для создания (без id и createdAt — их генерирует БД)
 export const CreateCourseSchema = z.object({
     title: z.string().min(1),
-    description: z.string(),
     mentorId: z.number().int(),
 });
 

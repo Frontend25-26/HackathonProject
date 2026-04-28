@@ -1,4 +1,4 @@
-import { CiStatus, SubmissionStatus } from '@backend/generated/prisma';
+import { CiStatus, Prisma, SubmissionStatus } from '@backend/generated/prisma';
 import { prisma } from '@backend/lib/prisma';
 
 const studentInclude = {
@@ -12,8 +12,15 @@ const studentInclude = {
     },
 } as const;
 
-export const submissionRepository = {
-    findAll(filters?: { assignmentId?: number; studentId?: number }) {
+type SubmissionWithStudent = Prisma.SubmissionGetPayload<{
+    include: typeof studentInclude;
+}>;
+
+class SubmissionRepository {
+    async findAll(filters?: {
+        assignmentId?: number;
+        studentId?: number;
+    }): Promise<SubmissionWithStudent[]> {
         return prisma.submission.findMany({
             where: {
                 ...(filters?.assignmentId && {
@@ -24,33 +31,47 @@ export const submissionRepository = {
             include: studentInclude,
             orderBy: { createdAt: 'desc' },
         });
-    },
+    }
 
-    findById(id: number) {
+    async findById(id: number): Promise<SubmissionWithStudent | null> {
         return prisma.submission.findUnique({
             where: { id },
             include: studentInclude,
         });
-    },
+    }
 
-    findByAssignmentAndStudent(assignmentId: number, studentId: number) {
+    async findByAssignmentAndStudent(
+        assignmentId: number,
+        studentId: number,
+    ): Promise<SubmissionWithStudent | null> {
         return prisma.submission.findUnique({
             where: { assignmentId_studentId: { assignmentId, studentId } },
+            include: studentInclude,
         });
-    },
+    }
 
-    create(data: { repoUrl: string; assignmentId: number; studentId: number }) {
-        return prisma.submission.create({ data });
-    },
+    async create(data: {
+        repoUrl: string;
+        assignmentId: number;
+        studentId: number;
+    }): Promise<SubmissionWithStudent> {
+        return prisma.submission.create({ data, include: studentInclude });
+    }
 
-    update(
+    async update(
         id: number,
         data: {
             repoUrl?: string;
             ciStatus?: CiStatus;
             status?: SubmissionStatus;
         },
-    ) {
-        return prisma.submission.update({ where: { id }, data });
-    },
-};
+    ): Promise<SubmissionWithStudent> {
+        return prisma.submission.update({
+            where: { id },
+            data,
+            include: studentInclude,
+        });
+    }
+}
+
+export const submissionRepository = new SubmissionRepository();
