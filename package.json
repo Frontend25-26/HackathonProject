@@ -27,7 +27,6 @@
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^8.5.0",
         "@gravity-ui/navigation": "^4.0.15",
-        "@gravity-ui/table": "^1.15.3",
         "@gravity-ui/uikit": "^7.35.2",
         "@prisma/adapter-mariadb": "^7.6.0",
         "@prisma/client": "^7.6.0",
