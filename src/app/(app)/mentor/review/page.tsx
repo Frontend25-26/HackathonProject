@@ -78,5 +78,7 @@ export default async function ReviewPage() {
     );
     const data = nulledData.filter((item): item is Submission => item !== null);
 
+    data.sort((a, b) => b.LastCommitDate.localeCompare(a.LastCommitDate));
+
     return <ReviewClient data={data} />;
 }
