@@ -1,9 +1,6 @@
-import { Submission } from '@/entities/submission';
+import { TableColumnConfig } from '@gravity-ui/uikit';
 
-import type {
-    CellContext,
-    ColumnDef,
-} from '@gravity-ui/table/build/esm/tanstack';
+import { Submission } from '@/entities/submission';
 
 function transformDate(date: string): string {
     return Intl.DateTimeFormat('ru-RU', {
@@ -12,34 +9,41 @@ function transformDate(date: string): string {
     }).format(new Date(date));
 }
 
-export const columns: ColumnDef<Submission>[] = [
-    { accessorKey: 'Student', header: 'Студент', size: 150 },
-    { accessorKey: 'Course', header: 'Курс', size: 100 },
-    { accessorKey: 'HW', header: 'ДЗ', size: 150 },
+export const columns: TableColumnConfig<Submission>[] = [
     {
-        accessorKey: 'Deadline',
-        header: 'Дедлайн',
-        cell: (item: CellContext<Submission, string>) => {
-            return <div>{transformDate(item.getValue())}</div>;
-        },
-        size: 170,
-    },
-    { accessorKey: 'CIStatus', header: 'CI-статус', size: 150 },
-    {
-        accessorKey: 'LastCommitDate',
-        header: 'Дата последнего коммита',
-        cell: (item: CellContext<Submission, string>) => {
-            return <div>{transformDate(item.getValue())}</div>;
-        },
-        size: 170,
+        id: 'Student',
+        name: 'Студент',
     },
     {
-        accessorKey: 'RepositoryUrl',
-        header: 'Ссылка на репозиторий',
-        cell: (item: CellContext<Submission, string>) => {
-            return <a href={item.getValue()}>{item.getValue()}</a>;
-        },
-        size: 250,
+        id: 'Course',
+        name: 'Курс',
+    },
+    {
+        id: 'HW',
+        name: 'ДЗ',
+    },
+    {
+        id: 'Deadline',
+        name: 'Дедлайн',
+        template: (item) => transformDate(item.Deadline),
+    },
+    {
+        id: 'CIStatus',
+        name: 'CI-статус',
+    },
+    {
+        id: 'LastCommitDate',
+        name: 'Дата последнего коммита',
+        template: (item) => transformDate(item.LastCommitDate),
+    },
+    {
+        id: 'RepositoryUrl',
+        name: 'Ссылка на репозиторий',
+        template: (item) => (
+            <a href={item.RepositoryUrl} target="_blank" rel="noreferrer">
+                {item.RepositoryUrl}
+            </a>
+        ),
     },
 ];
 
