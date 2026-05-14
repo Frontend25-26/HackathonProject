@@ -40,6 +40,13 @@ export const primaryMenu: MenuItemConfig[] = [
         icon: Persons,
         visibleRoles: ['ADMIN'],
     },
+    {
+        id: 'courses',
+        title: 'Список Курсов',
+        icon: ListUl,
+        visibleRoles: ['STUDENT'],
+        href: '/student/courses',
+    },
 ];
 
 export const secondaryMenu: MenuItemConfig[] = [
