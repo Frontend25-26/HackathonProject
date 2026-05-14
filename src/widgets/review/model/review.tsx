@@ -1,13 +1,7 @@
 import { TableColumnConfig } from '@gravity-ui/uikit';
 
 import { Submission } from '@/entities/submission';
-
-function transformDate(date: string): string {
-    return Intl.DateTimeFormat('ru-RU', {
-        dateStyle: 'short',
-        timeStyle: 'medium',
-    }).format(new Date(date));
-}
+import { transformDate } from '@/shared/utils/helper';
 
 export const columns: TableColumnConfig<Submission>[] = [
     {
@@ -48,9 +42,9 @@ export const columns: TableColumnConfig<Submission>[] = [
 ];
 
 export interface Filter {
-    Course: string | null;
-    Deadline: string | null;
-    CIStatus: string | null;
+    course: string | null;
+    deadline: string | null;
+    ciStatus: string | null;
 }
 
 export interface FilterProperties {
@@ -63,16 +57,16 @@ export const filtersData: FilterProperties[] = [
     {
         propertyName: 'Course',
         title: 'Курс',
-        filterName: 'Course',
+        filterName: 'course',
     },
     {
         propertyName: 'Deadline',
         title: 'Дедлайн',
-        filterName: 'Deadline',
+        filterName: 'deadline',
     },
     {
         propertyName: 'CIStatus',
         title: 'CI',
-        filterName: 'CIStatus',
+        filterName: 'ciStatus',
     },
 ];

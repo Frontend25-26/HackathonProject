@@ -1,7 +1,7 @@
 .noData {
     margin-top: 24px;
     text-align: center;
-    color: #888;
+    color: var(--g-color-text-misc);
 }
 
 .eraseFilters {

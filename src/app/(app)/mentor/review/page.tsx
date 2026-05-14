@@ -2,41 +2,33 @@ import { Submission } from '@/entities/submission';
 import { apiFetch } from '@/shared/api';
 import { ReviewClient } from '@/widgets/review/ui/ReviewClient';
 
-import type { AssignmentSchema } from '@/shared/types/assgnment';
+import type { AssignmentSchema } from '@/shared/types/assignment';
 import type { CourseSchema } from '@/shared/types/course';
 import type { EnrollmentSchema } from '@/shared/types/enrollment';
 import type { SubmissionSchema } from '@/shared/types/submission';
 import type { UserSchema } from '@/shared/types/user';
 
-/*
-const MOCK_DATA: Submission[] = [
-    {id: '1', Student: 'Алиса Иванова', Course: 'JS', HW: 'Typescript', Deadline: '24.04.2028', CIStatus: 'in-progress', LastCommitDate: '21.13.2027'},
-    {id: '2', Student: 'Боб Козлов', Course: 'Верстка', HW: 'Адаптивная верстка', Deadline: '24.03.2025', CIStatus: 'needs-submission', LastCommitDate: '21.03.2025'},
-    {id: '3', Student: 'Идеальный студент', Course: 'Верстка', HW: 'Fast-development', Deadline: '14.03.2025', CIStatus: 'done', LastCommitDate: '11.03.2025'},
-];
-*/
-
-function toKey(student: number, course: number): string {
+const toKey = (student: number, course: number): string => {
     return student + '@' + course;
-}
+};
 
-async function formatFetchedReview(
+const formatFetchedReview = async (
     submission: SubmissionSchema,
     enrollmentMapper: Set<string>,
-    courses: CourseSchema[],
-): Promise<Submission | null> {
-    const assignment: AssignmentSchema = await apiFetch(
-        '/api/assignments/' + submission.assignmentId,
-    );
-    console.log(assignment);
+    courses: Map<number, CourseSchema>,
+    assignments: Map<number, AssignmentSchema>,
+): Promise<Submission | null> => {
+    const assignment = assignments.get(submission.assignmentId);
 
     if (
+        assignment &&
+        courses.get(assignment.courseId) &&
         enrollmentMapper.has(toKey(submission.student.id, assignment.courseId))
     ) {
         return {
             id: submission.id.toString(),
             Student: submission.student.name,
-            Course: courses[assignment.courseId - 1].title,
+            Course: courses.get(assignment.courseId)!.title,
             HW: assignment.title,
             Deadline: assignment.dueDate,
             CIStatus: submission.ciStatus,
@@ -46,14 +38,30 @@ async function formatFetchedReview(
     } else {
         return null;
     }
-}
+};
 
 export default async function ReviewPage() {
-    const fetchedData: SubmissionSchema[] = await apiFetch('/api/submissions');
+    const requiredStatuses = ['APPROVED', 'PENDING', 'CHANGES_REQUESTED'];
+    const fetchedData: SubmissionSchema[] = await apiFetch(
+        `/api/submissions?statuses=${requiredStatuses.join(',')}`,
+    );
 
     const myId: number = ((await apiFetch('/api/me')) as UserSchema).id;
     const enrollments: EnrollmentSchema[] = await apiFetch('/api/enrollments');
     const courses: CourseSchema[] = await apiFetch('/api/courses');
+
+    const coursesMap = new Map<number, CourseSchema>();
+    for (const course of courses) {
+        coursesMap.set(course.id, course);
+    }
+
+    const assignments: AssignmentSchema[] = await apiFetch(`/api/assignments`);
+
+    const assignmentsMap = new Map<number, AssignmentSchema>();
+    for (const assignment of assignments) {
+        assignmentsMap.set(assignment.id, assignment);
+    }
+
     const myEnrollments = enrollments.filter(
         (enrollment) => enrollment.mentorId === myId,
     );
@@ -64,15 +72,13 @@ export default async function ReviewPage() {
         }),
     );
 
-    console.log('!!!');
-    console.log(enrollmentMapper);
-
     const nulledData = await Promise.all(
         fetchedData.map(async (submission) => {
             return await formatFetchedReview(
                 submission,
                 enrollmentMapper,
-                courses,
+                coursesMap,
+                assignmentsMap,
             );
         }),
     );
