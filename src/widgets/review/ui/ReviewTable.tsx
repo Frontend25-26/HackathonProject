@@ -7,7 +7,7 @@ import { Submission } from '@/entities/submission';
 
 import { columns } from '../model/review';
 
-import ReviewTableStyles from './ReviewTableStyles.module.css';
+import ReviewTableStyles from './ReviewClient.module.css';
 
 interface ReviewTableProps {
     tableData: Submission[];
