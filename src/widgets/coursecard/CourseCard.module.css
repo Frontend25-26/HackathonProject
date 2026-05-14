@@ -1,0 +1,112 @@
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: #fafafa;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardHeader {
+    padding: 16px 20px;
+    background: linear-gradient(75deg, rgb(87, 69, 247), rgb(119, 0, 178));
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    flex: 1;
+}
+
+.id {
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.cardBody {
+    padding: 20px;
+}
+
+.description {
+    color: #4a5568;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+    font-size: 14px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f7fafc;
+    border-radius: 8px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.statIcon {
+    font-size: 16px;
+}
+
+.statLabel {
+    color: #718096;
+    font-weight: 500;
+}
+
+.statValue {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.dates {
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.dateItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.dateItem:last-child {
+    margin-bottom: 0;
+}
+
+.dateLabel {
+    color: #718096;
+    font-weight: 500;
+}
+
+.dateValue {
+    color: #2d3748;
+}
