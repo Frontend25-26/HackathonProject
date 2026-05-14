@@ -15,10 +15,17 @@ class ReviewThreadRepository {
         return prisma.reviewThread.findUnique({ where: { id } });
     }
 
+    async findByGithubThreadId(
+        githubThreadId: number,
+    ): Promise<ReviewThread | null> {
+        return prisma.reviewThread.findFirst({ where: { githubThreadId } });
+    }
+
     async create(data: {
         filePath: string;
         line: number;
         reviewId: number;
+        githubThreadId?: number | null;
     }): Promise<ReviewThread> {
         return prisma.reviewThread.create({ data });
     }

@@ -15,10 +15,17 @@ class ReviewCommentsRepository {
         return prisma.reviewComment.findUnique({ where: { id } });
     }
 
+    async findByGithubCommentId(
+        githubCommentId: number,
+    ): Promise<ReviewComment | null> {
+        return prisma.reviewComment.findFirst({ where: { githubCommentId } });
+    }
+
     async create(data: {
         body: string;
         threadId: number;
         authorId: number;
+        githubCommentId?: number | null;
     }): Promise<ReviewComment> {
         return prisma.reviewComment.create({ data });
     }

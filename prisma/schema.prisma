@@ -15,6 +15,7 @@ model User {
   email              String?
   avatar             String?
   role               Role            @default(STUDENT)
+  githubToken        String?         @map("github_token") @db.Text
   createdAt          DateTime        @default(now()) @map("created_at")
   updatedAt          DateTime        @updatedAt @map("updated_at")
   createdAssignments Assignment[]    @relation("CreatedBy")
@@ -55,19 +56,21 @@ model Enrollment {
 }
 
 model Assignment {
-  id           Int          @id @default(autoincrement())
-  title        String
-  description  String       @db.Text
-  classroomUrl String       @map("classroom_url")
-  maxGrade     Int          @map("max_grade")
-  dueDate      DateTime     @map("due_date")
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
-  courseId     Int          @map("course_id")
-  createdById  Int          @map("created_by_id")
-  course       Course       @relation(fields: [courseId], references: [id])
-  createdBy    User         @relation("CreatedBy", fields: [createdById], references: [id])
-  submissions  Submission[]
+  id                    Int          @id @default(autoincrement())
+  title                 String
+  description           String       @db.Text
+  classroomUrl          String       @map("classroom_url")
+  classroomAssignmentId Int?         @map("classroom_assignment_id")
+  inviteLink            String?      @map("invite_link")
+  maxGrade              Int          @map("max_grade")
+  dueDate               DateTime     @map("due_date")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+  courseId              Int          @map("course_id")
+  createdById           Int          @map("created_by_id")
+  course                Course       @relation(fields: [courseId], references: [id])
+  createdBy             User         @relation("CreatedBy", fields: [createdById], references: [id])
+  submissions           Submission[]
 
   @@index([courseId], map: "assignments_course_id_fkey")
   @@index([createdById], map: "assignments_created_by_id_fkey")
@@ -77,6 +80,9 @@ model Assignment {
 model Submission {
   id           Int              @id @default(autoincrement())
   repoUrl      String           @map("repo_url")
+  repoOwner    String?          @map("repo_owner")
+  repoName     String?          @map("repo_name")
+  prNumber     Int?             @map("pr_number")
   ciStatus     CiStatus         @default(UNKNOWN) @map("ci_status")
   status       SubmissionStatus @default(DRAFT)
   createdAt    DateTime         @default(now()) @map("created_at")
@@ -84,6 +90,7 @@ model Submission {
   assignmentId Int              @map("assignment_id")
   studentId    Int              @map("student_id")
   review       Review?
+  commits      Commit[]
   assignment   Assignment       @relation(fields: [assignmentId], references: [id])
   student      User             @relation(fields: [studentId], references: [id])
 
@@ -109,27 +116,29 @@ model Review {
 }
 
 model ReviewThread {
-  id        Int             @id @default(autoincrement())
-  filePath  String          @map("file_path")
-  line      Int
-  createdAt DateTime        @default(now()) @map("created_at")
-  reviewId  Int             @map("review_id")
-  comments  ReviewComment[]
-  review    Review          @relation(fields: [reviewId], references: [id])
+  id             Int             @id @default(autoincrement())
+  filePath       String          @map("file_path")
+  line           Int
+  githubThreadId Int?            @map("github_thread_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  reviewId       Int             @map("review_id")
+  comments       ReviewComment[]
+  review         Review          @relation(fields: [reviewId], references: [id])
 
   @@index([reviewId], map: "review_threads_review_id_fkey")
   @@map("review_threads")
 }
 
 model ReviewComment {
-  id        Int          @id @default(autoincrement())
-  body      String       @db.Text
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-  threadId  Int          @map("thread_id")
-  authorId  Int          @map("author_id")
-  author    User         @relation(fields: [authorId], references: [id])
-  thread    ReviewThread @relation(fields: [threadId], references: [id])
+  id              Int          @id @default(autoincrement())
+  body            String       @db.Text
+  githubCommentId Int?         @map("github_comment_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  threadId        Int          @map("thread_id")
+  authorId        Int          @map("author_id")
+  author          User         @relation(fields: [authorId], references: [id])
+  thread          ReviewThread @relation(fields: [threadId], references: [id])
 
   @@index([authorId], map: "review_comments_author_id_fkey")
   @@index([threadId], map: "review_comments_thread_id_fkey")
@@ -156,4 +165,35 @@ enum CiStatus {
   RUNNING
   SUCCESS
   FAILURE
+}
+
+model Commit {
+  id            Int        @id @default(autoincrement())
+  sha           String
+  message       String     @db.Text
+  authorName    String     @map("author_name")
+  authorLogin   String?    @map("author_login")
+  committedAt   DateTime   @map("committed_at")
+  ciStatus      CiStatus   @default(UNKNOWN) @map("ci_status")
+  ciDetailsUrl  String?    @map("ci_details_url")
+  submissionId  Int        @map("submission_id")
+  submission    Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, sha])
+  @@index([submissionId], map: "commits_submission_id_fkey")
+  @@map("commits")
+}
+
+model SyncLog {
+  id                  Int      @id @default(autoincrement())
+  entityType          String   @map("entity_type")
+  entityId            Int?     @map("entity_id")
+  action              String
+  success             Boolean
+  errorMessage        String?  @map("error_message") @db.Text
+  rateLimitRemaining  Int?     @map("rate_limit_remaining")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId], map: "sync_logs_entity_idx")
+  @@map("sync_logs")
 }

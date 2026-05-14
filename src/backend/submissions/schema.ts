@@ -10,18 +10,23 @@ const SubmissionStudentSchema = z.object({
     avatar: z.string().nullable(),
 });
 
+const CiStatusEnum = z.enum([
+    'UNKNOWN',
+    'PENDING',
+    'RUNNING',
+    'SUCCESS',
+    'FAILURE',
+]);
+
 export const SubmissionSchema = registry.register(
     'Submission',
     z.object({
         id: z.number().int(),
         repoUrl: z.string(),
-        ciStatus: z.enum([
-            'UNKNOWN',
-            'PENDING',
-            'RUNNING',
-            'SUCCESS',
-            'FAILURE',
-        ]),
+        repoOwner: z.string().nullable(),
+        repoName: z.string().nullable(),
+        prNumber: z.number().int().nullable(),
+        ciStatus: CiStatusEnum,
         status: z.enum([
             'DRAFT',
             'PENDING',
@@ -34,6 +39,41 @@ export const SubmissionSchema = registry.register(
         student: SubmissionStudentSchema,
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
+    }),
+);
+
+export const CommitSchema = registry.register(
+    'Commit',
+    z.object({
+        id: z.number().int(),
+        sha: z.string(),
+        message: z.string(),
+        authorName: z.string(),
+        authorLogin: z.string().nullable(),
+        committedAt: z.string().datetime(),
+        ciStatus: CiStatusEnum,
+        ciDetailsUrl: z.string().nullable(),
+        submissionId: z.number().int(),
+    }),
+);
+
+export const DiffFileSchema = registry.register(
+    'DiffFile',
+    z.object({
+        filename: z.string(),
+        status: z.enum(['added', 'removed', 'modified', 'renamed']),
+        additions: z.number().int(),
+        deletions: z.number().int(),
+        changes: z.number().int(),
+        patch: z.string().optional(),
+    }),
+);
+
+export const SubmissionDiffSchema = registry.register(
+    'SubmissionDiff',
+    z.object({
+        prNumber: z.number().int(),
+        files: z.array(DiffFileSchema),
     }),
 );
 
@@ -134,5 +174,50 @@ registry.registerPath({
             content: { 'application/json': { schema: SubmissionSchema } },
         },
         404: { description: 'Работа не найдена' },
+    },
+});
+
+registry.registerPath({
+    method: 'get',
+    path: '/submissions/{id}/commits',
+    tags: ['Submissions'],
+    summary: addAccessTag(
+        'История коммитов работы (из кэша БД; ?refresh=1 — синхронизировать с GitHub)',
+        'STUDENT',
+    ),
+    request: {
+        params: z.object({ id: z.string() }),
+        query: z.object({ refresh: z.enum(['1']).optional() }),
+    },
+    responses: {
+        200: {
+            description: 'Список коммитов, отсортированных от новых к старым',
+            content: {
+                'application/json': { schema: z.array(CommitSchema) },
+            },
+        },
+        403: { description: 'Доступ к чужой работе запрещён' },
+        404: { description: 'Работа не найдена' },
+    },
+});
+
+registry.registerPath({
+    method: 'get',
+    path: '/submissions/{id}/diff',
+    tags: ['Submissions'],
+    summary: addAccessTag(
+        'Diff изменённых файлов из Pull Request (реальные данные с GitHub)',
+        'STUDENT',
+    ),
+    request: { params: z.object({ id: z.string() }) },
+    responses: {
+        200: {
+            description: 'Список изменённых файлов с patch-фрагментами',
+            content: {
+                'application/json': { schema: SubmissionDiffSchema },
+            },
+        },
+        403: { description: 'Доступ к чужой работе запрещён' },
+        404: { description: 'Работа или Pull Request не найдены' },
     },
 });

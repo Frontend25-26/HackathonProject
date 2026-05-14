@@ -8,6 +8,7 @@ export const ReviewCommentSchema = registry.register(
     z.object({
         id: z.number().int(),
         body: z.string(),
+        githubCommentId: z.number().int().nullable(),
         threadId: z.number().int(),
         authorId: z.number().int(),
         createdAt: z.string().datetime(),

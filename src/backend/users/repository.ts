@@ -26,15 +26,30 @@ class UserRepository {
         email?: string;
         avatar?: string;
         role?: Role;
+        githubToken?: string;
     }): Promise<User> {
         return prisma.user.create({ data });
     }
 
     async update(
         id: number,
-        data: { name?: string; email?: string; avatar?: string; role?: Role },
+        data: {
+            name?: string;
+            email?: string;
+            avatar?: string;
+            role?: Role;
+            githubToken?: string;
+        },
     ): Promise<User> {
         return prisma.user.update({ where: { id }, data });
+    }
+
+    async findGithubToken(id: number): Promise<string | null> {
+        const user = await prisma.user.findUnique({
+            where: { id },
+            select: { githubToken: true },
+        });
+        return user?.githubToken ?? null;
     }
 }
 
