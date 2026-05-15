@@ -1,0 +1,114 @@
+name: Create Issue from PR Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  create-issue:
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Parse comment and create issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commentBody = context.payload.comment.body.trim();
+
+            if (!commentBody.startsWith('/create-issue')) {
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const commentId = context.payload.comment.id;
+            const commentUrl = context.payload.comment.html_url;
+            const prNumber = context.payload.issue.number;
+
+            const rest = commentBody.slice('/create-issue'.length);
+            const lines = rest.split('\n');
+            const title = lines[0].trim();
+
+            const assignees = [];
+            const bodyLines = [];
+
+            for (const line of lines.slice(1)) {
+              const assignMatch = line.trim().match(/^assign\s+(.+)$/i);
+              if (assignMatch) {
+                const handles = assignMatch[1].match(/@[\w-]+/g) || [];
+                assignees.push(...handles.map(h => h.slice(1)));
+              } else {
+                bodyLines.push(line);
+              }
+            }
+
+            const description = bodyLines.join('\n').trim();
+
+            if (!title) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: [
+                  'Ошибка: заголовок issue не указан.',
+                  '',
+                  'Формат:',
+                  '```',
+                  '/create-issue <заголовок>',
+                  '<описание>',
+                  'assign @username',
+                  '```',
+                ].join('\n'),
+              });
+              return;
+            }
+
+            await github.rest.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: commentId,
+              content: 'eyes',
+            });
+
+            const fullBody = [
+              '### Описание',
+              '',
+              description || '_не указано_',
+              '',
+              '### Подзадачи',
+              '',
+              '',
+              '### Priority',
+              '',
+              '',
+              '### Size',
+              '',
+              '',
+              '### Блокеры',
+              '',
+              '',
+              '---',
+              `_Создано из комментария к PR #${prNumber}: ${commentUrl}_`,
+            ].join('\n');
+
+            const { data: issue } = await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body: fullBody,
+              labels: ['hackathon-2'],
+              assignees,
+            });
+
+            core.info(`Created issue #${issue.number}: ${issue.title}`);
+
+            await github.rest.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: commentId,
+              content: 'hooray',
+            });
