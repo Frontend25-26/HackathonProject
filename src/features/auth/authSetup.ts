@@ -10,14 +10,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         ...authConfig.callbacks,
 
-        async signIn({ profile }) {
+        async signIn({ profile, account }) {
             if (!profile?.id || !profile?.login) return false;
 
             const githubId = Number(profile.id);
             const login = profile.login as string;
+            const accessToken = account?.access_token as string | undefined;
 
             const existing = await userRepository.findByGithubId(githubId);
-            console.log('EXISTING ????', existing);
 
             if (!existing) {
                 let role;
@@ -34,6 +34,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email: (profile.email as string) || undefined,
                     avatar: (profile.avatar_url as string) || undefined,
                     role,
+                    githubToken: accessToken,
+                });
+            } else if (accessToken) {
+                await userRepository.update(existing.id, {
+                    githubToken: accessToken,
                 });
             }
 
