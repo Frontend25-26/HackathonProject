@@ -1,0 +1,163 @@
+name: Create Issue from PR Comment
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-issue:
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request) ||
+      github.event_name == 'pull_request_review_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse comment and create issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const eventName = context.eventName;
+            const commentBody = context.payload.comment.body.trim();
+
+            if (!commentBody.startsWith('/create-issue')) {
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const commentId = context.payload.comment.id;
+            const commentUrl = context.payload.comment.html_url;
+
+            const isDiffComment = eventName === 'pull_request_review_comment';
+            const prNumber = isDiffComment
+              ? context.payload.pull_request.number
+              : context.payload.issue.number;
+
+            const diffContext = isDiffComment ? {
+              path: context.payload.comment.path,
+              line: context.payload.comment.line ?? context.payload.comment.original_line,
+              diffHunk: context.payload.comment.diff_hunk,
+            } : null;
+
+            const rest = commentBody.slice('/create-issue'.length);
+            const lines = rest.split('\n');
+            const title = lines[0].trim();
+
+            const assignees = [];
+            const bodyLines = [];
+
+            for (const line of lines.slice(1)) {
+              const assignMatch = line.trim().match(/^assign\s+(.+)$/i);
+              if (assignMatch) {
+                const handles = assignMatch[1].match(/@[\w-]+/g) || [];
+                assignees.push(...handles.map(h => h.slice(1)));
+              } else {
+                bodyLines.push(line);
+              }
+            }
+
+            const description = bodyLines.join('\n').trim();
+
+            if (!title) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: [
+                  'Ошибка: заголовок issue не указан.',
+                  '',
+                  'Формат:',
+                  '```',
+                  '/create-issue <заголовок>',
+                  '<описание>',
+                  'assign @username',
+                  '```',
+                ].join('\n'),
+              });
+              return;
+            }
+
+            if (isDiffComment) {
+              await github.rest.reactions.createForPullRequestReviewComment({
+                owner,
+                repo,
+                comment_id: commentId,
+                content: 'eyes',
+              });
+            } else {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: commentId,
+                content: 'eyes',
+              });
+            }
+
+            const contextSection = diffContext
+              ? [
+                  '---',
+                  `_Создано из комментария к строке диффа в PR #${prNumber}: ${commentUrl}_`,
+                  '',
+                  `**Файл:** \`${diffContext.path}\`${diffContext.line ? ` (строка ${diffContext.line})` : ''}`,
+                  '',
+                  '<details>',
+                  '<summary>Контекст диффа</summary>',
+                  '',
+                  '```diff',
+                  diffContext.diffHunk,
+                  '```',
+                  '',
+                  '</details>',
+                ].join('\n')
+              : `---\n_Создано из комментария к PR #${prNumber}: ${commentUrl}_`;
+
+            const fullBody = [
+              '### Описание',
+              '',
+              description || '_не указано_',
+              '',
+              '### Подзадачи',
+              '',
+              '',
+              '### Priority',
+              '',
+              '',
+              '### Size',
+              '',
+              '',
+              '### Блокеры',
+              '',
+              '',
+              contextSection,
+            ].join('\n');
+
+            const { data: issue } = await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body: fullBody,
+              labels: ['hackathon-2'],
+              assignees,
+            });
+
+            core.info(`Created issue #${issue.number}: ${issue.title}`);
+
+            if (isDiffComment) {
+              await github.rest.reactions.createForPullRequestReviewComment({
+                owner,
+                repo,
+                comment_id: commentId,
+                content: 'hooray',
+              });
+            } else {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: commentId,
+                content: 'hooray',
+              });
+            }
