@@ -1,4 +1,4 @@
-export function transformDate(date: string): string {
+export function formatDateFromISODate(date: string): string {
     return Intl.DateTimeFormat('ru-RU', {
         dateStyle: 'short',
         timeStyle: 'medium',

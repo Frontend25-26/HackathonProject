@@ -1,4 +1,4 @@
-export interface UserSchema {
+export interface User {
     id: number;
     githubId: number;
     login: string;

@@ -45,7 +45,7 @@ export const primaryMenu: MenuItemConfig[] = [
         id: 'review',
         title: 'Проверка заданий',
         icon: ListCheck,
-        visibleRoles: ['ADMIN'],
+        visibleRoles: ['MENTOR', 'ADMIN'],
         href: '/mentor/review',
     },
 ];

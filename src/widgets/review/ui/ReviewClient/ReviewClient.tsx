@@ -3,28 +3,32 @@
 import { Button } from '@gravity-ui/uikit';
 import { useState } from 'react';
 
-import { Submission } from '@/entities/submission';
+import { DisplayedSubmission } from '@/entities/submission';
 import { Menu } from '@/shared/components/Menu';
-import { ReviewTable } from '@/widgets/review/ui/ReviewTable';
+import { ReviewTable } from '@/widgets/review/ui/ReviewTable/ReviewTable';
 
-import { filtersData } from '../model/review';
+import { filtersData } from '../../model/review';
 
 import styles from './ReviewClient.module.css';
 
-import type { Filter, FilterProperties } from '../model/review';
+import type { Filter, FilterProperties } from '../../model/review';
 
-function filterData(data: Submission[], filter: Filter): Submission[] {
-    return data.filter((assignment) => {
+function filterData(
+    data: DisplayedSubmission[],
+    filter: Filter,
+): DisplayedSubmission[] {
+    return data.filter((submission) => {
         return (
-            (!filter.course || assignment.Course === filter.course) &&
-            (!filter.deadline || assignment.Deadline === filter.deadline) &&
-            (!filter.ciStatus || assignment.CIStatus === filter.ciStatus)
+            (!filter.course || submission.course === filter.course) &&
+            (!filter.deadline || submission.deadline === filter.deadline) &&
+            (!filter.ciStatus || submission.ciStatus === filter.ciStatus)
         );
     });
 }
 
 const CLEAR_FILTER_OPTION = 'Очистить фильтр';
-export function ReviewClient({ data }: { data: Submission[] }) {
+const CLEAR_ALL_FILTERS = 'Сбросить все фильтры';
+export function ReviewClient({ data }: { data: DisplayedSubmission[] }) {
     const [filter, setFilter] = useState<Filter>({
         course: null,
         deadline: null,
@@ -80,7 +84,7 @@ export function ReviewClient({ data }: { data: Submission[] }) {
 
             <div className={styles.eraseFilters}>
                 <Button view="outlined-utility" onClick={resetFilters}>
-                    Сбросить все фильтры
+                    {CLEAR_ALL_FILTERS}
                 </Button>
             </div>
 
