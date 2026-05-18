@@ -1,37 +1,34 @@
-'use server';
-import { auth } from '@/features/auth/authSetup';
-import { CreateReplyInput, CreateThreadInput } from '@/features/thread/types';
-import { reviewCommentRepository } from '@backend/review-comments/repository';
-import { reviewThreadRepository } from '@backend/review-threads/repository';
+import { createReply, createThread } from './api';
+import { CreateReplyActionInput, CreateThreadActionInput } from './types';
 
-export async function createThreadAction({
+export const handleSubmitAction = async ({
     filePath,
     line,
     reviewId,
     text,
-}: CreateThreadInput): Promise<void> {
-    const thread = await reviewThreadRepository.create({
+    userId,
+}: CreateThreadActionInput): Promise<Comment> => {
+    const thread = await createThread({
         filePath,
         line,
         reviewId,
     });
 
-    await createReplyAction({ threadId: thread.id, text });
-}
-
-export async function createReplyAction({
-    threadId,
-    text,
-}: CreateReplyInput): Promise<void> {
-    const session = await auth();
-
-    if (!session?.user.userId) {
-        throw new Error('unauthorized');
-    }
-
-    await reviewCommentRepository.create({
-        body: text,
-        threadId: threadId,
-        authorId: session.user.userId,
+    return await createReply({
+        text,
+        threadId: thread.id,
+        userId,
     });
-}
+};
+
+export const handleReplyAction = async ({
+    text,
+    threadId,
+    userId,
+}: CreateReplyActionInput): Promise<Comment> => {
+    return await createReply({
+        text,
+        threadId,
+        userId,
+    });
+};

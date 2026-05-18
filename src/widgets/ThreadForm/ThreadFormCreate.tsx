@@ -1,6 +1,8 @@
+'use client';
+import { useSession } from 'next-auth/react';
 import { FC } from 'react';
 
-import { createThreadAction } from '@/features/thread/actions';
+import { handleSubmitAction } from '@/features/thread/actions';
 
 import { ThreadFormBase } from './ThreadFormBase';
 
@@ -8,8 +10,8 @@ interface ThreadFormCreateProps {
     filePath: string;
     line: number;
     reviewId: number;
-    onCancel: () => Promise<void>;
-    onSubmit: () => Promise<void>;
+    onCancel?: () => Promise<void>;
+    onSubmit?: () => Promise<void>;
 }
 
 export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
@@ -19,28 +21,33 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
     onCancel,
     onSubmit,
 }) => {
+    const session = useSession();
+
     const handleSubmit = async (text: string): Promise<void> => {
-        'use server';
-        await createThreadAction({
+        if (!session?.data?.user.userId) {
+            throw new Error('unauthorized');
+        }
+
+        await handleSubmitAction({
             filePath,
             line,
             reviewId,
             text,
+            userId: session.data.user.userId,
         });
 
-        await onSubmit();
+        if (onSubmit) await onSubmit();
     };
 
-    const onCancelWrapper = async (): Promise<void> => {
-        'use server';
-        await onCancel();
+    const handleCancel = async (): Promise<void> => {
+        if (onCancel) await onCancel();
     };
 
     return (
         <ThreadFormBase
             submitLabel="Создать тред"
             onSubmit={handleSubmit}
-            onCancel={onCancelWrapper}
+            onCancel={handleCancel}
         />
     );
 };

@@ -1,12 +1,15 @@
+'use client';
+import { useSession } from 'next-auth/react';
 import { FC } from 'react';
 
-import { createReplyAction } from '@/features/thread/actions';
-import { ThreadFormBase } from '@/widgets/ThreadForm/ThreadFormBase';
+import { handleReplyAction } from '@/features/thread/actions';
+
+import { ThreadFormBase } from './ThreadFormBase';
 
 interface ThreadFormReplyProps {
     threadId: number;
-    onCancel: () => Promise<void>;
-    onSubmit: () => Promise<void>;
+    onCancel?: () => Promise<void>;
+    onSubmit?: () => Promise<void>;
 }
 
 export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
@@ -14,25 +17,31 @@ export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
     onCancel,
     onSubmit,
 }) => {
+    const session = useSession();
+
     const handleSubmit = async (text: string): Promise<void> => {
-        'use server';
-        await createReplyAction({
+        if (!session?.data?.user.userId) {
+            throw new Error('unauthorized');
+        }
+
+        await handleReplyAction({
             threadId,
             text,
+            userId: session.data.user.userId,
         });
-        await onSubmit();
+
+        if (onSubmit) await onSubmit();
     };
 
-    const onCancelWrapper = async (): Promise<void> => {
-        'use server';
-        await onCancel();
+    const handleCancel = async (): Promise<void> => {
+        if (onCancel) await onCancel();
     };
 
     return (
         <ThreadFormBase
             submitLabel="Комментировать"
             onSubmit={handleSubmit}
-            onCancel={onCancelWrapper}
+            onCancel={handleCancel}
         />
     );
 };
