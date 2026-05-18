@@ -1,0 +1,27 @@
+:root {
+    --text-area-min-height-10-rows: 178px;
+}
+
+.thread-form-box {
+    padding: var(--g-spacing-2);
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .markdown-preview,
+    .markdown-editor textarea {
+        padding: var(--g-spacing-2) var(--g-spacing-3);
+    }
+
+    .markdown-preview {
+        min-height: var(--text-area-min-height-10-rows);
+    }
+
+    .button-group {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: var(--g-spacing-2);
+        margin-top: var(--g-spacing-2);
+    }
+}
