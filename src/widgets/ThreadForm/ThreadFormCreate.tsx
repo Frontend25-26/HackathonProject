@@ -36,11 +36,11 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
             userId: session.data.user.userId,
         });
 
-        if (onSubmit) await onSubmit();
+        await onSubmit?.();
     };
 
     const handleCancel = async (): Promise<void> => {
-        if (onCancel) await onCancel();
+        await onCancel?.();
     };
 
     return (
