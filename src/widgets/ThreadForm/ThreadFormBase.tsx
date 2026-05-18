@@ -1,6 +1,6 @@
 'use client';
 import { Card, TextArea, Button } from '@gravity-ui/uikit';
-import { FC, JSX, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import { MarkdownRender } from '@/shared/ui/MarkdownRender';
 
