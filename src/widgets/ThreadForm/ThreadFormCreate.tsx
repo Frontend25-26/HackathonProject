@@ -8,7 +8,8 @@ interface ThreadFormCreateProps {
     filePath: string;
     line: number;
     reviewId: number;
-    onCancel: () => void;
+    onCancel: () => Promise<void>;
+    onSubmit: () => Promise<void>;
 }
 
 export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
@@ -16,6 +17,7 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
     line,
     reviewId,
     onCancel,
+    onSubmit,
 }) => {
     const handleSubmit = async (text: string) => {
         'use server';
@@ -25,11 +27,13 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
             reviewId,
             text,
         });
+
+        await onSubmit();
     };
 
     const onCancelWrapper = async () => {
         'use server';
-        onCancel();
+        await onCancel();
     };
 
     return (

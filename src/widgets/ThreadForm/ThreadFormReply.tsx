@@ -5,12 +5,14 @@ import { ThreadFormBase } from '@/widgets/ThreadForm/ThreadFormBase';
 
 interface ThreadFormReplyProps {
     threadId: number;
-    onCancel: () => void;
+    onCancel: () => Promise<void>;
+    onSubmit: () => Promise<void>;
 }
 
 export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
     threadId,
     onCancel,
+    onSubmit,
 }) => {
     const handleSubmit = async (text: string) => {
         'use server';
@@ -18,11 +20,12 @@ export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
             threadId,
             text,
         });
+        await onSubmit();
     };
 
     const onCancelWrapper = async () => {
         'use server';
-        onCancel();
+        await onCancel();
     };
 
     return (
