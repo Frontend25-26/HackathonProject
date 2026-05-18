@@ -1,26 +1,15 @@
 'use server';
 import { auth } from '@/features/auth/authSetup';
+import { CreateReplyInput, CreateThreadInput } from '@/features/thread/types';
 import { reviewCommentRepository } from '@backend/review-comments/repository';
 import { reviewThreadRepository } from '@backend/review-threads/repository';
-
-interface CreateThreadInput {
-    filePath: string;
-    line: number;
-    reviewId: number;
-    text: string;
-}
-
-interface CreateReplyInput {
-    threadId: number;
-    text: string;
-}
 
 export async function createThreadAction({
     filePath,
     line,
     reviewId,
     text,
-}: CreateThreadInput) {
+}: CreateThreadInput): Promise<void> {
     const thread = await reviewThreadRepository.create({
         filePath,
         line,
@@ -30,7 +19,10 @@ export async function createThreadAction({
     await createReplyAction({ threadId: thread.id, text });
 }
 
-export async function createReplyAction({ threadId, text }: CreateReplyInput) {
+export async function createReplyAction({
+    threadId,
+    text,
+}: CreateReplyInput): Promise<void> {
     const session = await auth();
 
     if (!session?.user.userId) {

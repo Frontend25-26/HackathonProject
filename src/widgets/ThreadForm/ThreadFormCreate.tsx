@@ -19,7 +19,7 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
     onCancel,
     onSubmit,
 }) => {
-    const handleSubmit = async (text: string) => {
+    const handleSubmit = async (text: string): Promise<void> => {
         'use server';
         await createThreadAction({
             filePath,
@@ -31,7 +31,7 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
         await onSubmit();
     };
 
-    const onCancelWrapper = async () => {
+    const onCancelWrapper = async (): Promise<void> => {
         'use server';
         await onCancel();
     };

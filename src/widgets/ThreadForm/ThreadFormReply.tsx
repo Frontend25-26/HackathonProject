@@ -14,7 +14,7 @@ export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
     onCancel,
     onSubmit,
 }) => {
-    const handleSubmit = async (text: string) => {
+    const handleSubmit = async (text: string): Promise<void> => {
         'use server';
         await createReplyAction({
             threadId,
@@ -23,7 +23,7 @@ export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
         await onSubmit();
     };
 
-    const onCancelWrapper = async () => {
+    const onCancelWrapper = async (): Promise<void> => {
         'use server';
         await onCancel();
     };

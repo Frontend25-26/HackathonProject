@@ -1,6 +1,6 @@
 'use client';
 import { Card, TextArea, Button } from '@gravity-ui/uikit';
-import { FC, useState } from 'react';
+import { FC, JSX, useMemo, useState } from 'react';
 
 import { MarkdownRender } from '@/shared/ui/MarkdownRender';
 
@@ -21,7 +21,37 @@ export const ThreadFormBase: FC<ThreadFormProps> = ({
     const [preview, setPreview] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async () => {
+    const isDisabled = useMemo(
+        () => !text.trim() || isSubmitting,
+        [text, isSubmitting],
+    );
+
+    const renderText = (): JSX.Element => {
+        if (preview) {
+            return (
+                <Card size="m" className={styles.markdownPreview}>
+                    {text ? (
+                        <MarkdownRender content={text} />
+                    ) : (
+                        <span className={styles.markdownDummy}>:/</span>
+                    )}
+                </Card>
+            );
+        }
+
+        return (
+            <TextArea
+                value={text}
+                minRows={10}
+                size="l"
+                placeholder="Введите текст..."
+                onChange={(e) => setText(e.target.value)}
+                className={styles.markdownEditor}
+            />
+        );
+    };
+
+    const handleSubmit = async (): Promise<void> => {
         setIsSubmitting(true);
 
         try {
@@ -36,31 +66,14 @@ export const ThreadFormBase: FC<ThreadFormProps> = ({
     };
 
     return (
-        <Card view="filled" className={styles['thread-form-box']}>
+        <Card view="filled" className={styles.threadFormBox}>
             <div>
-                {!preview ? (
-                    <TextArea
-                        value={text}
-                        minRows={10}
-                        size="l"
-                        placeholder="Введите текст..."
-                        onChange={(e) => setText(e.target.value)}
-                        className={styles['markdown-editor']}
-                    />
-                ) : (
-                    <Card size="m" className={styles['markdown-preview']}>
-                        {text ? (
-                            <MarkdownRender content={text} />
-                        ) : (
-                            <span style={{ opacity: 0.5 }}>:/</span>
-                        )}
-                    </Card>
-                )}
+                {renderText()}
 
-                <div className={styles['button-group']}>
+                <div className={styles.buttonGroup}>
                     <Button
                         loading={isSubmitting}
-                        disabled={!text.trim() || isSubmitting}
+                        disabled={isDisabled}
                         onClick={handleSubmit}
                     >
                         {isSubmitting ? 'Отправка...' : submitLabel}
