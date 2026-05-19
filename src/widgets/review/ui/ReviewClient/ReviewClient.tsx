@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@gravity-ui/uikit';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { DisplayedSubmission } from '@/entities/submission';
 import { Menu } from '@/shared/components/Menu';
@@ -35,44 +35,50 @@ export function ReviewClient({ data }: { data: DisplayedSubmission[] }) {
         ciStatus: null,
     });
 
-    const getTitle = (base: string, value: string | null) => {
+    const getTitle = useCallback((base: string, value: string | null) => {
         return value ? `${base}: ${value}` : base;
-    };
+    }, []);
 
-    const handleFilterChange = (key: keyof Filter, value: string) => {
-        setFilter((prev) => ({
-            ...prev,
-            [key]: value === CLEAR_FILTER_OPTION ? null : value,
-        }));
-    };
+    const handleFilterChange = useCallback(
+        (key: keyof Filter, value: string) => {
+            setFilter((prev) => ({
+                ...prev,
+                [key]: value === CLEAR_FILTER_OPTION ? null : value,
+            }));
+        },
+        [],
+    );
 
-    const resetFilters = () => {
+    const resetFilters = useCallback(() => {
         setFilter({
             course: null,
             deadline: null,
             ciStatus: null,
         });
-    };
+    }, []);
 
-    const toMenuItem = (properties: FilterProperties) => {
-        const options = [
-            ...new Set(data.map((r) => r[properties.propertyName])),
-            CLEAR_FILTER_OPTION,
-        ];
+    const toMenuItem = useCallback(
+        (properties: FilterProperties) => {
+            const options = [
+                ...new Set(data.map((r) => r[properties.propertyName])),
+                CLEAR_FILTER_OPTION,
+            ];
 
-        const currentValue = filter[properties.filterName];
+            const currentValue = filter[properties.filterName];
 
-        return (
-            <Menu
-                key={properties.title}
-                elements={options}
-                title={getTitle(properties.title, currentValue)}
-                onSelect={(value) =>
-                    handleFilterChange(properties.filterName, value)
-                }
-            />
-        );
-    };
+            return (
+                <Menu
+                    key={properties.title}
+                    elements={options}
+                    title={getTitle(properties.title, currentValue)}
+                    onSelect={(value) =>
+                        handleFilterChange(properties.filterName, value)
+                    }
+                />
+            );
+        },
+        [data, filter, getTitle],
+    );
 
     return (
         <div>

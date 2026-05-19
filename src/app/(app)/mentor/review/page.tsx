@@ -40,9 +40,9 @@ const formatFetchedReview = async (
     }
 };
 
-export default async function ReviewPage() {
-    const requiredStatuses = ['APPROVED', 'PENDING', 'CHANGES_REQUESTED'];
+const requiredStatuses = ['APPROVED', 'PENDING', 'CHANGES_REQUESTED'];
 
+export default async function ReviewPage() {
     const [fetchedData, me, enrollments, courses, assignments] =
         await Promise.all([
             apiFetch<Submission[]>(
@@ -53,8 +53,6 @@ export default async function ReviewPage() {
             apiFetch<Course[]>('/api/courses'),
             apiFetch<Assignment[]>('/api/assignments'),
         ]);
-
-    const myId = me.id;
 
     const coursesMap = new Map<number, Course>();
     for (const course of courses) {
@@ -67,7 +65,7 @@ export default async function ReviewPage() {
     }
 
     const myEnrollments = enrollments.filter(
-        (enrollment) => enrollment.mentorId === myId,
+        (enrollment) => enrollment.mentorId === me.id,
     );
 
     const enrollmentMapper: Set<string> = new Set(

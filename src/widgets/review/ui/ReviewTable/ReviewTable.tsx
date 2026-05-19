@@ -14,7 +14,6 @@ interface ReviewTableProps {
 }
 
 export const ReviewTable: FC<ReviewTableProps> = ({ tableData }) => {
-    console.log(tableData);
     return tableData.length === 0 ? (
         <div className={styles.noData}>
             Нет работ, удовлетворяющих критериям поиска
