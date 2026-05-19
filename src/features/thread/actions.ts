@@ -21,14 +21,4 @@ export const handleSubmitAction = async ({
     });
 };
 
-export const handleReplyAction = async ({
-    text,
-    threadId,
-    userId,
-}: CreateReplyActionInput): Promise<Comment> => {
-    return await createReply({
-        text,
-        threadId,
-        userId,
-    });
-};
+export const handleReplyAction = createReply;
