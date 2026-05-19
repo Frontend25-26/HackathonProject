@@ -1,0 +1,33 @@
+:root {
+    --dummy-opacity: 0.5;
+}
+
+.threadFormBox {
+    padding: var(--g-spacing-2);
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .markdownPreview,
+    .markdownEditor textarea {
+        padding: var(--g-spacing-2) var(--g-spacing-3);
+    }
+
+    .markdownPreview {
+        min-height: calc(
+            10 * var(--g-text-body-short-line-height) /* 10 rows */ + 2 *
+                var(--g-spacing-2) /* padding of text area */ + 2 *
+                var(--_--border-width) /* bottom and top borders */
+        );
+    }
+
+    .markdownEditor,
+    .markdownPreview {
+        margin-bottom: var(--g-spacing-2);
+    }
+
+    .markdownDummy {
+        opacity: var(--dummy-opacity);
+    }
+}
