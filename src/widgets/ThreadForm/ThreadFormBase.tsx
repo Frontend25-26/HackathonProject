@@ -1,5 +1,5 @@
 'use client';
-import { Card, TextArea, Button } from '@gravity-ui/uikit';
+import { Card, TextArea, Button, Flex } from '@gravity-ui/uikit';
 import { FC, useMemo, useState } from 'react';
 
 import { MarkdownRender } from '@/shared/ui/MarkdownRender';
@@ -63,8 +63,7 @@ export const ThreadFormBase: FC<ThreadFormBaseProps> = ({
                         />
                     )}
                 </div>
-
-                <div className={styles.buttonGroup}>
+                <Flex gap={2} direction="row-reverse">
                     <Button
                         loading={isSubmitting}
                         disabled={isDisabled}
@@ -83,7 +82,7 @@ export const ThreadFormBase: FC<ThreadFormBaseProps> = ({
                     >
                         {preview ? 'Редактировать' : 'Превью'}
                     </Button>
-                </div>
+                </Flex>
             </div>
         </Card>
     );

@@ -22,11 +22,9 @@
         );
     }
 
-    .buttonGroup {
-        display: flex;
-        flex-direction: row-reverse;
-        gap: var(--g-spacing-2);
-        margin-top: var(--g-spacing-2);
+    .markdownEditor,
+    .markdownPreview {
+        margin-bottom: var(--g-spacing-2);
     }
 
     .markdownDummy {
