@@ -1,0 +1,22 @@
+.container {
+    padding: 20px;
+}
+
+.container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #02ccff;
+}
+
+.coursesList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    border-radius: 8px;
+}
