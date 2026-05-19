@@ -1,0 +1,48 @@
+.card {
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardHeader {
+    padding: 12px 16px;
+    background: #0fc5d6;
+}
+
+.title {
+    margin: 0;
+    color: #333;
+}
+
+.cardBody {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.description {
+    color: #02ccff;
+    margin-bottom: 12px;
+}
+
+.dates {
+    color: #999;
+    padding-top: 12px;
+}
+
+.dateItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.dateLabel,
+.dateValue {
+    color: #02ccff;
+}
