@@ -1,5 +1,5 @@
 'use client';
-import { Card } from '@gravity-ui/uikit';
+import { Card, Flex } from '@gravity-ui/uikit';
 import { FC } from 'react';
 
 import { Course } from '../../api/types';
@@ -21,31 +21,41 @@ export const CourseCard: FC<CourseCardStats> = ({ course, onView }) => (
         theme="normal"
         view="clear"
     >
-        <div className={styles.cardContent}>
-            <div className={styles.cardHeader}>
+        <Flex direction="column">
+            <div className={styles.header}>
                 <h3 className={styles.title}>{course.title}</h3>
             </div>
 
-            <div className={styles.cardBody}>
+            <Flex
+                className={styles.body}
+                justifyContent="space-between"
+                alignItems="flex-start"
+            >
                 <p className={styles.description}>
                     {course.description || 'Пока не добавили('}
                 </p>
 
-                <div className={styles.dates}>
-                    <div className={styles.dateItem}>
-                        <span className={styles.dateLabel}>Создан:</span>
-                        <span className={styles.dateValue}>
+                <Flex direction="column" className={styles.dates}>
+                    <Flex
+                        justifyContent="space-between"
+                        className={styles.date}
+                    >
+                        <span className={styles.datetext}>Создан:</span>
+                        <span className={styles.datenum}>
                             {formatDate(course.createdAt)}
                         </span>
-                    </div>
-                    <div className={styles.dateItem}>
-                        <span className={styles.dateLabel}>Обновлен:</span>
-                        <span className={styles.dateValue}>
+                    </Flex>
+                    <Flex
+                        justifyContent="space-between"
+                        className={styles.date}
+                    >
+                        <span className={styles.datetext}>Обновлен:</span>
+                        <span className={styles.datenum}>
                             {formatDate(course.updatedAt)}
                         </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </Flex>
+                </Flex>
+            </Flex>
+        </Flex>
     </Card>
 );

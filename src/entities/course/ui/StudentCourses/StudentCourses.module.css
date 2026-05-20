@@ -1,11 +1,10 @@
 .container {
-    padding: 20px;
+    padding: 24px;
 }
 
-.container h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #02ccff;
+.title {
+    margin-bottom: 24px;
+    color: #4d44e3;
 }
 
 .coursesList {
@@ -16,7 +15,6 @@
 
 .empty {
     text-align: center;
-    padding: 40px;
-    color: #999;
+    color: #4d44e3;
     border-radius: 8px;
 }
