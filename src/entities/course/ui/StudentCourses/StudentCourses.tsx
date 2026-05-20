@@ -14,7 +14,7 @@ export const StudentCourses: FC<{ courses: Course[] }> = ({ courses }) => {
 
     return (
         <div className={styles.container}>
-            <h1>Список курсов</h1>
+            <h1 className={styles.title}>Список курсов</h1>
             {!courses || courses.length === 0 ? (
                 <div className={styles.empty}>
                     <h2>Нет доступных курсов</h2>

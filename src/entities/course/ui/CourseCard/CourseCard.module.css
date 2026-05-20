@@ -4,45 +4,27 @@
     overflow: hidden;
 }
 
-.cardContent {
-    display: flex;
-    flex-direction: column;
-}
-
-.cardHeader {
-    padding: 12px 16px;
-    background: #0fc5d6;
+.header {
+    padding: 16px 24px;
+    background: #4d44e3;
 }
 
 .title {
-    margin: 0;
-    color: #333;
+    color: #fff;
 }
 
-.cardBody {
-    padding: 16px;
+.body {
+    padding: 24px;
+}
+
+.description,
+.datetext,
+.datenum {
+    color: #4d44e3;
+}
+
+.date {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-}
-
-.description {
-    color: #02ccff;
-    margin-bottom: 12px;
-}
-
-.dates {
-    color: #999;
-    padding-top: 12px;
-}
-
-.dateItem {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-}
-
-.dateLabel,
-.dateValue {
-    color: #02ccff;
+    margin-bottom: 8px;
 }
