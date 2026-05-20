@@ -1,30 +1,30 @@
 .card {
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: var(--g-border-radius-m);
     overflow: hidden;
 }
 
 .header {
-    padding: 16px 24px;
-    background: #4d44e3;
+    padding: var(--g-spacing-4) var(--g-spacing-6);
+    background: var(--g-color-base-brand);
 }
 
 .title {
-    color: #fff;
+    color: var(--g-color-base-brand-contrast);
 }
 
 .body {
-    padding: 24px;
+    padding: var(--g-spacing-6);
 }
 
 .description,
 .datetext,
 .datenum {
-    color: #4d44e3;
+    color: var(--g-color-base-brand-contrast);
 }
 
 .date {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: var(--g-spacing-2);
 }
