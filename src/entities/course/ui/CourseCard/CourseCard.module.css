@@ -1,0 +1,30 @@
+.card {
+    cursor: pointer;
+    border-radius: var(--g-border-radius-m);
+    overflow: hidden;
+}
+
+.header {
+    padding: var(--g-spacing-4) var(--g-spacing-6);
+    background: var(--g-color-base-brand);
+}
+
+.title {
+    color: var(--g-color-base-brand-contrast);
+}
+
+.body {
+    padding: var(--g-spacing-6);
+}
+
+.description,
+.datetext,
+.datenum {
+    color: var(--g-color-base-brand-contrast);
+}
+
+.date {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--g-spacing-2);
+}
