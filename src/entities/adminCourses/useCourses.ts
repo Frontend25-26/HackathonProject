@@ -1,9 +1,8 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
-import { deleteCourse, fetchCourses } from '@/entities/adminCourses/api/api';
+import { deleteCourse, fetchCourses } from '@/entities/adminCourses/api/';
 import { Course } from '@/entities/course';
 import { ApiError } from '@/shared/api';
 
@@ -22,11 +21,11 @@ export const useCourses = (): UseCoursesResult => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { data: session, status } = useSession();
+    // const { data: session, status } = useSession();
 
-    const isAuthorized = status === 'authenticated' && !!session?.user?.userId;
+    // const isAuthorized = status === 'authenticated' && !!session?.user?.userId;
 
-    const loadCourses = async () => {
+    const loadCourses = async (): Promise<void> => {
         setIsLoading(true);
         setError(null);
         try {
@@ -41,7 +40,7 @@ export const useCourses = (): UseCoursesResult => {
         }
     };
 
-    const deleteCourseHandler = async (id: number) => {
+    const deleteCourseHandler = async (id: number): Promise<void> => {
         setIsDeleting(true);
         setError(null);
         try {
@@ -57,15 +56,10 @@ export const useCourses = (): UseCoursesResult => {
         }
     };
 
-    // useEffect(() => {
-    //     if (status === 'loading') return;
-
-    //     if (!isAuthorized) {
-    //         throw new Error('unauthorized');
-    //     }
-
-    //     void loadCourses();
-    // }, [status, isAuthorized]);
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadCourses();
+    }, []);
 
     return {
         courses,

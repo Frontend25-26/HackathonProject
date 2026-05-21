@@ -1,23 +1,42 @@
 'use client';
 
-import { Table, withTableActions } from '@gravity-ui/uikit';
+import {
+    DropdownMenu,
+    Table,
+    TableColumnConfig,
+    withTableActions,
+} from '@gravity-ui/uikit';
 import { FC } from 'react';
 
 import { Course } from '@/entities/course';
+import { formatDate } from '@/shared/util';
 
 import styles from './CoursesTable.module.css';
-import { CourseTableProps, CourseColumnDef } from './types';
 
-const ActionsTable = withTableActions<Course>(Table);
-
-const formatDate = (date: string) => new Date(date).toLocaleDateString('ru-RU');
+export interface CourseTableProps {
+    courses: Course[];
+    onEditAction: (id: number) => void;
+    onDeleteAction: (id: number) => void;
+}
 
 export const CoursesTable: FC<CourseTableProps> = ({
     courses,
     onEditAction,
     onDeleteAction,
 }) => {
-    const columns: CourseColumnDef[] = [
+    const getRowActions = (course: Course) => [
+        {
+            text: 'Редактировать',
+            action: () => onEditAction(course.id),
+        },
+        {
+            text: 'Удалить',
+            action: () => onDeleteAction(course.id),
+            theme: 'danger' as const,
+        },
+    ];
+
+    const columns: TableColumnConfig<Course>[] = [
         { id: 'id', name: 'ID' },
         { id: 'title', name: 'Название' },
         {
@@ -30,26 +49,17 @@ export const CoursesTable: FC<CourseTableProps> = ({
             name: 'Последнее обновление',
             template: (item) => formatDate(item.updatedAt),
         },
-    ];
-
-    const getRowActions = (course: Course) => [
         {
-            text: 'Редактировать',
-            handler: () => onEditAction(course.id, course.title),
-        },
-        {
-            text: 'Удалить',
-            handler: () => onDeleteAction(course.id),
-            theme: 'danger' as const,
+            id: 'actions',
+            template: (item) => <DropdownMenu items={getRowActions(item)} />,
         },
     ];
 
     return (
-        <ActionsTable
+        <Table
             width={'max'}
             data={courses}
             columns={columns}
-            getRowActions={getRowActions}
             className={styles.table}
         />
     );
