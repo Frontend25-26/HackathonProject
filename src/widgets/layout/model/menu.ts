@@ -5,6 +5,7 @@ import {
     ListUl,
     Persons,
     ListCheck,
+    SquareListUl,
 } from '@gravity-ui/icons';
 
 import type { Role } from '@/entities/user';
@@ -23,6 +24,13 @@ const ALL_ROLES: Role[] = ['STUDENT', 'MENTOR', 'ADMIN'];
 
 export const primaryMenu: MenuItemConfig[] = [
     { id: 'dashboard', title: 'Дашборд', icon: Dots9, visibleRoles: ALL_ROLES },
+    {
+        id: 'courses',
+        title: 'Курсы',
+        icon: SquareListUl,
+        visibleRoles: ['ADMIN'],
+        href: '/admin/courses',
+    },
     {
         id: 'assignments',
         title: 'Задания',
