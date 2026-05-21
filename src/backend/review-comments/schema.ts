@@ -3,13 +3,22 @@ import { z } from 'zod';
 import { registry } from '@backend/lib/openapi';
 import { addAccessTag } from '@backend/lib/openapi-security';
 
+const ReviewCommentAuthorSchema = z.object({
+    id: z.number().int(),
+    name: z.string().nullable(),
+    login: z.string(),
+    avatar: z.string().nullable(),
+});
+
 export const ReviewCommentSchema = registry.register(
     'ReviewComment',
     z.object({
         id: z.number().int(),
         body: z.string(),
+        githubCommentId: z.number().int().nullable(),
         threadId: z.number().int(),
         authorId: z.number().int(),
+        author: ReviewCommentAuthorSchema,
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
     }),

@@ -10,6 +10,8 @@ export const AssignmentSchema = registry.register(
         title: z.string(),
         description: z.string(),
         classroomUrl: z.string(),
+        classroomAssignmentId: z.number().int().nullable(),
+        inviteLink: z.string().nullable(),
         maxGrade: z.number().int(),
         dueDate: z.string().datetime(),
         courseId: z.number().int(),
@@ -20,11 +22,23 @@ export const AssignmentSchema = registry.register(
 );
 
 export const CreateAssignmentSchema = z.object({
-    title: z.string().min(1),
-    description: z.string(),
-    classroomUrl: z.string().url(),
+    classroomAssignmentId: z.number().int().optional().openapi({
+        description:
+            'ID задания в GitHub Classroom. Если указан — title, classroomUrl, inviteLink и dueDate подтягиваются автоматически.',
+        example: 123456,
+    }),
+    title: z.string().min(1).optional().openapi({
+        description: 'Обязателен, если classroomAssignmentId не передан.',
+    }),
+    description: z.string().optional(),
+    classroomUrl: z.string().url().optional().openapi({
+        description: 'Обязателен, если classroomAssignmentId не передан.',
+    }),
     maxGrade: z.number().int().min(1),
-    dueDate: z.string().datetime(),
+    dueDate: z.string().datetime().optional().openapi({
+        description:
+            'Обязателен, если classroomAssignmentId не передан или у него нет deadline.',
+    }),
     courseId: z.number().int(),
     createdById: z.number().int(),
 });
@@ -62,7 +76,10 @@ registry.registerPath({
     method: 'post',
     path: '/assignments',
     tags: ['Assignments'],
-    summary: addAccessTag('Создать задание', 'ADMIN'),
+    summary: addAccessTag(
+        'Создать задание (если указан classroomAssignmentId — данные подтягиваются из GitHub Classroom)',
+        'ADMIN',
+    ),
     request: {
         body: {
             content: { 'application/json': { schema: CreateAssignmentSchema } },
@@ -72,6 +89,10 @@ registry.registerPath({
         201: {
             description: 'Задание создано',
             content: { 'application/json': { schema: AssignmentSchema } },
+        },
+        400: {
+            description:
+                'Не хватает обязательных полей (title / classroomUrl / dueDate)',
         },
     },
 });

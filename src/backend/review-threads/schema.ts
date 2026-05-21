@@ -9,6 +9,7 @@ export const ReviewThreadSchema = registry.register(
         id: z.number().int(),
         filePath: z.string(),
         line: z.number().int(),
+        githubThreadId: z.number().int().nullable(),
         reviewId: z.number().int(),
         createdAt: z.string().datetime(),
     }),

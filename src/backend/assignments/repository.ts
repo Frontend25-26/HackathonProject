@@ -15,10 +15,20 @@ class AssignmentRepository {
         return prisma.assignment.findUnique({ where: { id } });
     }
 
+    async findByClassroomAssignmentId(
+        classroomAssignmentId: number,
+    ): Promise<Assignment | null> {
+        return prisma.assignment.findFirst({
+            where: { classroomAssignmentId },
+        });
+    }
+
     async create(data: {
         title: string;
         description: string;
         classroomUrl: string;
+        classroomAssignmentId?: number | null;
+        inviteLink?: string | null;
         maxGrade: number;
         dueDate: Date;
         courseId: number;
@@ -33,6 +43,8 @@ class AssignmentRepository {
             title?: string;
             description?: string;
             classroomUrl?: string;
+            classroomAssignmentId?: number | null;
+            inviteLink?: string | null;
             maxGrade?: number;
             dueDate?: Date;
         },

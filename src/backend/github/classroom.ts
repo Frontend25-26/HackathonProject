@@ -1,9 +1,11 @@
 import { Role } from '@backend/generated/prisma';
 
-const GITHUB_API = 'https://api.github.com';
+export const GITHUB_API = 'https://api.github.com';
 
-function githubHeaders() {
-    const token = process.env.GITHUB_TOKEN;
+const RATE_LIMIT_PAUSE_THRESHOLD = 50;
+
+export function githubHeaders(userToken?: string): Record<string, string> {
+    const token = userToken ?? process.env.GITHUB_TOKEN;
     return {
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
@@ -11,11 +13,30 @@ function githubHeaders() {
     };
 }
 
-async function githubFetch<T>(path: string): Promise<T> {
+export class GitHubRateLimitError extends Error {
+    constructor(public resetAt: Date) {
+        super(`GitHub rate limit exceeded, resets at ${resetAt.toISOString()}`);
+    }
+}
+
+async function githubFetch<T>(path: string, userToken?: string): Promise<T> {
     const res = await fetch(`${GITHUB_API}${path}`, {
-        headers: githubHeaders(),
-        next: { revalidate: 60 },
+        headers: githubHeaders(userToken),
+        cache: 'no-store',
     });
+
+    const remaining = Number(res.headers.get('x-ratelimit-remaining') ?? -1);
+    const resetTs = Number(res.headers.get('x-ratelimit-reset') ?? 0);
+
+    if (res.status === 429 || (res.status === 403 && remaining === 0)) {
+        throw new GitHubRateLimitError(new Date(resetTs * 1000));
+    }
+
+    if (remaining >= 0 && remaining < RATE_LIMIT_PAUSE_THRESHOLD) {
+        console.warn(
+            `[GitHub] Rate limit low: ${remaining} remaining, resets at ${new Date(resetTs * 1000).toISOString()}`,
+        );
+    }
 
     if (!res.ok) {
         const text = await res.text();
@@ -28,9 +49,19 @@ async function githubFetch<T>(path: string): Promise<T> {
 async function githubFetchStatus(path: string): Promise<number> {
     const res = await fetch(`${GITHUB_API}${path}`, {
         headers: githubHeaders(),
-        next: { revalidate: 60 },
+        cache: 'no-store',
     });
     return res.status;
+}
+
+async function githubFetchRateLimit(): Promise<number | null> {
+    const res = await fetch(`${GITHUB_API}/rate_limit`, {
+        headers: githubHeaders(),
+        cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { rate: { remaining: number } };
+    return data.rate.remaining;
 }
 
 export type GhClassroomAssignment = {
@@ -48,6 +79,25 @@ export type GhClassroomAssignment = {
     submissions_count: number;
     passing: number;
     failing: number;
+};
+
+export type GhAcceptedAssignment = {
+    id: number;
+    submitted: boolean;
+    passing: boolean;
+    commit_count: number;
+    grade: string;
+    students: Array<{ login: string; id: number }>;
+    repository: {
+        id: number;
+        full_name: string;
+        html_url: string;
+        default_branch: string;
+    };
+    assignment: {
+        id: number;
+        title: string;
+    };
 };
 
 export type GhClassroom = {
@@ -76,6 +126,16 @@ export const classroomApi = {
 
     getAssignment(assignmentId: number): Promise<GhClassroomAssignment> {
         return githubFetch(`/assignments/${assignmentId}`);
+    },
+
+    listAcceptedAssignments(
+        assignmentId: number,
+    ): Promise<GhAcceptedAssignment[]> {
+        return githubFetch(`/assignments/${assignmentId}/accepted_assignments`);
+    },
+
+    getRateLimitRemaining(): Promise<number | null> {
+        return githubFetchRateLimit();
     },
 };
 
