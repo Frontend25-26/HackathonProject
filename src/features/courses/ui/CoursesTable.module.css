@@ -1,0 +1,10 @@
+.table :global(th) {
+    font-size: 24px;
+    line-height: 48px;
+    background: var(--g-color-base-brand);
+}
+
+.table :global(td) {
+    font-size: 20px;
+    line-height: 48px;
+}

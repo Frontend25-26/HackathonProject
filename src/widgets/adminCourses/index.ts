@@ -1,0 +1,1 @@
+export { AdminCoursesWidget } from './AdminCoursesWidget';
