@@ -32,6 +32,7 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
             id="user"
             compact={compact}
             title={userName}
+            href={`/user/${user.id}`}
             itemWrapper={(_, makeItem) =>
                 makeItem({
                     icon: user.avatar ? (
@@ -48,14 +49,7 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
                             borderColor={getRoleColor(user.role)}
                         />
                     ),
-                    title: (
-                        <Link
-                            href={`/user/${user.id}`}
-                            className={styles.plainLink}
-                        >
-                            {userName}
-                        </Link>
-                    ),
+                    title: userName,
                 })
             }
         />
