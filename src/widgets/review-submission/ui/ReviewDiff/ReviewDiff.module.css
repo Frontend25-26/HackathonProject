@@ -1,0 +1,5 @@
+.diff {
+    border: 1px solid var(--g-color-line-generic);
+    border-radius: var(--g-spacing-2);
+    overflow: hidden;
+}
