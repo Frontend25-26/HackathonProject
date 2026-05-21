@@ -16,7 +16,7 @@
 
     pre code {
         background: transparent;
-        padding: 0;
+        padding: var(--g-spacing-0);
     }
 
     blockquote {
@@ -57,5 +57,9 @@
     h3 {
         margin-top: var(--g-spacing-6);
         margin-bottom: var(--g-spacing-3);
+    }
+
+    p {
+        margin: var(--g-spacing-0);
     }
 }
