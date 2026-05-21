@@ -2,6 +2,8 @@
 import { Card, Flex } from '@gravity-ui/uikit';
 import { FC } from 'react';
 
+import { formatDate } from '@/shared/util';
+
 import { Course } from '../../api/types';
 
 import styles from './CourseCard.module.css';
@@ -10,8 +12,6 @@ interface CourseCardStats {
     course: Course;
     onView?: (id: number) => void;
 }
-
-const formatDate = (date: string) => new Date(date).toLocaleDateString('ru-RU');
 
 export const CourseCard: FC<CourseCardStats> = ({ course, onView }) => (
     <Card

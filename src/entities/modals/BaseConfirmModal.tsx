@@ -1,21 +1,23 @@
 'use client';
 
 import { Dialog, Button } from '@gravity-ui/uikit';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
-type Props = {
+type BaseConfirmProps = {
+    title: string;
+    body: ReactNode | string;
     isOpen: boolean;
     onCloseAction: () => void;
     onConfirmAction: () => Promise<void>;
-    courseTitle: string | undefined;
 };
 
-export const DeleteCourseConfirm = ({
+export const BaseConfirmModal = ({
+    title,
+    body,
     isOpen,
     onCloseAction,
     onConfirmAction,
-    courseTitle,
-}: Props) => {
+}: BaseConfirmProps) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleConfirm = async () => {
@@ -30,10 +32,8 @@ export const DeleteCourseConfirm = ({
 
     return (
         <Dialog open={isOpen} onClose={onCloseAction} hasCloseButton>
-            <Dialog.Header caption={'Удалить курс?'} />
-            <Dialog.Body>
-                Вы действительно хотите удалить курс <b>{courseTitle}</b>?
-            </Dialog.Body>
+            <Dialog.Header caption={title} />
+            <Dialog.Body>{body}</Dialog.Body>
             <Dialog.Footer>
                 <Button
                     view="flat"

@@ -1,1 +1,1 @@
-export { useCourses } from './api/useCourses';
+export { useCourses } from './useCourses';
