@@ -55,7 +55,7 @@ export const ThreadFormBase: FC<ThreadFormBaseProps> = ({
                     ) : (
                         <TextArea
                             value={text}
-                            minRows={10}
+                            minRows={8}
                             size="l"
                             placeholder="Введите текст..."
                             onChange={(e) => setText(e.target.value)}

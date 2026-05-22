@@ -20,10 +20,17 @@ export interface Thread {
 }
 
 export interface Comment {
-    authorId: number;
     body: string;
     createdAt: string;
     id: number;
     threadId: number;
     updatedAt: string;
+    author: Author;
+}
+
+export interface Author {
+    id: number;
+    name: string;
+    login: string;
+    avatar: string;
 }
