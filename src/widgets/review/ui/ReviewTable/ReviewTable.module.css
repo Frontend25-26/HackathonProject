@@ -1,0 +1,5 @@
+.noData {
+    margin-top: var(--g-border-radius-xl);
+    text-align: center;
+    color: var(--g-color-text-misc);
+}
