@@ -4,6 +4,7 @@ import { assignmentRepository } from '@backend/assignments/repository';
 import { CreateAssignmentSchema } from '@backend/assignments/schema';
 import { classroomApi } from '@backend/github/classroom';
 import { requireAuth, requireAdmin } from '@backend/lib/auth';
+import { userRepository } from '@backend/users/repository';
 
 export const GET = async (request: NextRequest): Promise<Response> => {
     const auth = await requireAuth();
@@ -40,8 +41,12 @@ export const POST = async (request: NextRequest): Promise<Response> => {
         : undefined;
 
     if (classroomAssignmentId) {
+        const dbUser = await userRepository.findById(auth.user.id);
         const ghAssignment = await classroomApi
-            .getAssignment(classroomAssignmentId)
+            .getAssignment(
+                classroomAssignmentId,
+                dbUser?.githubToken ?? undefined,
+            )
             .catch(() => null);
 
         if (ghAssignment) {

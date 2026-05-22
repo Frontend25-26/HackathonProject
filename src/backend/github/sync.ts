@@ -50,7 +50,10 @@ async function logSync(params: {
     await prisma.syncLog.create({ data: params }).catch(() => {});
 }
 
-export async function syncStudentRepos(assignmentId: number): Promise<void> {
+export async function syncStudentRepos(
+    assignmentId: number,
+    userToken?: string,
+): Promise<void> {
     const assignment = await prisma.assignment.findUnique({
         where: { id: assignmentId },
     });
@@ -72,6 +75,7 @@ export async function syncStudentRepos(assignmentId: number): Promise<void> {
     try {
         accepted = await classroomApi.listAcceptedAssignments(
             assignment.classroomAssignmentId,
+            userToken,
         );
         rateLimitRemaining =
             (await classroomApi.getRateLimitRemaining()) ?? undefined;
