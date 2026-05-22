@@ -26,8 +26,8 @@ export const ThreadFormReply: FC<ThreadFormReplyProps> = ({
 
         await handleReplyAction({
             threadId,
-            text,
-            userId: session.data.user.userId,
+            body: text,
+            authorId: session.data.user.userId,
         });
 
         await onSubmit?.();
