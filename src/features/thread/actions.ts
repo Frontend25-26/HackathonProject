@@ -1,5 +1,6 @@
 import { createReply, createThread } from './api';
-import { CreateReplyActionInput, CreateThreadActionInput } from './types';
+import { Comment } from './types';
+import { CreateThreadActionInput } from './types';
 
 export const handleSubmitAction = async ({
     filePath,
@@ -15,9 +16,9 @@ export const handleSubmitAction = async ({
     });
 
     return await createReply({
-        text,
+        body: text,
         threadId: thread.id,
-        userId,
+        authorId: userId,
     });
 };
 
