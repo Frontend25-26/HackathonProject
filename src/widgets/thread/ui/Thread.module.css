@@ -1,0 +1,10 @@
+.thread {
+    padding: var(--g-spacing-2);
+}
+
+.message {
+    padding: var(--g-spacing-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-spacing-2);
+}
