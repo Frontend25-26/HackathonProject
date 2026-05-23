@@ -16,7 +16,7 @@ interface ThreadProps {
 export const Thread: FC<ThreadProps> = ({ thread }) => {
     const [isReplying, setIsReplying] = useState(false);
 
-    const asyncClose = async () => setIsReplying(false);
+    const handleClose = async () => setIsReplying(false);
 
     return (
         <Card view="raised" size="m" className={styles.thread}>
@@ -33,8 +33,8 @@ export const Thread: FC<ThreadProps> = ({ thread }) => {
             {isReplying ? (
                 <ThreadFormReply
                     threadId={thread.id}
-                    onCancel={asyncClose}
-                    onSubmit={asyncClose}
+                    onCancel={handleClose}
+                    onSubmit={handleClose}
                 />
             ) : (
                 <Button
