@@ -46,14 +46,29 @@
    `classroom.github.com/assignments/{ASSIGNMENT_ID}`
 5. Запомни `ASSIGNMENT_ID`
 
-### Шаг 5. Получить GitHub Token для сервисного аккаунта
+### Шаг 5. Создать GitHub App
 
-1. Перейди на [github.com/settings/tokens](https://github.com/settings/tokens) → **Generate new token (classic)**
-2. Выбери scopes:
-    - `repo` — доступ к репозиториям (коммиты, PR, комментарии)
-    - `read:org` — чтение Teams для определения ролей
-    - `classroom` — доступ к Classroom API (если доступен)
-3. Скопируй токен
+GitHub App привязан к организации, не к личному аккаунту — его можно передавать разработчикам и деплоить без личных токенов.
+
+1. Перейди **GitHub → Organization Settings → Developer settings → GitHub Apps → New GitHub App**
+2. Заполни:
+    - **GitHub App name**: `HackathonProject Bot` (любое уникальное в рамках GitHub)
+    - **Homepage URL**: `http://localhost:3000`
+    - **Webhook**: сними галку **Active** (вебхуки настраиваются отдельно в шаге 10)
+3. Выдай права (**Repository permissions**):
+    - `Contents` → **Read-only** (чтение коммитов)
+    - `Pull requests` → **Read-only** (список PR и файлов)
+    - `Commit statuses` → **Read-only** (статус CI)
+    - `Checks` → **Read-only** (GitHub Actions check runs)
+4. Выдай права (**Organization permissions**):
+    - `Members` → **Read-only** (Teams API для определения ролей)
+5. Нажми **Create GitHub App**
+6. На странице созданного приложения:
+    - Скопируй **App ID** (число в верхней части страницы)
+    - Прокрути вниз → **Private keys** → **Generate a private key** → скачается `.pem`-файл
+7. Установи App в организацию: слева **Install App** → выбери организацию → **All repositories** → **Install**
+8. После установки в URL страницы запомни **Installation ID**:
+   `github.com/organizations/{org}/settings/installations/{INSTALLATION_ID}`
 
 ### Шаг 6. Зарегистрировать GitHub OAuth App
 
@@ -84,8 +99,10 @@ AUTH_SECRET="your-random-secret-here"
 AUTH_GITHUB_ID="Ov23liABCDEF123456"
 AUTH_GITHUB_SECRET="your_oauth_client_secret"
 
-# GitHub сервисный токен (из шага 5)
-GITHUB_TOKEN="ghp_your_service_token"
+# GitHub App (из шага 5)
+GITHUB_APP_ID="123456"
+GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIEo...\n-----END RSA PRIVATE KEY-----"
+GITHUB_INSTALLATION_ID="78901234"
 
 # Название организации (slug из шага 1)
 GITHUB_ORG="my-course-org"
@@ -430,15 +447,15 @@ curl http://localhost:3000/api/submissions/1/diff \
 Добавь в `.env`:
 
 ```env
-# Уже был:
-GITHUB_TOKEN=ghp_...           # Сервисный токен (read:org для Teams, доступ к Classroom API)
-GITHUB_ORG=your-org-slug       # GitHub организация
-
-# Новые:
-GITHUB_WEBHOOK_SECRET=secret   # Секрет для верификации webhook-подписей
+GITHUB_APP_ID=123456
+GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIEo...\n-----END RSA PRIVATE KEY-----"
+GITHUB_INSTALLATION_ID=78901234
+GITHUB_ORG=your-org-slug
+GITHUB_WEBHOOK_SECRET=secret
 ```
 
-> `GITHUB_TOKEN` нужен с правами: `repo`, `read:org`, `classroom` (для Classroom API).
+> `GITHUB_APP_PRIVATE_KEY` — содержимое `.pem`-файла в одну строку, переносы строк заменены на `\n`.
+> Скопируй файл целиком и замени реальные переносы строк на литеральный `\n` перед вставкой в `.env`.
 
 ---
 

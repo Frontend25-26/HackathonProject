@@ -24,7 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 try {
                     role = await resolveRoleFromGitHubTeams(login);
                 } catch {
-                    // GITHUB_TOKEN не задан или нет прав — роль по умолчанию STUDENT
+                    // GitHub App не настроен или нет прав — роль по умолчанию STUDENT
                 }
 
                 await userRepository.create({

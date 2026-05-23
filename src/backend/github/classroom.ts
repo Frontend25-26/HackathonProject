@@ -1,15 +1,82 @@
+import { createSign } from 'crypto';
+
 import { Role } from '@backend/generated/prisma';
 
 export const GITHUB_API = 'https://api.github.com';
 
 const RATE_LIMIT_PAUSE_THRESHOLD = 50;
 
-export function githubHeaders(userToken?: string): Record<string, string> {
-    const token = userToken ?? process.env.GITHUB_TOKEN;
+function createAppJWT(appId: string, privateKey: string): string {
+    const now = Math.floor(Date.now() / 1000);
+    const header = Buffer.from(
+        JSON.stringify({ alg: 'RS256', typ: 'JWT' }),
+    ).toString('base64url');
+    const payload = Buffer.from(
+        JSON.stringify({ iat: now - 60, exp: now + 600, iss: appId }),
+    ).toString('base64url');
+    const data = `${header}.${payload}`;
+    const sign = createSign('RSA-SHA256');
+    sign.update(data);
+    return `${data}.${sign.sign(privateKey).toString('base64url')}`;
+}
+
+let _cachedToken: { value: string; expiresAt: number } | null = null;
+
+async function getServiceToken(): Promise<string> {
+    const now = Date.now();
+    if (_cachedToken && _cachedToken.expiresAt - now > 60_000) {
+        return _cachedToken.value;
+    }
+
+    const appId = process.env.GITHUB_APP_ID;
+    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(
+        /\\n/g,
+        '\n',
+    );
+    const installationId = process.env.GITHUB_INSTALLATION_ID;
+
+    if (!appId || !privateKey || !installationId) {
+        throw new Error(
+            'GitHub App credentials not configured (GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, GITHUB_INSTALLATION_ID)',
+        );
+    }
+
+    const jwt = createAppJWT(appId, privateKey);
+    const res = await fetch(
+        `${GITHUB_API}/app/installations/${installationId}/access_tokens`,
+        {
+            method: 'POST',
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                Authorization: `Bearer ${jwt}`,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(
+            `Failed to get GitHub App installation token: ${res.status}: ${text}`,
+        );
+    }
+
+    const data = (await res.json()) as { token: string; expires_at: string };
+    _cachedToken = {
+        value: data.token,
+        expiresAt: new Date(data.expires_at).getTime(),
+    };
+    return _cachedToken.value;
+}
+
+export async function githubHeaders(
+    userToken?: string,
+): Promise<Record<string, string>> {
+    const token = userToken ?? (await getServiceToken());
     return {
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        Authorization: `Bearer ${token}`,
     };
 }
 
@@ -21,7 +88,7 @@ export class GitHubRateLimitError extends Error {
 
 async function githubFetch<T>(path: string, userToken?: string): Promise<T> {
     const res = await fetch(`${GITHUB_API}${path}`, {
-        headers: githubHeaders(userToken),
+        headers: await githubHeaders(userToken),
         cache: 'no-store',
     });
 
@@ -48,7 +115,7 @@ async function githubFetch<T>(path: string, userToken?: string): Promise<T> {
 
 async function githubFetchStatus(path: string): Promise<number> {
     const res = await fetch(`${GITHUB_API}${path}`, {
-        headers: githubHeaders(),
+        headers: await githubHeaders(),
         cache: 'no-store',
     });
     return res.status;
@@ -56,7 +123,7 @@ async function githubFetchStatus(path: string): Promise<number> {
 
 async function githubFetchRateLimit(): Promise<number | null> {
     const res = await fetch(`${GITHUB_API}/rate_limit`, {
-        headers: githubHeaders(),
+        headers: await githubHeaders(),
         cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -105,33 +172,46 @@ export type GhClassroom = {
     name: string;
     archived: boolean;
     url: string;
-    organization: {
+    organization?: {
         login: string;
         avatar_url: string;
     };
 };
 
 export const classroomApi = {
-    listClassrooms(): Promise<GhClassroom[]> {
-        return githubFetch('/classrooms');
+    listClassrooms(userToken?: string): Promise<GhClassroom[]> {
+        return githubFetch('/classrooms', userToken);
     },
 
-    getClassroom(classroomId: number): Promise<GhClassroom> {
-        return githubFetch(`/classrooms/${classroomId}`);
+    getClassroom(
+        classroomId: number,
+        userToken?: string,
+    ): Promise<GhClassroom> {
+        return githubFetch(`/classrooms/${classroomId}`, userToken);
     },
 
-    listAssignments(classroomId: number): Promise<GhClassroomAssignment[]> {
-        return githubFetch(`/classrooms/${classroomId}/assignments`);
+    listAssignments(
+        classroomId: number,
+        userToken?: string,
+    ): Promise<GhClassroomAssignment[]> {
+        return githubFetch(`/classrooms/${classroomId}/assignments`, userToken);
     },
 
-    getAssignment(assignmentId: number): Promise<GhClassroomAssignment> {
-        return githubFetch(`/assignments/${assignmentId}`);
+    getAssignment(
+        assignmentId: number,
+        userToken?: string,
+    ): Promise<GhClassroomAssignment> {
+        return githubFetch(`/assignments/${assignmentId}`, userToken);
     },
 
     listAcceptedAssignments(
         assignmentId: number,
+        userToken?: string,
     ): Promise<GhAcceptedAssignment[]> {
-        return githubFetch(`/assignments/${assignmentId}/accepted_assignments`);
+        return githubFetch(
+            `/assignments/${assignmentId}/accepted_assignments`,
+            userToken,
+        );
     },
 
     getRateLimitRemaining(): Promise<number | null> {
@@ -146,8 +226,6 @@ export const classroomApi = {
  * - `admins` team → ADMIN
  * - `mentors` team → MENTOR
  * - остальное → STUDENT
- *
- * Требует GITHUB_TOKEN с правами `read:org` (для проверки membership).
  *
  * @param login GitHub username
  * @returns Role: ADMIN | MENTOR | STUDENT

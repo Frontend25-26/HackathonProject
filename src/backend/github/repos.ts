@@ -76,7 +76,7 @@ export type GhIssueComment = {
 
 async function ghFetch<T>(path: string, userToken?: string): Promise<T> {
     const res = await fetch(`${GITHUB_API}${path}`, {
-        headers: githubHeaders(userToken),
+        headers: await githubHeaders(userToken),
         cache: 'no-store',
     });
 
@@ -103,7 +103,7 @@ async function ghPost<T>(
     const res = await fetch(`${GITHUB_API}${path}`, {
         method: 'POST',
         headers: {
-            ...githubHeaders(userToken),
+            ...(await githubHeaders(userToken)),
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),

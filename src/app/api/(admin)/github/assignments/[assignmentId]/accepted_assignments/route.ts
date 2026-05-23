@@ -1,14 +1,18 @@
 /**
- * GET /api/github/classrooms — список классрумов GitHub Classroom
+ * GET /api/github/assignments/[assignmentId]/accepted_assignments
  *
  * Группа: (admin) — требует роль ADMIN.
  */
+
+import { NextRequest } from 'next/server';
 
 import { classroomApi } from '@backend/github/classroom';
 import { requireAdmin } from '@backend/lib/auth';
 import { userRepository } from '@backend/users/repository';
 
-export async function GET() {
+type Params = { params: Promise<{ assignmentId: string }> };
+
+export async function GET(request: NextRequest, { params }: Params) {
     const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
@@ -20,17 +24,14 @@ export async function GET() {
         );
     }
 
+    const { assignmentId } = await params;
+
     try {
-        const classrooms = await classroomApi.listClassrooms(
+        const accepted = await classroomApi.listAcceptedAssignments(
+            Number(assignmentId),
             dbUser.githubToken,
         );
-        const org = process.env.GITHUB_ORG;
-        const filtered = org
-            ? classrooms.filter((c) =>
-                  c.url.toLowerCase().includes(org.toLowerCase()),
-              )
-            : classrooms;
-        return Response.json(filtered);
+        return Response.json(accepted);
     } catch (err) {
         const message = err instanceof Error ? err.message : 'GitHub API error';
         return Response.json({ error: message }, { status: 502 });
