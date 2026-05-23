@@ -52,7 +52,7 @@ export const primaryMenu: MenuItemConfig[] = [
     {
         id: 'review',
         title: 'Проверка заданий',
-        icon: ListCheck,
+        icon: SquareListUl,
         visibleRoles: ['MENTOR', 'ADMIN'],
         href: '/mentor/review',
     },

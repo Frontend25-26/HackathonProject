@@ -1,0 +1,1 @@
+export { DeleteCourseConfirmModal } from './DeleteCourseConfirm';
