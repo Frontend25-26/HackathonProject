@@ -1,5 +1,6 @@
+import { Comment } from '@/entities/thread';
+
 import { createReply, createThread } from './api';
-import { Comment } from './types';
 import { CreateThreadActionInput } from './types';
 
 export const handleSubmitAction = async ({
