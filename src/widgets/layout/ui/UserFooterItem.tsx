@@ -2,7 +2,10 @@
 
 import { FooterItem } from '@gravity-ui/navigation';
 import { Avatar } from '@gravity-ui/uikit';
+import Link from 'next/link';
 import { FC } from 'react';
+
+import styles from './UserFooterItem.module.css';
 
 import type { Role, User } from '@/entities/user';
 
@@ -29,6 +32,7 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
             id="user"
             compact={compact}
             title={userName}
+            href={`/user/${user.id}`}
             itemWrapper={(_, makeItem) =>
                 makeItem({
                     icon: user.avatar ? (
