@@ -9,5 +9,6 @@ import '@backend/review-threads/schema';
 import '@backend/review-comments/schema';
 import '@backend/github/schema';
 import '@backend/sync-logs/schema';
+import '@backend/notifications/schema';
 
 export { generateOpenApiSpec } from './openapi';
