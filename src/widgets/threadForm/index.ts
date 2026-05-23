@@ -1,2 +1,2 @@
-export { ThreadFormReply } from './ThreadFormReply';
-export { ThreadFormCreate } from './ThreadFormCreate';
+export { ThreadFormReply } from './ui/ThreadFormReply';
+export { ThreadFormCreate } from './ui/ThreadFormCreate';

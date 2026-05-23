@@ -3,7 +3,7 @@
 import { Button, Card } from '@gravity-ui/uikit';
 import { FC, useState } from 'react';
 
-import { Comment, Thread as ThreadType, ThreadWithComments } from '@/entities/thread';
+import { Comment, ThreadWithComments } from '@/entities/thread';
 import { ThreadFormReply } from '@/widgets/threadForm';
 
 import styles from './Thread.module.css';
@@ -11,19 +11,16 @@ import { ThreadMessage } from './ThreadMessage';
 
 interface ThreadProps {
     thread: ThreadWithComments;
-    // comments: Comment[];
 }
 
-export const Thread: FC<ThreadProps> = ({ 
-    thread, 
-    // comments 
-}) => {
+export const Thread: FC<ThreadProps> = ({ thread }) => {
     const [isReplying, setIsReplying] = useState(false);
+
+    const asyncClose = async () => setIsReplying(false);
 
     return (
         <Card view="raised" size="m" className={styles.thread}>
             <div className={styles.replies}>
-                {/* {comments.map((comment: Comment) => ( */}
                 {thread.comments.map((comment: Comment) => (
                     <ThreadMessage
                         key={comment.id}
@@ -36,12 +33,8 @@ export const Thread: FC<ThreadProps> = ({
             {isReplying ? (
                 <ThreadFormReply
                     threadId={thread.id}
-                    onCancel={async () => {
-                        setIsReplying(false);
-                    }}
-                    onSubmit={async () => {
-                        setIsReplying(false);
-                    }}
+                    onCancel={asyncClose}
+                    onSubmit={asyncClose}
                 />
             ) : (
                 <Button

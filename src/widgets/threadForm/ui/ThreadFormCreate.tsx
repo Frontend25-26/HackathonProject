@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { FC } from 'react';
 
+import { useThread } from '@/entities/thread/model/useThread';
 import { handleSubmitAction } from '@/features/thread/actions';
 
 import { ThreadFormBase } from './ThreadFormBase';
@@ -22,19 +23,23 @@ export const ThreadFormCreate: FC<ThreadFormCreateProps> = ({
     onSubmit,
 }) => {
     const session = useSession();
+    const { addThread, addComment } = useThread();
 
     const handleSubmit = async (text: string): Promise<void> => {
         if (!session?.data?.user.userId) {
             throw new Error('unauthorized');
         }
 
-        await handleSubmitAction({
+        const [thread, comment] = await handleSubmitAction({
             filePath,
             line,
             reviewId,
             text,
             userId: session.data.user.userId,
         });
+
+        addThread(thread);
+        addComment(comment);
 
         await onSubmit?.();
     };
