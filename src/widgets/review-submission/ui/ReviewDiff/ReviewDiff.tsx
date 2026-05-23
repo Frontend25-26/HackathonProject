@@ -1,105 +1,43 @@
 'use client';
 
-import { generateDiffFile } from '@git-diff-view/file';
-import { DiffView, DiffModeEnum } from '@git-diff-view/react';
-import { FC, useMemo } from 'react';
-import { useEffect, useState } from 'react';
-
-import '@git-diff-view/react/styles/diff-view.css';
-import styles from './ReviewDiff.module.css';
+import {
+    Diff2HtmlUI,
+    Diff2HtmlUIConfig,
+} from 'diff2html/lib/ui/js/diff2html-ui';
+import { FC, useEffect, useRef } from 'react';
+import 'diff2html/bundles/css/diff2html.min.css';
 
 interface SubmissionClientProps {
     fileName: string;
-    oldFile: string;
-    newFile: string;
+    patch: string;
 }
 
-export function useGravityTheme() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+export const ReviewDiff: FC<SubmissionClientProps> = ({ fileName, patch }) => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const el = document.body;
+        if (!containerRef.current) {
+            return;
+        }
 
-        const update = () => {
-            setTheme(
-                el.classList.contains('g-root_theme_dark') ? 'dark' : 'light',
-            );
+        const configuration: Diff2HtmlUIConfig = {
+            drawFileList: false,
+            matching: 'lines',
+            highlight: true,
+            outputFormat: 'side-by-side',
         };
 
-        update();
+        containerRef.current.innerHTML = '';
 
-        const observer = new MutationObserver(update);
-        observer.observe(el, { attributes: true, attributeFilter: ['class'] });
-
-        return () => observer.disconnect();
-    }, []);
-
-    return theme;
-}
-
-export function getLanguage(fileName: string): string {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-
-    const map: Record<string, string> = {
-        ts: 'typescript',
-        tsx: 'typescript',
-        js: 'javascript',
-        jsx: 'javascript',
-
-        json: 'json',
-
-        css: 'css',
-        scss: 'scss',
-
-        md: 'markdown',
-
-        yml: 'yaml',
-        yaml: 'yaml',
-
-        py: 'python',
-
-        go: 'go',
-        java: 'java',
-        kt: 'kotlin',
-        rs: 'rust',
-        sql: 'sql',
-
-        html: 'html',
-        htm: 'html',
-    };
-
-    return map[ext || ''] || 'plaintext';
-}
-
-export const ReviewDiff: FC<SubmissionClientProps> = ({
-    fileName,
-    oldFile,
-    newFile,
-}) => {
-    const diffFile = useMemo(() => {
-        const file = generateDiffFile(
-            fileName,
-            oldFile,
-            fileName,
-            newFile,
-            getLanguage(fileName),
-            getLanguage(fileName),
+        const diff2htmlUi = new Diff2HtmlUI(
+            containerRef.current,
+            patch,
+            configuration,
         );
 
-        file.init();
+        diff2htmlUi.draw();
+        diff2htmlUi.highlightCode();
+    }, [patch]);
 
-        return file;
-    }, [fileName, oldFile, newFile]);
-
-    const theme = useGravityTheme();
-
-    return (
-        <DiffView
-            diffFile={diffFile}
-            diffViewMode={DiffModeEnum.Split}
-            diffViewTheme={theme === 'dark' ? 'dark' : 'light'}
-            diffViewHighlight={true}
-            className={styles.diff}
-        />
-    );
+    return <div ref={containerRef} />;
 };

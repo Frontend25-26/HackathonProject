@@ -1,4 +1,8 @@
 import { diffLines } from 'diff';
+import { parse } from 'diff2html';
+import { DiffFile } from 'diff2html/lib/types';
+
+import { getChangePatch } from '@/widgets/review-submission/ui/ReviewSubmissionClient/ReviewSubmissionClient';
 
 import { RepoDiff } from '../ReviewDiff/ReviewMockRepository';
 
@@ -17,27 +21,6 @@ export interface TreeNode {
     children?: TreeNode[];
 }
 
-export function getDiffStats(oldText: string, newText: string) {
-    const changes = diffLines(oldText, newText);
-
-    let added = 0;
-    let removed = 0;
-
-    for (const part of changes) {
-        const lineCount = part.count || 0;
-
-        if (part.added) {
-            added += lineCount;
-        }
-
-        if (part.removed) {
-            removed += lineCount;
-        }
-    }
-
-    return { added, removed };
-}
-
 export function buildFileTree(repo: RepoDiff): TreeNode[] {
     const root: TreeNode = {
         name: '',
@@ -46,15 +29,11 @@ export function buildFileTree(repo: RepoDiff): TreeNode[] {
         children: [],
     };
 
-    const getStatus = (
-        oldContent?: string,
-        newContent?: string,
-    ): DiffStatus => {
-        if (!oldContent && newContent) {
+    const getStatus = (fileInfo: DiffFile): DiffStatus => {
+        if (fileInfo.addedLines > 0 && fileInfo.deletedLines == 0) {
             return 'added';
         }
-
-        if (oldContent && !newContent) {
+        if (fileInfo.addedLines == 0 && fileInfo.deletedLines > 0) {
             return 'deleted';
         }
 
@@ -64,12 +43,14 @@ export function buildFileTree(repo: RepoDiff): TreeNode[] {
     for (const fullPath in repo) {
         const file = repo[fullPath];
 
-        const oldContent = file.oldContent || '';
-        const newContent = file.newContent || '';
+        const patch = getChangePatch(fullPath, file.patch);
 
-        const status = getStatus(file.oldContent, file.newContent);
+        const fileInfo = parse(patch)[0];
 
-        const { added, removed } = getDiffStats(oldContent, newContent);
+        const status = getStatus(fileInfo);
+
+        const added = fileInfo.addedLines;
+        const removed = fileInfo.deletedLines;
 
         const parts = fullPath.split('/');
 
