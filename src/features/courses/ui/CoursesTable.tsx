@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    DropdownMenu,
-    Table,
-    TableColumnConfig,
-    withTableActions,
-} from '@gravity-ui/uikit';
+import { DropdownMenu, Table, TableColumnConfig } from '@gravity-ui/uikit';
 import { FC } from 'react';
 
 import { Course } from '@/entities/course';

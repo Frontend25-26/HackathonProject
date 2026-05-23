@@ -1,6 +1,5 @@
 'use client';
 
-import { Dialog, Button } from '@gravity-ui/uikit';
 import { useState } from 'react';
 
 import { BaseConfirmModal } from './BaseConfirmModal';
@@ -18,7 +17,7 @@ export const DeleteCourseConfirmModal = ({
     onConfirmAction,
     courseTitle,
 }: DeleteCourseConfirmProps) => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [_, setIsLoading] = useState(false);
 
     const handleConfirm = async () => {
         setIsLoading(true);
