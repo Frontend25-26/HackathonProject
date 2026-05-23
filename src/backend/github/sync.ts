@@ -294,10 +294,9 @@ export async function syncPRComments(submissionId: number): Promise<void> {
     }
 
     let reviewComments;
-    let issueComments;
 
     try {
-        [reviewComments, issueComments] = await Promise.all([
+        [reviewComments] = await Promise.all([
             reposApi.listPullRequestReviewComments(owner, repo, prNumber),
             reposApi.listIssueComments(owner, repo, prNumber),
         ]);
