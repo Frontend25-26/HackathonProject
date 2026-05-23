@@ -1,4 +1,4 @@
-export interface EnrollmentSchema {
+export interface Enrollment {
     id: number;
     courseId: number;
     studentId: number;

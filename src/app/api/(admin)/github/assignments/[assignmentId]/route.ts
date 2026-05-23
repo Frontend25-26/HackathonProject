@@ -8,6 +8,7 @@ import { NextRequest } from 'next/server';
 
 import { classroomApi } from '@backend/github/classroom';
 import { requireAdmin } from '@backend/lib/auth';
+import { userRepository } from '@backend/users/repository';
 
 type Params = { params: Promise<{ assignmentId: string }> };
 
@@ -15,11 +16,20 @@ export async function GET(request: NextRequest, { params }: Params) {
     const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
+    const dbUser = await userRepository.findById(auth.user.id);
+    if (!dbUser?.githubToken) {
+        return Response.json(
+            { error: 'GitHub токен не найден. Переавторизуйтесь через GitHub' },
+            { status: 401 },
+        );
+    }
+
     const { assignmentId } = await params;
 
     try {
         const assignment = await classroomApi.getAssignment(
             Number(assignmentId),
+            dbUser.githubToken,
         );
         return Response.json(assignment);
     } catch (err) {

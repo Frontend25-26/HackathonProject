@@ -32,6 +32,7 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
             id="user"
             compact={compact}
             title={userName}
+            href={`/user/${user.id}`}
             itemWrapper={(_, makeItem) =>
                 makeItem({
                     icon: user.avatar ? (

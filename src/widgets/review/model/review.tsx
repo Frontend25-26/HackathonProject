@@ -1,41 +1,41 @@
 import { TableColumnConfig } from '@gravity-ui/uikit';
 
-import { Submission } from '@/entities/submission';
-import { transformDate } from '@/shared/utils/helper';
+import { DisplayedSubmission } from '@/entities/submission';
+import { formatDateFromISODate } from '@/shared/utils/helpers';
 
-export const columns: TableColumnConfig<Submission>[] = [
+export const columns: TableColumnConfig<DisplayedSubmission>[] = [
     {
-        id: 'Student',
+        id: 'student',
         name: 'Студент',
     },
     {
-        id: 'Course',
+        id: 'course',
         name: 'Курс',
     },
     {
-        id: 'HW',
+        id: 'hw',
         name: 'ДЗ',
     },
     {
-        id: 'Deadline',
+        id: 'deadline',
         name: 'Дедлайн',
-        template: (item) => transformDate(item.Deadline),
+        template: (item) => formatDateFromISODate(item.deadline),
     },
     {
-        id: 'CIStatus',
+        id: 'ciStatus',
         name: 'CI-статус',
     },
     {
-        id: 'LastCommitDate',
+        id: 'lastCommitDate',
         name: 'Дата последнего коммита',
-        template: (item) => transformDate(item.LastCommitDate),
+        template: (item) => formatDateFromISODate(item.lastCommitDate),
     },
     {
-        id: 'RepositoryUrl',
+        id: 'repositoryUrl',
         name: 'Ссылка на репозиторий',
         template: (item) => (
-            <a href={item.RepositoryUrl} target="_blank" rel="noreferrer">
-                {item.RepositoryUrl}
+            <a href={item.repositoryUrl} target="_blank" rel="noreferrer">
+                {item.repositoryUrl}
             </a>
         ),
     },
@@ -48,24 +48,24 @@ export interface Filter {
 }
 
 export interface FilterProperties {
-    propertyName: keyof Submission;
+    propertyName: keyof DisplayedSubmission;
     title: string;
     filterName: keyof Filter;
 }
 
 export const filtersData: FilterProperties[] = [
     {
-        propertyName: 'Course',
+        propertyName: 'course',
         title: 'Курс',
         filterName: 'course',
     },
     {
-        propertyName: 'Deadline',
+        propertyName: 'deadline',
         title: 'Дедлайн',
         filterName: 'deadline',
     },
     {
-        propertyName: 'CIStatus',
+        propertyName: 'ciStatus',
         title: 'CI',
         filterName: 'ciStatus',
     },

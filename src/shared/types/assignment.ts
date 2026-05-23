@@ -1,4 +1,4 @@
-export interface AssignmentSchema {
+export interface Assignment {
     classroomUrl: string;
     courseId: number;
     createdAt: string;

@@ -1,23 +1,23 @@
-import { Submission } from '@/entities/submission';
+import { DisplayedSubmission } from '@/entities/submission';
 import { apiFetch } from '@/shared/api';
-import { ReviewClient } from '@/widgets/review/ui/ReviewClient';
+import { ReviewClient } from '@/widgets/review/ui/ReviewClient/ReviewClient';
 
-import type { AssignmentSchema } from '@/shared/types/assignment';
-import type { CourseSchema } from '@/shared/types/course';
-import type { EnrollmentSchema } from '@/shared/types/enrollment';
-import type { SubmissionSchema } from '@/shared/types/submission';
-import type { UserSchema } from '@/shared/types/user';
+import type { Assignment } from '@/shared/types/assignment';
+import type { Course } from '@/shared/types/course';
+import type { Enrollment } from '@/shared/types/enrollment';
+import type { Submission } from '@/shared/types/submission';
+import type { User } from '@/shared/types/user';
 
 const toKey = (student: number, course: number): string => {
     return student + '@' + course;
 };
 
 const formatFetchedReview = async (
-    submission: SubmissionSchema,
+    submission: Submission,
     enrollmentMapper: Set<string>,
-    courses: Map<number, CourseSchema>,
-    assignments: Map<number, AssignmentSchema>,
-): Promise<Submission | null> => {
+    courses: Map<number, Course>,
+    assignments: Map<number, Assignment>,
+): Promise<DisplayedSubmission | null> => {
     const assignment = assignments.get(submission.assignmentId);
 
     if (
@@ -27,43 +27,45 @@ const formatFetchedReview = async (
     ) {
         return {
             id: submission.id.toString(),
-            Student: submission.student.name,
-            Course: courses.get(assignment.courseId)!.title,
-            HW: assignment.title,
-            Deadline: assignment.dueDate,
-            CIStatus: submission.ciStatus,
-            LastCommitDate: submission.updatedAt,
-            RepositoryUrl: submission.repoUrl,
+            student: submission.student.name,
+            course: courses.get(assignment.courseId)!.title,
+            hw: assignment.title,
+            deadline: assignment.dueDate,
+            ciStatus: submission.ciStatus,
+            lastCommitDate: submission.updatedAt,
+            repositoryUrl: submission.repoUrl,
         };
     } else {
         return null;
     }
 };
 
+const requiredStatuses = ['APPROVED', 'PENDING', 'CHANGES_REQUESTED'];
+
 export default async function ReviewPage() {
-    const requiredStatuses = ['APPROVED', 'PENDING', 'CHANGES_REQUESTED'];
-    const fetchedData: SubmissionSchema[] = await apiFetch(
-        `/api/submissions?statuses=${requiredStatuses.join(',')}`,
-    );
+    const [fetchedData, me, enrollments, courses, assignments] =
+        await Promise.all([
+            apiFetch<Submission[]>(
+                `/api/submissions?statuses=${requiredStatuses.join(',')}`,
+            ),
+            apiFetch<User>('/api/me'),
+            apiFetch<Enrollment[]>('/api/enrollments'),
+            apiFetch<Course[]>('/api/courses'),
+            apiFetch<Assignment[]>('/api/assignments'),
+        ]);
 
-    const myId: number = ((await apiFetch('/api/me')) as UserSchema).id;
-    const enrollments: EnrollmentSchema[] = await apiFetch('/api/enrollments');
-    const courses: CourseSchema[] = await apiFetch('/api/courses');
-
-    const coursesMap = new Map<number, CourseSchema>();
+    const coursesMap = new Map<number, Course>();
     for (const course of courses) {
         coursesMap.set(course.id, course);
     }
 
-    const assignments: AssignmentSchema[] = await apiFetch(`/api/assignments`);
-
-    const assignmentsMap = new Map<number, AssignmentSchema>();
+    const assignmentsMap = new Map<number, Assignment>();
     for (const assignment of assignments) {
         assignmentsMap.set(assignment.id, assignment);
     }
 
     const myEnrollments = enrollments.filter(
-        (enrollment) => enrollment.mentorId === myId,
+        (enrollment) => enrollment.mentorId === me.id,
     );
 
     const enrollmentMapper: Set<string> = new Set(
@@ -82,9 +84,11 @@ export default async function ReviewPage() {
             );
         }),
     );
-    const data = nulledData.filter((item): item is Submission => item !== null);
+    const data = nulledData.filter(
+        (item): item is DisplayedSubmission => item !== null,
+    );
 
-    data.sort((a, b) => b.LastCommitDate.localeCompare(a.LastCommitDate));
+    data.sort((a, b) => b.lastCommitDate.localeCompare(a.lastCommitDate));
 
     return <ReviewClient data={data} />;
 }

@@ -1,1 +1,1 @@
-export type { Submission } from './types';
+export type { DisplayedSubmission } from './types';

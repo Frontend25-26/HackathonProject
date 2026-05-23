@@ -1,10 +1,10 @@
-export interface Submission {
+export interface DisplayedSubmission {
     id: string;
-    Student: string;
-    Course: string;
-    HW: string;
-    Deadline: string;
-    CIStatus: string;
-    LastCommitDate: string;
-    RepositoryUrl: string;
+    student: string;
+    course: string;
+    hw: string;
+    deadline: string;
+    ciStatus: string;
+    lastCommitDate: string;
+    repositoryUrl: string;
 }

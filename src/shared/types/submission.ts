@@ -5,7 +5,7 @@ interface StudentSchema {
     avatar: string;
 }
 
-export interface SubmissionSchema {
+export interface Submission {
     id: number;
     repoUrl: string;
     ciStatus: string;

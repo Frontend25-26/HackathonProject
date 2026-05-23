@@ -7,6 +7,7 @@ import {
 } from '@backend/github/sync';
 import { requireAdmin } from '@backend/lib/auth';
 import { prisma } from '@backend/lib/prisma';
+import { userRepository } from '@backend/users/repository';
 
 export const POST = async (
     _request: NextRequest,
@@ -23,7 +24,8 @@ export const POST = async (
         return Response.json({ error: 'Задание не найдено' }, { status: 404 });
     }
 
-    await syncStudentRepos(id);
+    const dbUser = await userRepository.findById(auth.user.id);
+    await syncStudentRepos(id, dbUser?.githubToken ?? undefined);
 
     const submissions = await prisma.submission.findMany({
         where: { assignmentId: id },

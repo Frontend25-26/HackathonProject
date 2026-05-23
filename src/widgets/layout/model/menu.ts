@@ -4,6 +4,7 @@ import {
     GraduationCap,
     ListUl,
     Persons,
+    ListCheck,
 } from '@gravity-ui/icons';
 
 import type { Role } from '@/entities/user';
@@ -39,6 +40,13 @@ export const primaryMenu: MenuItemConfig[] = [
         title: 'Студенты',
         icon: Persons,
         visibleRoles: ['ADMIN'],
+    },
+    {
+        id: 'review',
+        title: 'Проверка заданий',
+        icon: ListCheck,
+        visibleRoles: ['MENTOR', 'ADMIN'],
+        href: '/mentor/review',
     },
     {
         id: 'courses',

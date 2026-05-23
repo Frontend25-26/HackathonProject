@@ -1,4 +1,4 @@
-export interface CourseSchema {
+export interface Course {
     createdAt: string;
     id: number;
     title: string;
