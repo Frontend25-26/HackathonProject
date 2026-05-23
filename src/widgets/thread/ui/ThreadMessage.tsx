@@ -1,9 +1,10 @@
 'use client';
 
 import { User, Box } from '@gravity-ui/uikit';
+import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
 
-import { Author } from '@/features/thread/types';
+import { Author } from '@/entities/thread';
 import { MarkdownRender } from '@/shared/ui/MarkdownRender';
 
 import styles from './Thread.module.css';
@@ -25,9 +26,9 @@ export const ThreadMessage: FC<ThreadMessageProps> = ({
             <User
                 avatar={author.avatar ? author.avatar : userName}
                 name={userName}
-                description={createdAt}
+                description={formatDistanceToNow(createdAt)}
                 size="m"
-            ></User>
+            />
             <MarkdownRender content={text} />
         </Box>
     );
