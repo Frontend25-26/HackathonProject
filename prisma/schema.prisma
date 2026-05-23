@@ -24,6 +24,7 @@ model User {
   reviewComments     ReviewComment[]
   reviews            Review[]
   submissions        Submission[]
+  notifications      Notification[]
 
   @@map("users")
 }
@@ -196,4 +197,18 @@ model SyncLog {
 
   @@index([entityType, entityId], map: "sync_logs_entity_idx")
   @@map("sync_logs")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  title     String
+  body      String?  @db.Text
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "notifications_user_id_idx")
+  @@map("notifications")
 }
