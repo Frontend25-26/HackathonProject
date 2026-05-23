@@ -1,12 +1,14 @@
 'use client';
 
-import { apiFetch } from "@/shared/api";
-import { useThread } from "../model/useThread";
-import { Thread, Comment } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+
+import { apiFetch } from '@/shared/api';
+
+import { useThread } from '../model/useThread';
+import { Thread, Comment } from '../types';
 
 interface InitTreadsResult {
-    loading: boolean,
+    loading: boolean;
     error: boolean;
 }
 
@@ -20,29 +22,36 @@ export const useInitThreads = (reviewId: number): InitTreadsResult => {
             try {
                 setLoading(true);
 
-                const threads = await apiFetch<Thread[]>('/api/review-threads', {
-                    query: { reviewId }
-                })
+                const threads = await apiFetch<Thread[]>(
+                    '/api/review-threads',
+                    {
+                        query: { reviewId },
+                    },
+                );
 
                 if (threads.length == 0) return;
 
                 setThreads(threads);
 
-                const comments = await apiFetch<Comment[]>('/api/review-comments', {
-                    query: { threadIds: threads.map((t) => t.id).join(',') }
-                });
+                const comments = await apiFetch<Comment[]>(
+                    '/api/review-comments',
+                    {
+                        query: {
+                            threadIds: threads.map((t) => t.id).join(','),
+                        },
+                    },
+                );
 
                 setComments(comments);
             } catch (_) {
-                setError(true)
+                setError(true);
             } finally {
                 setLoading(false);
             }
-        
-};
+        };
 
         load();
     }, [reviewId, setThreads, setComments]);
 
-    return {loading, error};
-};  
+    return { loading, error };
+};

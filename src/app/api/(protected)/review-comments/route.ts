@@ -93,10 +93,9 @@ export const GET = async (request: NextRequest): Promise<Response> => {
         threadIds?.length
             ? { threadIds }
             : threadId
-                ? { threadId: Number(threadId) }
-                : undefined,
+              ? { threadId: Number(threadId) }
+              : undefined,
     );
-
 
     return Response.json(comments);
 };

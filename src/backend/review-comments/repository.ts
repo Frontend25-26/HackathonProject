@@ -25,8 +25,8 @@ class ReviewCommentsRepository {
             where: filters?.threadIds?.length
                 ? { threadId: { in: filters.threadIds } }
                 : filters?.threadId
-                    ? { threadId: filters.threadId }
-                    : undefined,
+                  ? { threadId: filters.threadId }
+                  : undefined,
             include: authorInclude,
             orderBy: { createdAt: 'asc' },
         });

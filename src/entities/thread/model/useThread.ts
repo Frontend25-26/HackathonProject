@@ -14,28 +14,34 @@ export const useThread = create<ThreadStore>((set) => ({
     threads: {},
     setThreads: (threads) =>
         set({
-            threads: Object.fromEntries(threads.map((t) => [t.id, { ...t, comments: [] }]))
+            threads: Object.fromEntries(
+                threads.map((t) => [t.id, { ...t, comments: [] }]),
+            ),
         }),
 
-    setComments: (comments) => set((state) => {
-        const updated = { ...state.threads };
+    setComments: (comments) =>
+        set((state) => {
+            const updated = { ...state.threads };
 
-        for (const comment of comments) {
-            const thread = updated[comment.threadId];
-            if (thread) {
-                updated[comment.threadId] = {
-                    ...thread,
-                    comments: [...thread.comments, comment]
+            for (const comment of comments) {
+                const thread = updated[comment.threadId];
+                if (thread) {
+                    updated[comment.threadId] = {
+                        ...thread,
+                        comments: [...thread.comments, comment],
+                    };
                 }
             }
-        }
 
-        return { threads: updated }
-    }),
+            return { threads: updated };
+        }),
 
     addThread: (thread) =>
         set((state) => ({
-            threads: { ...state.threads, [thread.id]: { ...thread, comments: [] } }
+            threads: {
+                ...state.threads,
+                [thread.id]: { ...thread, comments: [] },
+            },
         })),
 
     addComment: (comment) =>
@@ -46,8 +52,11 @@ export const useThread = create<ThreadStore>((set) => ({
             return {
                 threads: {
                     ...state.threads,
-                    [thread.id]: { ...thread, comments: [...thread.comments, comment] }
-                }
-            }
-        })
+                    [thread.id]: {
+                        ...thread,
+                        comments: [...thread.comments, comment],
+                    },
+                },
+            };
+        }),
 }));
