@@ -47,7 +47,7 @@ export const BaseConfirmModal = ({
                     onClick={handleConfirm}
                     loading={isLoading}
                 >
-                    Удалить
+                    Подтвердить
                 </Button>
             </Dialog.Footer>
         </Dialog>

@@ -1,33 +1,36 @@
 'use client';
 
-import { Alert, Card, Loader } from '@gravity-ui/uikit';
-import { useMemo, useState } from 'react';
+import { Alert, Card } from '@gravity-ui/uikit';
+import { FC, useMemo, useState } from 'react';
 
 import { useCourses } from '@/entities/adminCourses';
+import { Course } from '@/entities/course';
 import { DeleteCourseConfirmModal } from '@/entities/modals/DeleteCourseConfirm';
 import { CoursesTable } from '@/features/courses';
 
-export function AdminCoursesWidget() {
-    const { courses, isLoading, error, deleteCourse } = useCourses();
+export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
+    const [data, setData] = useState(courses);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [editId, setEditId] = useState<number | null>(null);
-    const deletingCourse = useMemo(
-        () => courses.find((c) => c.id === deleteId),
-        [courses, deleteId],
-    );
-    const editingCourse = useMemo(
-        () => courses.find((c) => c.id === editId),
-        [courses, editId],
-    );
+    const { error, deleteCourse } = useCourses((id: number) => {
+        setData((prev) => prev.filter((course) => course.id !== id));
+    });
 
-    if (isLoading) return <Loader />;
+    const deletingCourse = useMemo(
+        () => data.find((c) => c.id === deleteId),
+        [data, deleteId],
+    );
+    // const editingCourse = useMemo(
+    //     () => courses.find((c) => c.id === editId),
+    //     [courses, editId],
+    // );
 
     return (
         <Card>
             {error && <Alert title="Ошибка" message={error} theme="danger" />}
 
             <CoursesTable
-                courses={courses}
+                courses={data}
                 onDeleteAction={setDeleteId}
                 onEditAction={setEditId}
             />
@@ -57,4 +60,4 @@ export function AdminCoursesWidget() {
             />
         </Card>
     );
-}
+};

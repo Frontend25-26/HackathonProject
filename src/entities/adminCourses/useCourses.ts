@@ -1,51 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { deleteCourse, fetchCourses } from '@/entities/adminCourses/api/';
-import { Course } from '@/entities/course';
+import { deleteCourse } from '@/entities/adminCourses/api/';
 import { ApiError } from '@/shared/api';
 
 interface UseCoursesResult {
-    courses: Course[];
-    isLoading: boolean;
     isDeleting: boolean;
     error: string | null;
-    loadCourses: () => Promise<void>;
     deleteCourse: (id: number) => Promise<void>;
 }
 
-export const useCourses = (): UseCoursesResult => {
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+export const useCourses = (
+    onDeleteAction?: (id: number) => void,
+): UseCoursesResult => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    // const { data: session, status } = useSession();
-
-    // const isAuthorized = status === 'authenticated' && !!session?.user?.userId;
-
-    const loadCourses = async (): Promise<void> => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const data = await fetchCourses();
-            setCourses(data);
-        } catch (e) {
-            setError(
-                e instanceof ApiError ? e.message : 'Ошибка загрузки курсов',
-            );
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const deleteCourseHandler = async (id: number): Promise<void> => {
         setIsDeleting(true);
         setError(null);
         try {
             await deleteCourse(id);
-            await loadCourses();
+            onDeleteAction?.(id);
         } catch (e) {
             setError(
                 e instanceof ApiError ? e.message : 'Ошибка удаления курса',
@@ -56,17 +33,9 @@ export const useCourses = (): UseCoursesResult => {
         }
     };
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadCourses();
-    }, []);
-
     return {
-        courses,
-        isLoading,
         isDeleting,
         error,
-        loadCourses,
         deleteCourse: deleteCourseHandler,
     };
 };
