@@ -1,10 +1,11 @@
 import {
     CircleQuestion,
     Dots9,
+    Gear,
     GraduationCap,
+    ListCheck,
     ListUl,
     Persons,
-    ListCheck,
 } from '@gravity-ui/icons';
 
 import type { Role } from '@/entities/user';
@@ -73,4 +74,11 @@ export const primaryMenu: MenuItemConfig[] = [
 
 export const secondaryMenu: MenuItemConfig[] = [
     { id: 'faq', title: 'FAQ', icon: CircleQuestion, visibleRoles: ALL_ROLES },
+    {
+        id: 'settings',
+        title: 'Настройки',
+        icon: Gear,
+        visibleRoles: ['ADMIN'],
+        href: '/admin/classrooms',
+    },
 ];
