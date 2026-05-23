@@ -84,9 +84,17 @@ export const GET = async (request: NextRequest): Promise<Response> => {
 
     const { searchParams } = request.nextUrl;
     const threadId = searchParams.get('threadId');
+    const threadIdsParam = searchParams.get('threadIds');
+    const threadIds = threadIdsParam
+        ? threadIdsParam.split(',').map(Number).filter(Boolean)
+        : undefined;
 
     const comments = await reviewCommentRepository.findAll(
-        threadId ? { threadId: Number(threadId) } : undefined,
+        threadIds?.length
+            ? { threadIds }
+            : threadId
+              ? { threadId: Number(threadId) }
+              : undefined,
     );
 
     return Response.json(comments);

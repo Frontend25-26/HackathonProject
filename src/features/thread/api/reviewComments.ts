@@ -1,3 +1,4 @@
+import { Comment } from '@/entities/thread';
 import { apiFetch } from '@/shared/api';
 
 import { CreateReplyInput } from './types';

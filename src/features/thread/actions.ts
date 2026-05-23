@@ -1,5 +1,7 @@
+import { Comment, Thread } from '@/entities/thread';
+
 import { createReply, createThread } from './api';
-import { CreateReplyActionInput, CreateThreadActionInput } from './types';
+import { CreateThreadActionInput } from './types';
 
 export const handleSubmitAction = async ({
     filePath,
@@ -7,18 +9,20 @@ export const handleSubmitAction = async ({
     reviewId,
     text,
     userId,
-}: CreateThreadActionInput): Promise<Comment> => {
+}: CreateThreadActionInput): Promise<[Thread, Comment]> => {
     const thread = await createThread({
         filePath,
         line,
         reviewId,
     });
 
-    return await createReply({
-        text,
+    const comment = await createReply({
+        body: text,
         threadId: thread.id,
-        userId,
+        authorId: userId,
     });
+
+    return [thread, comment];
 };
 
 export const handleReplyAction = createReply;

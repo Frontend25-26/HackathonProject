@@ -77,7 +77,7 @@ export function ReviewClient({ data }: { data: DisplayedSubmission[] }) {
                 />
             );
         },
-        [data, filter, getTitle],
+        [data, filter, getTitle, handleFilterChange],
     );
 
     return (

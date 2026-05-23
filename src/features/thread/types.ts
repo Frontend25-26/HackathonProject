@@ -9,21 +9,3 @@ export interface CreateThreadActionInput {
 }
 
 export type CreateReplyActionInput = CreateReplyInput;
-
-export interface Thread {
-    id: number;
-    githubThreadId: number;
-    filePath: string;
-    reviewId: number;
-    line: number;
-    createdAt: string;
-}
-
-export interface Comment {
-    authorId: number;
-    body: string;
-    createdAt: string;
-    id: number;
-    threadId: number;
-    updatedAt: string;
-}

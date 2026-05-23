@@ -16,7 +16,7 @@
 
     .markdownPreview {
         min-height: calc(
-            10 * var(--g-text-body-short-line-height) /* 10 rows */ + 2 *
+            8 * var(--g-text-body-short-line-height) /* 10 rows */ + 2 *
                 var(--g-spacing-2) /* padding of text area */ + 2 *
                 var(--_--border-width) /* bottom and top borders */
         );

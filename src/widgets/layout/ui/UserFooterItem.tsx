@@ -2,10 +2,7 @@
 
 import { FooterItem } from '@gravity-ui/navigation';
 import { Avatar } from '@gravity-ui/uikit';
-import Link from 'next/link';
 import { FC } from 'react';
-
-import styles from './UserFooterItem.module.css';
 
 import type { Role, User } from '@/entities/user';
 
