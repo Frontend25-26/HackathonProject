@@ -8,9 +8,7 @@ import { Course } from '../../api/types';
 import styles from './StudentCourses.module.css';
 
 export const StudentCourses: FC<{ courses: Course[] }> = ({ courses }) => {
-    const handleView = (id: number) => {
-        console.log('Переход на курс:', id);
-    };
+    const handleView = (_id: number) => {};
 
     return (
         <div className={styles.container}>
