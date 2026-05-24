@@ -111,6 +111,12 @@ registry.registerPath({
         query: z.object({
             assignmentId: z.string().optional(),
             studentId: z.string().optional(),
+            statuses: z
+                .string()
+                .optional()
+                .describe(
+                    'Запятая-разделённый список статусов: DRAFT,PENDING,IN_REVIEW,CHANGES_REQUESTED,APPROVED',
+                ),
         }),
     },
     responses: {
