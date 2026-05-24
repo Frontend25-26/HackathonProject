@@ -9,4 +9,5 @@ export default globalIgnores([
     '**/dist/**/*',
     '.prettierignore', // Config file, not markdown
     'src/backend/generated/**/*', // Generated code
+    'prisma/**/*',
 ]);

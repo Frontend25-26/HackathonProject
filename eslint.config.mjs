@@ -134,6 +134,8 @@ export default defineConfig([
     {
         files: ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'],
         rules: {
+            'no-console': ['error', { allow: ['warn', 'error'] }],
+            'no-alert': 'error',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {
