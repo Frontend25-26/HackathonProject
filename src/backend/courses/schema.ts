@@ -8,17 +8,24 @@ export const CourseSchema = registry.register(
     z.object({
         id: z.number().int(),
         title: z.string(),
+        description: z.string().nullable(),
         createdAt: z.string().datetime(),
         updatedAt: z.string().datetime(),
+        assignmentsTotal: z.number().int(),
+        assignmentsCompleted: z.number().int(),
+        totalScore: z.number().int(),
+        maxScore: z.number().int(),
     }),
 );
 
 export const CreateCourseSchema = z.object({
     title: z.string().min(1),
+    description: z.string().optional(),
 });
 
 export const UpdateCourseSchema = z.object({
     title: z.string().min(1).optional(),
+    description: z.string().optional(),
 });
 
 registry.registerPath({

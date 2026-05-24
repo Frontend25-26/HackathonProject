@@ -3,16 +3,10 @@ import { FC } from 'react';
 import { StudentCourses } from '@/entities/course';
 import { apiFetch } from '@/shared/api';
 
-interface CourseFromAPI {
-    id: number;
-    title: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-}
+import type { Course } from '@/entities/course/api/types';
 
 const StudentCoursesPage: FC = async () => {
-    const courses = await apiFetch<CourseFromAPI[]>('/api/courses');
+    const courses = await apiFetch<Course[]>('/api/courses');
     return <StudentCourses courses={courses} />;
 };
 

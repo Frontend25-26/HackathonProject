@@ -12,15 +12,15 @@ import { courseRepository } from '@backend/courses/repository';
 import { CreateCourseSchema } from '@backend/courses/schema';
 import { requireAuth, requireAdmin } from '@backend/lib/auth';
 
-export async function GET() {
+export const GET = async (): Promise<Response> => {
     const auth = await requireAuth();
     if (!auth.ok) return auth.response;
 
-    const courses = await courseRepository.findAll();
+    const courses = await courseRepository.findAllWithStats(auth.user.id);
     return Response.json(courses);
-}
+};
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest): Promise<Response> => {
     const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
 
@@ -33,4 +33,4 @@ export async function POST(request: NextRequest) {
 
     const course = await courseRepository.create(parsed.data);
     return Response.json(course, { status: 201 });
-}
+};

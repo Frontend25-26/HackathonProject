@@ -32,6 +32,7 @@ model User {
 model Course {
   id          Int          @id @default(autoincrement())
   title       String
+  description String?      @db.Text
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   assignments Assignment[]
@@ -211,4 +212,13 @@ model Notification {
 
   @@index([userId], map: "notifications_user_id_idx")
   @@map("notifications")
+}
+
+model SiteSettings {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String?  @db.Text
+  updatedAt DateTime @map("updated_at")
+
+  @@map("site_settings")
 }
