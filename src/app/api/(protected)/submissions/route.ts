@@ -12,7 +12,7 @@
 
 import { NextRequest } from 'next/server';
 
-import { Role } from '@backend/generated/prisma';
+import { Role, SubmissionStatus } from '@backend/generated/prisma';
 import { requireAuth } from '@backend/lib/auth';
 import { submissionRepository } from '@backend/submissions/repository';
 import { CreateSubmissionSchema } from '@backend/submissions/schema';
@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = request.nextUrl;
     const assignmentId = searchParams.get('assignmentId');
+    const statusesParam = searchParams.get('statuses');
 
     // STUDENT видит только свои сабмишны
     const studentIdParam =
@@ -32,9 +33,19 @@ export async function GET(request: NextRequest) {
               ? Number(searchParams.get('studentId'))
               : undefined;
 
+    const validStatuses = new Set(Object.values(SubmissionStatus));
+    const statuses = statusesParam
+        ? (statusesParam
+              .split(',')
+              .filter((s) =>
+                  validStatuses.has(s as SubmissionStatus),
+              ) as SubmissionStatus[])
+        : undefined;
+
     const submissions = await submissionRepository.findAll({
         ...(assignmentId && { assignmentId: Number(assignmentId) }),
         ...(studentIdParam !== undefined && { studentId: studentIdParam }),
+        ...(statuses?.length && { statuses }),
     });
 
     return Response.json(submissions);

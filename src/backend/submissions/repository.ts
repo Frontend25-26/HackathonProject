@@ -20,6 +20,7 @@ class SubmissionRepository {
     async findAll(filters?: {
         assignmentId?: number;
         studentId?: number;
+        statuses?: SubmissionStatus[];
     }): Promise<SubmissionWithStudent[]> {
         return prisma.submission.findMany({
             where: {
@@ -27,6 +28,9 @@ class SubmissionRepository {
                     assignmentId: filters.assignmentId,
                 }),
                 ...(filters?.studentId && { studentId: filters.studentId }),
+                ...(filters?.statuses?.length && {
+                    status: { in: filters.statuses },
+                }),
             },
             include: studentInclude,
             orderBy: { createdAt: 'desc' },
