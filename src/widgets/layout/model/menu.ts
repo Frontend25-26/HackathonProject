@@ -4,7 +4,6 @@ import {
     GraduationCap,
     ListUl,
     Persons,
-    ListCheck,
     SquareListUl,
 } from '@gravity-ui/icons';
 
