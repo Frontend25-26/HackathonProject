@@ -23,7 +23,7 @@ export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
         },
         onEditAction: (id, newTitle) => {
             setData((prev) =>
-                prev.map((c) => {
+                prev.filter((c) => {
                     if (c.id === id) {
                         c.title = newTitle;
                     }
@@ -75,9 +75,9 @@ export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
                 }}
             />
 
-            <div className={styles['create-button-container']}>
+            <div className={styles.createButtonContainer}>
                 <Button
-                    сlassName={styles['create-button']}
+                    сlassName={styles.createButton}
                     view="action"
                     onClick={() => setIsCreating(true)}
                 >

@@ -4,12 +4,12 @@
     background-color: var(--g-color-base-background);
     border-top: 1px solid var(--g-color-line-generic);
     margin-top: 16px;
+    /*line-height: 48px;*/
+    font-size: 40px;
 }
 
 .create-button {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 40px;
-    line-height: 48px;
 }
