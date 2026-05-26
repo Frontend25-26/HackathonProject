@@ -24,6 +24,13 @@ const ALL_ROLES: Role[] = ['STUDENT', 'MENTOR', 'ADMIN'];
 export const primaryMenu: MenuItemConfig[] = [
     { id: 'dashboard', title: 'Дашборд', icon: Dots9, visibleRoles: ALL_ROLES },
     {
+        id: 'courses',
+        title: 'Курсы',
+        icon: ListUl,
+        visibleRoles: ['ADMIN'],
+        href: '/admin/courses',
+    },
+    {
         id: 'assignments',
         title: 'Задания',
         icon: ListUl,
