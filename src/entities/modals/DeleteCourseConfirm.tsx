@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import { BaseConfirmModal } from './BaseConfirmModal';
 
 type DeleteCourseConfirmProps = {
@@ -17,16 +15,9 @@ export const DeleteCourseConfirmModal = ({
     onConfirmAction,
     courseTitle,
 }: DeleteCourseConfirmProps) => {
-    const [_, setIsLoading] = useState(false);
-
     const handleConfirm = async () => {
-        setIsLoading(true);
-        try {
-            await onConfirmAction();
-            onCloseAction();
-        } finally {
-            setIsLoading(false);
-        }
+        await onConfirmAction();
+        onCloseAction();
     };
 
     return (

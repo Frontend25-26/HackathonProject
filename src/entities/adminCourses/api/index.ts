@@ -1,1 +1,1 @@
-export { fetchCourses, deleteCourse } from './api';
+export { fetchCourses, deleteCourse, editCourse, createCourse } from './api';
