@@ -10,4 +10,6 @@
     display: inline-flex;
     align-items: center;
     gap: var(--g-spacing-2);
+    font-size: var(--g-text-body-3-font-size);
+    line-height: var(--g-text-body-3-line-height);
 }
