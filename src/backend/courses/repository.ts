@@ -62,11 +62,10 @@ class CourseRepository {
         return prisma.course.findUnique({ where: { id } });
     }
 
-    async create(data: {
-        title: string;
-        description?: string;
-    }): Promise<Course> {
-        return prisma.course.create({ data });
+    async create(data: { title: string }): Promise<Course> {
+        return prisma.course.create({
+            data: { ...data, createdAt: new Date(), updatedAt: new Date() },
+        });
     }
 
     async update(
