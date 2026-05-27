@@ -52,7 +52,7 @@ export const CoursesTable: FC<CourseTableProps> = ({
 
     return (
         <Table
-            width={'max'}
+            width="max"
             data={courses}
             columns={columns}
             className={styles.table}

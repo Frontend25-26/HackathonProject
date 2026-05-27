@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog, Button, TextInput } from '@gravity-ui/uikit';
-import { FC, useState, useCallback } from 'react';
+import { FC, useState } from 'react';
 
 type EditCourseModalProps = {
     isOpen: boolean;
@@ -22,7 +22,7 @@ export const EditCourseModal: FC<EditCourseModalProps> = ({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleConfirm = useCallback(async (): Promise<void> => {
+    const handleConfirm = async (): Promise<void> => {
         const trimmed = title.trim();
         if (!trimmed) {
             setError('Название не может быть пустым');
@@ -38,7 +38,7 @@ export const EditCourseModal: FC<EditCourseModalProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [title, onConfirmAction]);
+    };
 
     return (
         <Dialog open={isOpen} onClose={onCloseAction} hasCloseButton>

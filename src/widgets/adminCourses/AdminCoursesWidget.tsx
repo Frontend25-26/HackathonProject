@@ -12,11 +12,18 @@ import { CoursesTable } from '@/features/courses';
 
 import styles from './AdminCoursesWidget.module.css';
 
-export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
-    const [data, setData] = useState(courses);
+interface AdminCoursesWidgetProps {
+    courses: Course[];
+}
+
+export const AdminCoursesWidget: FC<AdminCoursesWidgetProps> = ({
+    courses,
+}) => {
+    const [data, setData] = useState<Course[]>(courses);
     const [deleteId, setDeleteId] = useState<number | null>(null);
-    const [isCreating, setIsCreating] = useState<boolean>(false);
+    const [isCreating, setIsCreating] = useState(false);
     const [editId, setEditId] = useState<number | null>(null);
+
     const { error, deleteCourse, editCourse } = useCourses({
         onDeleteAction: (id: number) => {
             setData((prev) => prev.filter((course) => course.id !== id));
@@ -33,12 +40,14 @@ export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
         },
     });
 
-    const deletingCourse = useMemo(() => {
-        return data.find((c) => c.id === deleteId);
-    }, [data, deleteId]);
-    const editingCourse = useMemo(() => {
-        return data.find((c) => c.id === editId);
-    }, [data, editId]);
+    const deletingCourse = useMemo(
+        () => data.find((c) => c.id === deleteId),
+        [data, deleteId],
+    );
+    const editingCourse = useMemo(
+        () => data.find((c) => c.id === editId),
+        [data, editId],
+    );
 
     return (
         <Card>
@@ -55,7 +64,7 @@ export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
                 courseTitle={deletingCourse?.title}
                 onCloseAction={() => setDeleteId(null)}
                 onConfirmAction={async () => {
-                    if (deleteId) {
+                    if (deleteId !== null) {
                         await deleteCourse(deleteId);
                         setDeleteId(null);
                     }
@@ -68,7 +77,7 @@ export const AdminCoursesWidget: FC<{ courses: Course[] }> = ({ courses }) => {
                 initialTitle={editingCourse?.title}
                 onCloseAction={() => setEditId(null)}
                 onConfirmAction={async (newTitle) => {
-                    if (editId) {
+                    if (editId !== null) {
                         await editCourse(editId, newTitle);
                         setEditId(null);
                     }
