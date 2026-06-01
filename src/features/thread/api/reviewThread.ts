@@ -1,6 +1,5 @@
+import { Thread } from '@/entities/thread';
 import { apiFetch } from '@/shared/api';
-
-import { Thread } from '../types';
 
 import { CreateThreadInput } from './types';
 

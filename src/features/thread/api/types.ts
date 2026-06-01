@@ -6,6 +6,6 @@ export interface CreateThreadInput {
 
 export interface CreateReplyInput {
     threadId: number;
-    text: string;
-    userId: number;
+    body: string;
+    authorId: number;
 }

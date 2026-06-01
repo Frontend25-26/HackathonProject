@@ -1,0 +1,1 @@
+export { TableWithSorting } from './TableWithSorting';

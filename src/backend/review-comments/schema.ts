@@ -39,11 +39,20 @@ registry.registerPath({
     path: '/review-comments',
     tags: ['ReviewComments'],
     summary: addAccessTag(
-        'Список комментариев (фильтр по threadId через query) (MENTOR везде, STUDENT только в своих review)',
+        'Список комментариев (фильтр по threadId или threadIds через query) (MENTOR везде, STUDENT только в своих review)',
         'STUDENT | MENTOR',
     ),
     request: {
-        query: z.object({ threadId: z.string().optional() }),
+        query: z.object({
+            threadId: z.string().optional().openapi({
+                description: 'ID одного треда',
+                example: '42',
+            }),
+            threadIds: z.string().optional().openapi({
+                description: 'ID нескольких тредов через запятую',
+                example: '1,2,3',
+            }),
+        }),
     },
     responses: {
         200: {

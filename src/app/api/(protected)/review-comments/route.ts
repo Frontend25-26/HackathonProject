@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { reposApi } from '@backend/github/repos';
 import { requireAuth } from '@backend/lib/auth';
 import { prisma } from '@backend/lib/prisma';
+import { notificationRepository } from '@backend/notifications/repository';
 import { reviewCommentRepository } from '@backend/review-comments/repository';
 import { CreateReviewCommentSchema } from '@backend/review-comments/schema';
 import { userRepository } from '@backend/users/repository';
@@ -84,9 +85,17 @@ export const GET = async (request: NextRequest): Promise<Response> => {
 
     const { searchParams } = request.nextUrl;
     const threadId = searchParams.get('threadId');
+    const threadIdsParam = searchParams.get('threadIds');
+    const threadIds = threadIdsParam
+        ? threadIdsParam.split(',').map(Number).filter(Boolean)
+        : undefined;
 
     const comments = await reviewCommentRepository.findAll(
-        threadId ? { threadId: Number(threadId) } : undefined,
+        threadIds?.length
+            ? { threadIds }
+            : threadId
+              ? { threadId: Number(threadId) }
+              : undefined,
     );
 
     return Response.json(comments);
@@ -114,6 +123,8 @@ export const POST = async (request: NextRequest): Promise<Response> => {
             },
             review: {
                 select: {
+                    id: true,
+                    mentorId: true,
                     submission: {
                         select: { studentId: true },
                     },
@@ -154,6 +165,33 @@ export const POST = async (request: NextRequest): Promise<Response> => {
         authorId: auth.user.id,
         githubCommentId,
     });
+
+    const reviewId = thread.review.id;
+    const studentId = thread.review.submission.studentId;
+    const mentorId = thread.review.mentorId;
+
+    if (
+        (auth.user.role === 'MENTOR' || auth.user.role === 'ADMIN') &&
+        auth.user.id !== studentId
+    ) {
+        // MENTOR комментирует → уведомить STUDENT
+        notificationRepository
+            .createForNewComment({
+                recipientId: studentId,
+                actorId: auth.user.id,
+                reviewId,
+            })
+            .catch(console.error);
+    } else if (auth.user.role === 'STUDENT') {
+        // STUDENT отвечает → уведомить MENTOR
+        notificationRepository
+            .createForStudentReply({
+                recipientId: mentorId,
+                actorId: auth.user.id,
+                reviewId,
+            })
+            .catch(console.error);
+    }
 
     return Response.json(comment, { status: 201 });
 };

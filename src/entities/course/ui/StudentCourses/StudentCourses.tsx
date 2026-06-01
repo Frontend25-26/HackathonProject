@@ -1,35 +1,60 @@
 'use client';
-import { FC } from 'react';
 
-import { CourseCard } from '@/entities/course/ui/CourseCard';
+import { TableColumnConfig, Text } from '@gravity-ui/uikit';
 
-import { Course } from '../../api/types';
+import { Table } from '@/shared/ui/Table/Table';
 
 import styles from './StudentCourses.module.css';
 
-export const StudentCourses: FC<{ courses: Course[] }> = ({ courses }) => {
-    const handleView = (id: number) => {
-        console.log('Переход на курс:', id);
-    };
+import type { Course } from '../../api/types';
+import type { FC } from 'react';
+
+interface StudentCoursesProps {
+    courses: Course[];
+}
+
+const columns: TableColumnConfig<Course>[] = [
+    {
+        id: 'title',
+        name: 'Название',
+    },
+    {
+        id: 'description',
+        name: 'Описание',
+        template: (item) => (
+            <span className={styles.description}>
+                {item.description ?? '—'}
+            </span>
+        ),
+    },
+    {
+        id: 'assignmentsCompleted',
+        name: 'Домашние задания',
+        template: (item) =>
+            `${item.assignmentsCompleted} / ${item.assignmentsTotal}`,
+    },
+    {
+        id: 'totalScore',
+        name: 'Баллы',
+        template: (item) => `${item.totalScore} / ${item.maxScore}`,
+    },
+];
+
+export const StudentCourses: FC<StudentCoursesProps> = ({ courses }) => {
+    const handleClick = (_item: Course): void => {};
 
     return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>Список курсов</h1>
-            {!courses || courses.length === 0 ? (
-                <div className={styles.empty}>
-                    <h2>Нет доступных курсов</h2>
-                </div>
-            ) : (
-                <div className={styles.coursesList}>
-                    {courses.map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            course={course}
-                            onView={handleView}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
+        <>
+            <Text as="h1" variant="display-1">
+                Список курсов
+            </Text>
+            <Table
+                data={courses}
+                columns={columns}
+                verticalAlign="middle"
+                onRowClick={handleClick}
+                emptyMessage="Нет доступных курсов"
+            />
+        </>
     );
 };

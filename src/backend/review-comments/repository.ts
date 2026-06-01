@@ -19,11 +19,14 @@ type ReviewCommentWithAuthor = Prisma.ReviewCommentGetPayload<{
 class ReviewCommentsRepository {
     async findAll(filters?: {
         threadId?: number;
+        threadIds?: number[];
     }): Promise<ReviewCommentWithAuthor[]> {
         return prisma.reviewComment.findMany({
-            where: filters?.threadId
-                ? { threadId: filters.threadId }
-                : undefined,
+            where: filters?.threadIds?.length
+                ? { threadId: { in: filters.threadIds } }
+                : filters?.threadId
+                  ? { threadId: filters.threadId }
+                  : undefined,
             include: authorInclude,
             orderBy: { createdAt: 'asc' },
         });

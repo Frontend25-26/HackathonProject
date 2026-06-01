@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server';
 
 import { requireAuth } from '@backend/lib/auth';
 import { prisma } from '@backend/lib/prisma';
+import { notificationRepository } from '@backend/notifications/repository';
 import { reviewThreadRepository } from '@backend/review-threads/repository';
 import { CreateReviewThreadSchema } from '@backend/review-threads/schema';
 
@@ -81,6 +82,15 @@ export async function POST(request: NextRequest) {
     // MENTOR/ADMIN может создавать везде
     if (auth.user.role === 'MENTOR' || auth.user.role === 'ADMIN') {
         const thread = await reviewThreadRepository.create(parsed.data);
+
+        notificationRepository
+            .createForNewThread({
+                recipientId: review.submission.studentId,
+                actorId: auth.user.id,
+                reviewId: parsed.data.reviewId,
+            })
+            .catch(console.error);
+
         return Response.json(thread, { status: 201 });
     }
 
