@@ -1,8 +1,8 @@
+import { settingsRepository } from '@backend/settings/repository';
+import { UpdateSiteSettingsSchema } from '@backend/settings/schema';
 import { NextRequest } from 'next/server';
 
 import { requireAdmin } from '@backend/lib/auth';
-import { settingsRepository } from '@backend/settings/repository';
-import { UpdateSiteSettingsSchema } from '@backend/settings/schema';
 
 export const GET = async (): Promise<Response> => {
     const auth = await requireAdmin();

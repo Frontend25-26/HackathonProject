@@ -1,6 +1,7 @@
+import { settingsRepository } from '@backend/settings/repository';
+
 import { classroomApi } from '@backend/github/classroom';
 import { requireAdmin } from '@backend/lib/auth';
-import { settingsRepository } from '@backend/settings/repository';
 import { userRepository } from '@backend/users/repository';
 
 export const GET = async (): Promise<Response> => {
