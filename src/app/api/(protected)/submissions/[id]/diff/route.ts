@@ -18,8 +18,6 @@ export const GET = async (
         where: { id: submissionId },
     });
 
-    console.log('-> submission: ', submission);
-
     if (!submission) {
         return Response.json({ error: 'Работа не найдена' }, { status: 404 });
     }

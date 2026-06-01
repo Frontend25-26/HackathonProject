@@ -39,7 +39,7 @@ export const StudentCourses: FC = () => {
     }, []);
 
     const handleView = (title: string) => {
-        alert(`Курс "${title}" пока не доступен. Страница в разработке!`);
+        //alert(`Курс "${title}" пока не доступен. Страница в разработке!`);
     };
 
     if (courses.length === 0) {
