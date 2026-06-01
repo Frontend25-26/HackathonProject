@@ -5,15 +5,18 @@ import {
     Diff2HtmlUIConfig,
 } from 'diff2html/lib/ui/js/diff2html-ui';
 import { FC, useEffect, useRef } from 'react';
+
+import { Theme, useTheme } from '@/features/theme';
+
 import 'diff2html/bundles/css/diff2html.min.css';
 
 interface SubmissionClientProps {
-    fileName: string;
     patch: string;
 }
 
-export const ReviewDiff: FC<SubmissionClientProps> = ({ fileName, patch }) => {
+export const ReviewDiff: FC<SubmissionClientProps> = ({ patch }) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const { theme } = useTheme();
 
     useEffect(() => {
         if (!containerRef.current) {
@@ -39,5 +42,12 @@ export const ReviewDiff: FC<SubmissionClientProps> = ({ fileName, patch }) => {
         diff2htmlUi.highlightCode();
     }, [patch]);
 
-    return <div ref={containerRef} />;
+    return (
+        <div
+            className={
+                theme === Theme.DARK ? 'd2h-dark-color-scheme' : undefined
+            }
+            ref={containerRef}
+        />
+    );
 };

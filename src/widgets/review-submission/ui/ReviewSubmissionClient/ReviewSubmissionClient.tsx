@@ -1,6 +1,12 @@
 'use client';
 
-import { FC, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
+
+import {
+    getCreatePatch,
+    getChangePatch,
+    getDeletePatch,
+} from '@/shared/utils/helpers/gitPatch';
 
 import { buildFileTree } from '../FileTree/buildFileTree';
 import { FileTree } from '../FileTree/FileTree';
@@ -8,39 +14,10 @@ import { ReviewDiff } from '../ReviewDiff/ReviewDiff';
 
 import styles from './ReviewSubmissionClient.module.css';
 
-import type { RepoDiff } from '../ReviewDiff/ReviewMockRepository';
-
-export const getChangePatch = (fileName: string, patch: string) => {
-    return `
-diff --git a/${fileName} b/${fileName}
---- a/${fileName}
-+++ b/${fileName}
-${patch}
-`;
-};
-
-const getCreatePatch = (fileName: string, patch: string) => {
-    return `
-diff --git a/${fileName} b/${fileName}
-new file mode 100644
---- /dev/null
-+++ b/${fileName}
-${patch}
-`;
-};
-
-const getDeletePatch = (fileName: string, patch: string) => {
-    return `
-diff --git a/${fileName} b/${fileName}
-deleted file mode 100644
---- a/${fileName}
-+++ /dev/null
-${patch}
-`;
-};
+import type { FileChange, RepoDiff } from '@/shared/types/file-diff';
 
 interface ReviewSubmissionProps {
-    fileChanges: RepoDiff;
+    fileChanges: FileChange[];
 }
 
 export const ReviewSubmissionClient: FC<ReviewSubmissionProps> = ({
@@ -48,10 +25,25 @@ export const ReviewSubmissionClient: FC<ReviewSubmissionProps> = ({
 }) => {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-    const tree = useMemo(() => buildFileTree(fileChanges), [fileChanges]);
+    const fileMapper = useMemo<RepoDiff>(() => {
+        const mapper: RepoDiff = {};
 
-    const selectedDiff = selectedFile ? fileChanges[selectedFile] : null;
+        fileChanges.forEach((fileChange) => {
+            mapper[fileChange.filename] = {
+                status: fileChange.status,
+                filename: fileChange.filename,
+                patch: fileChange.patch,
+            };
+        });
 
+        return mapper;
+    }, [fileChanges]);
+    console.log(selectedFile);
+    console.log(fileChanges);
+
+    const tree = useMemo(() => buildFileTree(fileMapper), [fileMapper]);
+
+    const selectedDiff = selectedFile ? fileMapper[selectedFile] : null;
     let fullPatch: string | null = null;
     if (selectedDiff) {
         if (selectedDiff.status === 'added') {
@@ -75,10 +67,7 @@ export const ReviewSubmissionClient: FC<ReviewSubmissionProps> = ({
 
             <div className={styles.reviewDiff}>
                 {selectedDiff ? (
-                    <ReviewDiff
-                        fileName={selectedFile || ''}
-                        patch={fullPatch!}
-                    />
+                    <ReviewDiff patch={fullPatch!} />
                 ) : (
                     <div>Select a file</div>
                 )}

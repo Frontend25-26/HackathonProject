@@ -1,10 +1,8 @@
-import { diffLines } from 'diff';
 import { parse } from 'diff2html';
 import { DiffFile } from 'diff2html/lib/types';
 
-import { getChangePatch } from '@/widgets/review-submission/ui/ReviewSubmissionClient/ReviewSubmissionClient';
-
-import { RepoDiff } from '../ReviewDiff/ReviewMockRepository';
+import { RepoDiff } from '@/shared/types/file-diff';
+import { getChangePatch } from '@/shared/utils/helpers/gitPatch';
 
 export type DiffStatus = 'added' | 'modified' | 'deleted';
 
@@ -40,10 +38,8 @@ export function buildFileTree(repo: RepoDiff): TreeNode[] {
         return 'modified';
     };
 
-    for (const fullPath in repo) {
-        const file = repo[fullPath];
-
-        const patch = getChangePatch(fullPath, file.patch);
+    Object.values(repo).forEach((file) => {
+        const patch = getChangePatch(file.filename, file.patch);
 
         const fileInfo = parse(patch)[0];
 
@@ -52,7 +48,7 @@ export function buildFileTree(repo: RepoDiff): TreeNode[] {
         const added = fileInfo.addedLines;
         const removed = fileInfo.deletedLines;
 
-        const parts = fullPath.split('/');
+        const parts = file.filename.split('/');
 
         let current = root;
 
@@ -89,7 +85,7 @@ export function buildFileTree(repo: RepoDiff): TreeNode[] {
 
             current = node;
         });
-    }
+    });
 
     return root.children || [];
 }

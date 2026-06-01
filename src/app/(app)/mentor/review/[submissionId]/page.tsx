@@ -1,5 +1,4 @@
 import { apiFetch } from '@/shared/api';
-import { RepoDiff } from '@/widgets/review-submission/ui/ReviewDiff/ReviewMockRepository';
 import { ReviewSubmissionClient } from '@/widgets/review-submission/ui/ReviewSubmissionClient/ReviewSubmissionClient';
 
 interface ReviewSubmissionProps {
@@ -8,16 +7,18 @@ interface ReviewSubmissionProps {
     };
 }
 
-async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
-    //const user = await apiFetch<User>('/api/me');
+import type { FileChange } from '@/shared/types/file-diff';
 
+interface DiffFetch {
+    files: FileChange[];
+}
+
+async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
     const id = (await params).submissionId;
-    const fileData = await apiFetch<RepoDiff>(`/api/submissions/${id}/diff`);
-    //const fileData = repoDiff;
+    const fileData = await apiFetch<DiffFetch>(`/api/submissions/${id}/diff`);
     return (
         <div>
-            <p>This is review submission page</p>
-            <ReviewSubmissionClient fileChanges={fileData} />
+            <ReviewSubmissionClient fileChanges={fileData.files} />
         </div>
     );
 }
