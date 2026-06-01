@@ -46,14 +46,7 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
                             borderColor={getRoleColor(user.role)}
                         />
                     ),
-                    title: (
-                        <Link
-                            href={`/user/${user.id}`}
-                            className={styles.plainLink}
-                        >
-                            {userName}
-                        </Link>
-                    ),
+                    title: userName,
                 })
             }
         />

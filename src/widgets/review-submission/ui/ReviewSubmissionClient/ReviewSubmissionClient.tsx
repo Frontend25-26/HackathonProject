@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import {
     getCreatePatch,
@@ -38,8 +38,6 @@ export const ReviewSubmissionClient: FC<ReviewSubmissionProps> = ({
 
         return mapper;
     }, [fileChanges]);
-    console.log(selectedFile);
-    console.log(fileChanges);
 
     const tree = useMemo(() => buildFileTree(fileMapper), [fileMapper]);
 
