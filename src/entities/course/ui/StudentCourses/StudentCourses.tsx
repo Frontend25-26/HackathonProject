@@ -1,12 +1,11 @@
 'use client';
 
-import { TableColumnConfig, Text } from '@gravity-ui/uikit';
-
-import { Table } from '@/shared/ui/Table/Table';
+import { TableColumnConfig, Text, Flex, Box, Table } from '@gravity-ui/uikit';
+import { useRouter } from 'next/navigation';
 
 import styles from './StudentCourses.module.css';
 
-import type { Course } from '../../api/types';
+import type { Course } from '@/entities/course';
 import type { FC } from 'react';
 
 interface StudentCoursesProps {
@@ -22,9 +21,13 @@ const columns: TableColumnConfig<Course>[] = [
         id: 'description',
         name: 'Описание',
         template: (item) => (
-            <span className={styles.description}>
+            <Text
+                variant="body-2"
+                color="secondary"
+                className={styles.description}
+            >
                 {item.description ?? '—'}
-            </span>
+            </Text>
         ),
     },
     {
@@ -41,20 +44,27 @@ const columns: TableColumnConfig<Course>[] = [
 ];
 
 export const StudentCourses: FC<StudentCoursesProps> = ({ courses }) => {
-    const handleClick = (_item: Course): void => {};
+    const router = useRouter();
+
+    const handleClick = (course: Course) => {
+        router.push(`/student/assignments?courseId=${course.id}`);
+    };
 
     return (
-        <>
+        <Flex direction="column">
             <Text as="h1" variant="display-1">
                 Список курсов
             </Text>
-            <Table
-                data={courses}
-                columns={columns}
-                verticalAlign="middle"
-                onRowClick={handleClick}
-                emptyMessage="Нет доступных курсов"
-            />
-        </>
+
+            <Box className={styles.tableWrapper}>
+                <Table
+                    data={courses}
+                    columns={columns}
+                    verticalAlign="middle"
+                    onRowClick={handleClick}
+                    emptyMessage="Нет доступных курсов"
+                />
+            </Box>
+        </Flex>
     );
 };
