@@ -67,7 +67,7 @@ export const ReviewSubmissionClient: FC<ReviewSubmissionProps> = ({
                 {selectedDiff ? (
                     <ReviewDiff patch={fullPatch!} />
                 ) : (
-                    <div>Select a file</div>
+                    <div>Выберите файл</div>
                 )}
             </div>
         </div>

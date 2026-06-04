@@ -1,5 +1,7 @@
 import { apiFetch } from '@/shared/api';
-import { ReviewSubmissionClient } from '@/widgets/review-submission/ui/ReviewSubmissionClient/ReviewSubmissionClient';
+import { ReviewSubmissionClient } from '@/widgets/review-submission';
+
+import type { FileChange } from '@/shared/types/file-diff';
 
 interface ReviewSubmissionProps {
     params: {
@@ -7,20 +9,22 @@ interface ReviewSubmissionProps {
     };
 }
 
-import type { FileChange } from '@/shared/types/file-diff';
-
 interface DiffFetch {
     files: FileChange[];
 }
 
 async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
-    const id = (await params).submissionId;
-    const fileData = await apiFetch<DiffFetch>(`/api/submissions/${id}/diff`);
-    return (
-        <div>
-            <ReviewSubmissionClient fileChanges={fileData.files} />
-        </div>
-    );
+    const a = await params;
+    let fileData: DiffFetch;
+    try {
+        fileData = await apiFetch<DiffFetch>(
+            `/api/submissions/${a.submissionId}/diff`,
+        );
+    } catch {
+        return <p>Работа не найдена</p>;
+    }
+
+    return <ReviewSubmissionClient fileChanges={fileData.files} />;
 }
 
 export default ReviewSubmissionPage;

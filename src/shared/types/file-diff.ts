@@ -1,7 +1,9 @@
 export type FilePath = string;
 
+export type FileStatus = 'added' | 'modified' | 'deleted';
+
 export type FileChange = {
-    status: string;
+    status: FileStatus;
     patch: string;
     filename: string;
 };

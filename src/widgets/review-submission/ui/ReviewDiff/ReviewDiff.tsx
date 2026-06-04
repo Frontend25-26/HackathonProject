@@ -1,53 +1,52 @@
 'use client';
 
-import {
-    Diff2HtmlUI,
-    Diff2HtmlUIConfig,
-} from 'diff2html/lib/ui/js/diff2html-ui';
+import { html, type Diff2HtmlConfig } from 'diff2html';
+import hljs from 'highlight.js';
 import { FC, useEffect, useRef } from 'react';
 
 import { Theme, useTheme } from '@/features/theme';
 
 import 'diff2html/bundles/css/diff2html.min.css';
+import 'highlight.js/styles/github.css';
 
 interface SubmissionClientProps {
     patch: string;
 }
 
 export const ReviewDiff: FC<SubmissionClientProps> = ({ patch }) => {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { theme } = useTheme();
 
     useEffect(() => {
-        if (!containerRef.current) {
+        const container = containerRef.current;
+
+        if (!container || !patch) {
             return;
         }
 
-        const configuration: Diff2HtmlUIConfig = {
+        const configuration: Diff2HtmlConfig = {
             drawFileList: false,
             matching: 'lines',
-            highlight: true,
             outputFormat: 'side-by-side',
         };
 
-        containerRef.current.innerHTML = '';
+        container.innerHTML = html(patch, configuration);
 
-        const diff2htmlUi = new Diff2HtmlUI(
-            containerRef.current,
-            patch,
-            configuration,
-        );
-
-        diff2htmlUi.draw();
-        diff2htmlUi.highlightCode();
+        container
+            .querySelectorAll('pre code')
+            .forEach((block) => hljs.highlightElement(block as HTMLElement));
     }, [patch]);
+
+    if (!patch) {
+        return <p>Diff файла не может быть отображен</p>;
+    }
 
     return (
         <div
+            ref={containerRef}
             className={
                 theme === Theme.DARK ? 'd2h-dark-color-scheme' : undefined
             }
-            ref={containerRef}
         />
     );
 };

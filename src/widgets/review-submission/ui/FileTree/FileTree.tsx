@@ -42,7 +42,7 @@ interface TreeItemProps {
 const TreeItem: FC<TreeItemProps> = ({ node, selectedFile, onSelectFile }) => {
     const [open, setOpen] = useState(true);
 
-    if (node.type === 'folder') {
+    if (node.type === 'FOLDER') {
         return (
             <div className={styles.folderMargin}>
                 <div
@@ -75,7 +75,7 @@ const TreeItem: FC<TreeItemProps> = ({ node, selectedFile, onSelectFile }) => {
     const statusClassname =
         status === 'added'
             ? styles.add
-            : status === 'deleted'
+            : status === 'modified'
               ? styles.delete
               : styles.modify;
 
