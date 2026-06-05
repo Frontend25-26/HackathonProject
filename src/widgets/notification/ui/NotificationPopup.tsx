@@ -1,4 +1,4 @@
-import { Card, Popup } from '@gravity-ui/uikit';
+import { Popup } from '@gravity-ui/uikit';
 
 import { Notification } from '@/entities/notification';
 
@@ -25,13 +25,15 @@ export const NotificationPopup = ({
             onOpenChange={setOpen}
             placement="right-end"
         >
-            {notifications.length !== 0 ? (
-                notifications.map((notification) => (
-                    <NotificationItem
-                        key={notification.id}
-                        notification={notification}
-                    />
-                ))
+            {notifications.length ? (
+                notifications
+                    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+                    .map((notification) => (
+                        <NotificationItem
+                            key={notification.id}
+                            notification={notification}
+                        />
+                    ))
             ) : (
                 <div className={styles.empty}>Нет уведомлений</div>
             )}

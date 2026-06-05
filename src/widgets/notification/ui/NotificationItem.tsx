@@ -1,9 +1,12 @@
-import { User } from '@gravity-ui/uikit';
+import { Avatar, Checkbox, Link } from '@gravity-ui/uikit';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { useRouter } from 'next/navigation';
 
-import { Notification, patchNotification } from '@/entities/notification';
+import {
+    Notification,
+    patchNotification,
+    useNotificationsPolling,
+} from '@/entities/notification';
 
 import styles from './Notification.module.css';
 
@@ -12,35 +15,54 @@ interface Props {
 }
 
 export function NotificationItem({ notification }: Props) {
-    const router = useRouter();
+    const { reload } = useNotificationsPolling();
 
-    const handleClick = async () => {
+    const handleNotification = async () => {
         await patchNotification(notification.id);
-        router.push(notification.link);
+        await reload();
     };
 
     return (
-        <button type="button" onClick={handleClick} className={styles.item}>
+        <div className={styles.itemWrapper}>
             <div className={styles.userWrapper}>
-                <User
-                    avatar={{ text: 'no name', theme: 'brand' }} // TODO после добавления автора для уведомлений
+                <Avatar // TODO после добавления автора для уведомлений
+                    text={'no name'}
                     size="s"
-                    name={notification.title}
-                    description={
-                        <span className={styles.description}>
-                            {notification.body}
-                        </span>
-                    }
+                    theme="brand"
+                />
+                {/*{notification.author.avatar ? (*/}
+                {/*<Avatar*/}
+                {/*    imgUrl={notification.author.avatar}*/}
+                {/*    size="m"*/}
+                {/*/>*/}
+                {/*) : (*/}
+                {/*<Avatar*/}
+                {/*    text={notification.author.userName}*/}
+                {/*    size="m"*/}
+                {/*    theme="brand"*/}
+                {/*/>*/}
+                {/*)}*/}
+            </div>
+            <div className={styles.contentWrapper}>
+                <Link
+                    className={styles.content}
+                    href={notification.link}
+                    onClick={handleNotification}
+                >
+                    {notification.title}
+                </Link>
+                <span className={styles.description}>{notification.body}</span>
+                <span className={styles.time}>
+                    {formatDistanceToNow(new Date(notification.createdAt), {
+                        locale: ru,
+                    })}
+                </span>
+                <Checkbox
+                    className={styles.checkboxWrapper}
+                    checked={notification.isRead}
+                    onChange={handleNotification}
                 />
             </div>
-
-            <span className={styles.time}>
-                {formatDistanceToNow(new Date(notification.createdAt), {
-                    locale: ru,
-                })}
-            </span>
-
-            {!notification.isRead && <div className={styles.unread} />}
-        </button>
+        </div>
     );
 }

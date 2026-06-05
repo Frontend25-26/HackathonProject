@@ -18,7 +18,6 @@ export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
         null,
     );
     const [open, setOpen] = useState(false);
-
     const { unreadCount, notifications } = useNotificationsPolling();
 
     return (
@@ -32,14 +31,14 @@ export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
                     <>
                         <div
                             ref={setAnchorElement}
-                            onClick={() => setOpen(!open)}
+                            onClick={() => setOpen((prev) => !prev)}
                         >
                             {makeItem({
                                 ...params,
                                 icon: (
                                     <div className={styles.iconWrapper}>
                                         <Bell />
-                                        {unreadCount !== 0 && (
+                                        {!!unreadCount && (
                                             <span className={styles.badge}>
                                                 {unreadCount < 99
                                                     ? unreadCount
