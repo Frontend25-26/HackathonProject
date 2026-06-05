@@ -1,0 +1,71 @@
+.fileTree {
+}
+
+.folderMargin {
+    margin-left: var(--g-spacing-3);
+}
+
+.folder {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: var(--g-spacing-2);
+}
+
+.file {
+    margin-left: var(--g-spacing-6);
+    margin-right: var(--g-spacing-5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--g-spacing-2);
+    padding: var(--g-spacing-1) 0;
+    user-select: none;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.fileBox {
+    display: flex;
+    align-items: center;
+    gap: var(--g-spacing-2);
+    overflow: hidden;
+}
+
+.fileType {
+    width: var(--g-spacing-3);
+    font-weight: 700;
+    font-family: monospace;
+    flex-shrink: 0;
+}
+
+.add {
+    color: var(--g-color-base-positive-heavy);
+}
+
+.modify {
+    color: var(--g-color-base-info-heavy);
+}
+
+.delete {
+    color: var(--g-color-base-danger-heavy);
+}
+
+.fileName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.changedLines {
+    font-size: var(--g-spacing-3);
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: var(--g-spacing-2);
+    flex-shrink: 0;
+}
