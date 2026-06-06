@@ -15,7 +15,7 @@ export const GhClassroomSchema = registry.register(
         name: z.string(),
         archived: z.boolean(),
         url: z.string(),
-        organization: GhOrganizationSchema,
+        organization: GhOrganizationSchema.optional(),
     }),
 );
 
@@ -92,10 +92,12 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'get',
-    path: '/github/classrooms/{classroomId}/assignments',
+    path: '/github/assignments',
     tags: ['GitHub Classroom'],
-    summary: addAccessTag('Список заданий classroom-класса', 'ADMIN'),
-    request: { params: z.object({ classroomId: z.string() }) },
+    summary: addAccessTag(
+        'Список заданий выбранного classroom-класса (classroomId берётся из настроек сайта)',
+        'ADMIN',
+    ),
     responses: {
         200: {
             description:
@@ -103,6 +105,10 @@ registry.registerPath({
             content: {
                 'application/json': { schema: z.array(GhAssignmentSchema) },
             },
+        },
+        400: {
+            description:
+                'Классрум не выбран — сначала выбери на /admin/classrooms',
         },
     },
 });

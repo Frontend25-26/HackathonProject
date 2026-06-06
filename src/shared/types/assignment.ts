@@ -10,3 +10,8 @@ export interface Assignment {
     title: string;
     updatedAt: string;
 }
+export enum AssignmentStatus {
+    ACTIVE = 'active',
+    OVERDUE = 'overdue',
+    COMPLETED = 'completed',
+}
