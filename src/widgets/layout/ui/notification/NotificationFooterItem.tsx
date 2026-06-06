@@ -14,14 +14,8 @@ interface NotificationFooterItemProps {
 export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
     compact,
 }) => {
-    const {
-        unreadCount,
-        notifications,
-        reload,
-        readLocally,
-        readAllLocally,
-        restore,
-    } = useNotificationsPolling();
+    const { unreadCount, notifications, reload, readLocally, readAll } =
+        useNotificationsPolling();
 
     const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
         null,
@@ -64,8 +58,7 @@ export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
                             notifications={notifications}
                             reload={reload}
                             readLocally={readLocally}
-                            readAllLocally={readAllLocally}
-                            restore={restore}
+                            readAll={readAll}
                         />
                     </>
                 );

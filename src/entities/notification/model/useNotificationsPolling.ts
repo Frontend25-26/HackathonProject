@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Notification } from '@/entities/notification';
+import { Notification, patchAllNotifications } from '@/entities/notification';
 import { getNotifications } from '@/entities/notification/api/actions';
 
 export function useNotificationsPolling() {
@@ -25,13 +25,21 @@ export function useNotificationsPolling() {
         );
     };
 
-    const restoreNotifications = (snapshot: Notification[]) => {
-        setNotifications(snapshot);
-    };
-
     const loadNotifications = useCallback(async () => {
         setNotifications(await getNotifications({ limit: 10, unread: true }));
     }, []);
+
+    const markAllAsRead = useCallback(async () => {
+        const snapshot = [...notifications];
+
+        markAllAsReadLocally();
+        try {
+            await patchAllNotifications();
+            await loadNotifications();
+        } catch {
+            setNotifications(snapshot);
+        }
+    }, [notifications, loadNotifications]);
 
     useEffect(() => {
         queueMicrotask(() => loadNotifications());
@@ -45,8 +53,7 @@ export function useNotificationsPolling() {
         notifications,
         unreadCount,
         reload: loadNotifications,
-        restore: restoreNotifications,
         readLocally: markAsReadLocally,
-        readAllLocally: markAllAsReadLocally,
+        readAll: markAllAsRead,
     };
 }

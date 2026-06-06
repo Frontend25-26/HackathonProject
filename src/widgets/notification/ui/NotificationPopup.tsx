@@ -1,6 +1,6 @@
 import { Button, Popup } from '@gravity-ui/uikit';
 
-import { Notification, patchAllNotifications } from '@/entities/notification';
+import { Notification } from '@/entities/notification';
 
 import styles from './Notification.module.css';
 import { NotificationItem } from './NotificationItem';
@@ -11,9 +11,8 @@ interface NotificationPopupProps {
     anchorElement: HTMLDivElement | null;
     notifications: Notification[];
     reload: () => Promise<void>;
-    restore: (snapshot: Notification[]) => void;
     readLocally: (id: number) => void;
-    readAllLocally: () => void;
+    readAll: () => void;
 }
 
 export const NotificationPopup = ({
@@ -22,20 +21,9 @@ export const NotificationPopup = ({
     anchorElement,
     notifications,
     readLocally,
-    readAllLocally,
     reload,
-    restore,
+    readAll,
 }: NotificationPopupProps) => {
-    const handleMarkAll = () => {
-        const snapshot = [...notifications];
-        try {
-            readAllLocally();
-            void patchAllNotifications().then(() => reload());
-        } catch (_) {
-            restore(snapshot);
-        }
-    };
-
     return (
         <Popup
             anchorElement={anchorElement}
@@ -57,7 +45,7 @@ export const NotificationPopup = ({
                         size="s"
                         view="flat-action"
                         width="max"
-                        onClick={handleMarkAll}
+                        onClick={readAll}
                     >
                         Отметить все как прочитанные
                     </Button>
