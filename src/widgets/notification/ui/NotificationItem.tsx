@@ -2,24 +2,23 @@ import { Avatar, Checkbox, Link } from '@gravity-ui/uikit';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
-import {
-    Notification,
-    patchNotification,
-    useNotificationsPolling,
-} from '@/entities/notification';
+import { Notification, patchNotification } from '@/entities/notification';
 
 import styles from './Notification.module.css';
 
 interface Props {
     notification: Notification;
+    reload: () => Promise<void>;
+    onRead: (id: number) => void;
 }
 
-export function NotificationItem({ notification }: Props) {
-    const { reload } = useNotificationsPolling();
-
+export function NotificationItem({ notification, reload, onRead }: Props) {
     const handleNotification = async () => {
-        await patchNotification(notification.id);
-        await reload();
+        if (!notification.isRead) {
+            onRead(notification.id);
+
+            void patchNotification(notification.id).then(() => reload());
+        }
     };
 
     return (

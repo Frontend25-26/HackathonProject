@@ -18,7 +18,8 @@ export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
         null,
     );
     const [open, setOpen] = useState(false);
-    const { unreadCount, notifications } = useNotificationsPolling();
+    const { unreadCount, notifications, reload, markAsReadLocally } =
+        useNotificationsPolling();
 
     return (
         <FooterItem
@@ -54,6 +55,8 @@ export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
                             setOpen={setOpen}
                             anchorElement={anchorElement}
                             notifications={notifications}
+                            reload={reload}
+                            markAsReadLocally={markAsReadLocally}
                         />
                     </>
                 );

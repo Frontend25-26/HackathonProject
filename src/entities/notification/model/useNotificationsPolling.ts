@@ -6,6 +6,16 @@ import { getNotifications } from '@/entities/notification/api/actions';
 export function useNotificationsPolling() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
+    const markAsReadLocally = (id: number) => {
+        setNotifications((prev) =>
+            prev.map((notification) =>
+                notification.id === id
+                    ? { ...notification, isRead: true }
+                    : notification,
+            ),
+        );
+    };
+
     const loadNotifications = useCallback(async () => {
         setNotifications(await getNotifications({ limit: 10 }));
     }, []);
@@ -22,5 +32,6 @@ export function useNotificationsPolling() {
         notifications,
         unreadCount,
         reload: loadNotifications,
+        markAsReadLocally,
     };
 }

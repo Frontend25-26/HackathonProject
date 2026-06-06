@@ -10,6 +10,8 @@ interface NotificationPopupProps {
     setOpen: (open: boolean) => void;
     anchorElement: HTMLDivElement | null;
     notifications: Notification[];
+    reload: () => Promise<void>;
+    markAsReadLocally: (id: number) => void;
 }
 
 export const NotificationPopup = ({
@@ -17,6 +19,8 @@ export const NotificationPopup = ({
     setOpen,
     anchorElement,
     notifications,
+    markAsReadLocally,
+    reload,
 }: NotificationPopupProps) => {
     return (
         <Popup
@@ -32,6 +36,8 @@ export const NotificationPopup = ({
                         <NotificationItem
                             key={notification.id}
                             notification={notification}
+                            onRead={markAsReadLocally}
+                            reload={reload}
                         />
                     ))
             ) : (
