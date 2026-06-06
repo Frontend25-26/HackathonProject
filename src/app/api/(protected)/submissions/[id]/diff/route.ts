@@ -27,14 +27,28 @@ export const GET = async (
         return Response.json({ error: 'Доступ запрещён' }, { status: 403 });
     }
 
-    if (!submission.repoOwner || !submission.repoName) {
+    let { repoOwner: owner, repoName: repo } = submission;
+
+    if ((!owner || !repo) && submission.repoUrl) {
+        const match = submission.repoUrl.match(
+            /github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/,
+        );
+        if (match) {
+            owner = match[1];
+            repo = match[2];
+            await prisma.submission.update({
+                where: { id: submissionId },
+                data: { repoOwner: owner, repoName: repo },
+            });
+        }
+    }
+
+    if (!owner || !repo) {
         return Response.json(
             { error: 'Репозиторий не привязан к работе' },
             { status: 404 },
         );
     }
-
-    const { repoOwner: owner, repoName: repo } = submission;
 
     let prNumber = submission.prNumber;
 

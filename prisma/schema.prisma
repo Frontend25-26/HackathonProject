@@ -8,23 +8,24 @@ datasource db {
 }
 
 model User {
-  id                 Int             @id @default(autoincrement())
-  githubId           Int             @unique @map("github_id")
-  login              String          @unique
-  name               String?
-  email              String?
-  avatar             String?
-  role               Role            @default(STUDENT)
-  githubToken        String?         @map("github_token") @db.Text
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @updatedAt @map("updated_at")
-  createdAssignments Assignment[]    @relation("CreatedBy")
-  mentorEnrollments  Enrollment[]    @relation("MentorEnrollments")
-  studentEnrollments Enrollment[]    @relation("StudentEnrollments")
-  reviewComments     ReviewComment[]
-  reviews            Review[]
-  submissions        Submission[]
-  notifications      Notification[]
+  id                    Int             @id @default(autoincrement())
+  githubId              Int             @unique @map("github_id")
+  login                 String          @unique
+  name                  String?
+  email                 String?
+  avatar                String?
+  role                  Role            @default(STUDENT)
+  githubToken           String?         @map("github_token") @db.Text
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+  createdAssignments    Assignment[]    @relation("CreatedBy")
+  mentorEnrollments     Enrollment[]    @relation("MentorEnrollments")
+  studentEnrollments    Enrollment[]    @relation("StudentEnrollments")
+  reviewComments        ReviewComment[]
+  reviews               Review[]
+  submissions           Submission[]
+  notifications         Notification[]  @relation("NotificationRecipient")
+  actedNotifications    Notification[]  @relation("NotificationActor")
 
   @@map("users")
 }
@@ -203,14 +204,17 @@ model SyncLog {
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
+  actorId   Int?     @map("actor_id")
   title     String
   body      String?  @db.Text
   link      String?
   isRead    Boolean  @default(false) @map("is_read")
   createdAt DateTime @default(now()) @map("created_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor     User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([userId], map: "notifications_user_id_idx")
+  @@index([actorId], map: "notifications_actor_id_idx")
   @@map("notifications")
 }
 

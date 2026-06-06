@@ -25,5 +25,16 @@ export async function GET(request: NextRequest) {
         take: limit,
     });
 
-    return Response.json(notifications);
+    return Response.json(
+        notifications.map(({ actor, actorId, ...n }) => ({
+            ...n,
+            source: actor
+                ? {
+                      authorId: actor.id,
+                      userName: actor.login,
+                      imgUrl: actor.avatar,
+                  }
+                : null,
+        })),
+    );
 }

@@ -13,6 +13,13 @@ export const NotificationSchema = registry.register(
         link: z.string().nullable(),
         isRead: z.boolean(),
         createdAt: z.string().datetime(),
+        source: z
+            .object({
+                authorId: z.number().int(),
+                userName: z.string(),
+                imgUrl: z.string().nullable(),
+            })
+            .nullable(),
     }),
 );
 
