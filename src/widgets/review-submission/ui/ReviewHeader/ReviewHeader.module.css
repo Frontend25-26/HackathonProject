@@ -1,0 +1,111 @@
+.reviewHeader {
+    margin-top: var(--g-spacing-3);
+    margin-bottom: var(--g-spacing-6);
+}
+
+.reviewInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-spacing-3);
+    flex: 1;
+}
+
+.headerTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--g-spacing-4);
+}
+
+.assignmentTitle {
+    margin: 0;
+    font-size: calc(var(--g-spacing-2) * 2);
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+}
+
+.studentInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--g-spacing-2);
+    margin-right: var(--g-spacing-6);
+    flex-shrink: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.studentName {
+    font-size: var(--g-spacing-4);
+    font-weight: 500;
+}
+
+.metaInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--g-spacing-2);
+}
+
+.commitWrapper {
+    display: flex;
+    gap: var(--g-spacing-2);
+    margin: var(--g-spacing-1) 0;
+    align-items: flex-start;
+}
+
+.commitDate {
+    margin-top: auto;
+    margin-bottom: auto;
+    width: calc(var(--g-spacing-2) * 16);
+    font-size: var(--g-spacing-3);
+}
+
+.commits {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(var(--g-spacing-2) * 20);
+    overflow-y: auto;
+}
+
+.commit {
+    flex: 1;
+    border: 1px solid;
+    margin-right: var(--g-spacing-3);
+    max-width: calc(var(--g-spacing-2) * 50);
+    border-radius: var(--g-spacing-1);
+    padding: var(--g-spacing-2);
+}
+
+.commitHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--g-spacing-1);
+}
+
+.commitTitle {
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: bold;
+    font-size: var(--g-spacing-3);
+    display: flex;
+    align-items: center;
+}
+
+.commitSha {
+    margin-left: var(--g-spacing-3);
+    font-family: monospace;
+    font-size: var(--g-spacing-3);
+    color: inherit;
+}
+
+.commitCiStatus {
+    font-size: var(--g-spacing-3);
+    color: inherit;
+}
+
+.badge {
+    margin-left: var(--g-spacing-2);
+}

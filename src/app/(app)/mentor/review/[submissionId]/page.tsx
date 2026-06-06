@@ -1,7 +1,13 @@
 import { apiFetch } from '@/shared/api';
-import { ReviewSubmissionClient } from '@/widgets/review-submission';
+import { Assignment } from '@/shared/types/assignment';
+import {
+    ReviewSubmissionClient,
+    ReviewHeader,
+} from '@/widgets/review-submission';
 
+import type { Commit } from '@/shared/types/commit';
 import type { FileChange } from '@/shared/types/file-diff';
+import type { Submission } from '@/shared/types/submission';
 
 interface ReviewSubmissionProps {
     params: {
@@ -24,7 +30,26 @@ async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
         return <p>Работа не найдена</p>;
     }
 
-    return <ReviewSubmissionClient fileChanges={fileData.files} />;
+    const commits = await apiFetch<Commit[]>(
+        `/api/submissions/${a.submissionId}/commits?refresh=1`,
+    );
+    const submission = await apiFetch<Submission>(
+        `/api/submissions/${a.submissionId}`,
+    );
+    const assignment = await apiFetch<Assignment>(
+        `/api/assignments/${submission.assignmentId}`,
+    );
+
+    return (
+        <div>
+            <ReviewHeader
+                commits={commits}
+                submission={submission}
+                assignment={assignment}
+            ></ReviewHeader>
+            <ReviewSubmissionClient fileChanges={fileData.files} />
+        </div>
+    );
 }
 
 export default ReviewSubmissionPage;
