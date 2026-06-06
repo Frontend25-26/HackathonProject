@@ -14,12 +14,13 @@ interface NotificationFooterItemProps {
 export const NotificationFooterItem: FC<NotificationFooterItemProps> = ({
     compact,
 }) => {
+    const { unreadCount, notifications, reload, markAsReadLocally } =
+        useNotificationsPolling();
+
     const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
         null,
     );
     const [open, setOpen] = useState(false);
-    const { unreadCount, notifications, reload, markAsReadLocally } =
-        useNotificationsPolling();
 
     return (
         <FooterItem
