@@ -1,10 +1,11 @@
-import { Avatar, Checkbox, Link } from '@gravity-ui/uikit';
+import { Checkbox, Link } from '@gravity-ui/uikit';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { Notification, patchNotification } from '@/entities/notification';
 
 import styles from './Notification.module.css';
+import { NotificationAvatar } from './NotificationAvatar';
 
 interface Props {
     notification: Notification;
@@ -24,23 +25,7 @@ export function NotificationItem({ notification, reload, onRead }: Props) {
     return (
         <div className={styles.itemWrapper}>
             <div className={styles.userWrapper}>
-                <Avatar // TODO после добавления автора для уведомлений
-                    text={'no name'}
-                    size="s"
-                    theme="brand"
-                />
-                {/*{notification.author.avatar ? (*/}
-                {/*<Avatar*/}
-                {/*    imgUrl={notification.author.avatar}*/}
-                {/*    size="m"*/}
-                {/*/>*/}
-                {/*) : (*/}
-                {/*<Avatar*/}
-                {/*    text={notification.author.userName}*/}
-                {/*    size="m"*/}
-                {/*    theme="brand"*/}
-                {/*/>*/}
-                {/*)}*/}
+                <NotificationAvatar source={notification.source} />
             </div>
             <div className={styles.contentWrapper}>
                 <Link
