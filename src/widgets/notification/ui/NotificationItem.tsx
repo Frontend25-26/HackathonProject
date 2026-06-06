@@ -29,7 +29,7 @@ export function NotificationItem({ notification, reload, onRead }: Props) {
             </div>
             <div className={styles.contentWrapper}>
                 <Link
-                    className={styles.content}
+                    className={styles.title}
                     href={notification.link}
                     onClick={handleNotification}
                 >
