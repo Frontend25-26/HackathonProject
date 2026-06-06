@@ -1,6 +1,6 @@
-import { Popup } from '@gravity-ui/uikit';
+import { Button, Popup } from '@gravity-ui/uikit';
 
-import { Notification } from '@/entities/notification';
+import { Notification, patchAllNotifications } from '@/entities/notification';
 
 import styles from './Notification.module.css';
 import { NotificationItem } from './NotificationItem';
@@ -11,7 +11,9 @@ interface NotificationPopupProps {
     anchorElement: HTMLDivElement | null;
     notifications: Notification[];
     reload: () => Promise<void>;
-    markAsReadLocally: (id: number) => void;
+    restore: (snapshot: Notification[]) => void;
+    readLocally: (id: number) => void;
+    readAllLocally: () => void;
 }
 
 export const NotificationPopup = ({
@@ -19,9 +21,21 @@ export const NotificationPopup = ({
     setOpen,
     anchorElement,
     notifications,
-    markAsReadLocally,
+    readLocally,
+    readAllLocally,
     reload,
+    restore,
 }: NotificationPopupProps) => {
+    const handleMarkAll = () => {
+        const snapshot = [...notifications];
+        try {
+            readAllLocally();
+            void patchAllNotifications().then(() => reload());
+        } catch (_) {
+            restore(snapshot);
+        }
+    };
+
     return (
         <Popup
             anchorElement={anchorElement}
@@ -30,16 +44,24 @@ export const NotificationPopup = ({
             placement="right-end"
         >
             {notifications.length ? (
-                notifications
-                    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-                    .map((notification) => (
+                <>
+                    {notifications.map((notification) => (
                         <NotificationItem
                             key={notification.id}
                             notification={notification}
-                            onRead={markAsReadLocally}
+                            onRead={readLocally}
                             reload={reload}
                         />
-                    ))
+                    ))}
+                    <Button
+                        size="s"
+                        view="flat-action"
+                        width="max"
+                        onClick={handleMarkAll}
+                    >
+                        Отметить все как прочитанные
+                    </Button>
+                </>
             ) : (
                 <div className={styles.empty}>Нет уведомлений</div>
             )}

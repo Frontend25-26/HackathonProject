@@ -39,6 +39,7 @@ export function NotificationItem({ notification, reload, onRead }: Props) {
                 <span className={styles.time}>
                     {formatDistanceToNow(new Date(notification.createdAt), {
                         locale: ru,
+                        addSuffix: true,
                     })}
                 </span>
                 <Checkbox

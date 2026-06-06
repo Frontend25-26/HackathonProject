@@ -24,3 +24,9 @@ export const patchNotification = async (id: number): Promise<void> => {
         method: 'PATCH',
     });
 };
+
+export const patchAllNotifications = async (): Promise<void> => {
+    await apiFetch('/api/notifications/read-all', {
+        method: 'POST',
+    });
+};

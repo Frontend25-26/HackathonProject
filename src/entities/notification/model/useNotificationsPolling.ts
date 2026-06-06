@@ -16,8 +16,21 @@ export function useNotificationsPolling() {
         );
     };
 
+    const markAllAsReadLocally = () => {
+        setNotifications((prev) =>
+            prev.map((notification) => ({
+                ...notification,
+                isRead: true,
+            })),
+        );
+    };
+
+    const restoreNotifications = (snapshot: Notification[]) => {
+        setNotifications(snapshot);
+    };
+
     const loadNotifications = useCallback(async () => {
-        setNotifications(await getNotifications({ limit: 10 }));
+        setNotifications(await getNotifications({ limit: 10, unread: true }));
     }, []);
 
     useEffect(() => {
@@ -32,6 +45,8 @@ export function useNotificationsPolling() {
         notifications,
         unreadCount,
         reload: loadNotifications,
-        markAsReadLocally,
+        restore: restoreNotifications,
+        readLocally: markAsReadLocally,
+        readAllLocally: markAllAsReadLocally,
     };
 }
