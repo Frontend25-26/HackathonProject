@@ -5,6 +5,7 @@ import { apiFetch } from '@/shared/api';
 
 import type { Assignment } from '@/entities/assignment';
 import type { Course } from '@/entities/course';
+import type { Submission } from '@/entities/submission';
 
 interface PageProps {
     searchParams?: Promise<{
@@ -21,10 +22,16 @@ const StudentAssignmentsPage: FC<PageProps> = async ({ searchParams }) => {
         apiFetch<Course[]>('/api/courses'),
     ]);
 
+    let submissions: Submission[] = [];
+    const me = await apiFetch<{ id: number }>('/api/me');
+    const studentId = me.id;
+    submissions = await apiFetch<Submission[]>(`/api/submissions?studentId=${studentId}`);
+
     return (
         <StudentAssignments
             assignments={assignments}
             courses={courses}
+            submissions={submissions}
             initialCourseId={courseId}
         />
     );

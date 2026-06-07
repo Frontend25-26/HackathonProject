@@ -3,36 +3,36 @@
 import { Text, Box, Select, Button, Label, Flex } from '@gravity-ui/uikit';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useMemo } from 'react';
-
+import type { Submission } from '@/shared/types/submission';
 import { AssignmentStatus, type Assignment } from '@/shared/types/assignment';
 import { Table } from '@/shared/ui/Table/Table';
 import { formatDueDate } from '@/shared/utils/helpers';
-
 import styles from './StudentAssignments.module.css';
-
 import type { Course } from '@/entities/course';
 
 interface StudentAssignmentsProps {
     assignments: Assignment[];
     courses: Course[];
+    submissions?: Submission[];
     initialCourseId?: number;
 }
 
 interface EnrichedAssignment extends Assignment {
     courseTitle: string;
     status: AssignmentStatus;
+    score: number;
 }
 
 const STATUS_CONFIG = {
     [AssignmentStatus.ACTIVE]: { text: 'Активное', theme: 'info' as const },
-    [AssignmentStatus.OVERDUE]: {
-        text: 'Просрочено',
-        theme: 'danger' as const,
-    },
+    [AssignmentStatus.OVERDUE]: { text: 'Просрочено', theme: 'danger' as const },
     [AssignmentStatus.COMPLETED]: { text: 'Сдано', theme: 'success' as const },
 };
 
-const getDefaultStatus = (assignment: Assignment): AssignmentStatus => {
+const getAssignmentStatusWithSubmission = (assignment: Assignment, submission?: Submission): AssignmentStatus => {
+    if (submission && ['APPROVED', 'COMPLETED'].includes(submission.status)) {
+        return AssignmentStatus.COMPLETED;
+    }
     const now = new Date();
     const dueDate = new Date(assignment.dueDate);
     return dueDate < now ? AssignmentStatus.OVERDUE : AssignmentStatus.ACTIVE;
@@ -57,9 +57,7 @@ const columns = [
     {
         id: 'maxGrade',
         name: 'Баллы',
-        // заглушка пока на 0 баллов
-        // template: (item: EnrichedAssignment) => `${item.score ?? 0} / ${item.maxGrade}`,
-        template: (item: EnrichedAssignment) => `0 / ${item.maxGrade}`,
+        template: (item: EnrichedAssignment) => `${item.score} / ${item.maxGrade}`,
     },
     {
         id: 'status',
@@ -75,6 +73,7 @@ const columns = [
 export const StudentAssignments = ({
     assignments,
     courses,
+    submissions = [],
     initialCourseId,
 }: StudentAssignmentsProps) => {
     const router = useRouter();
@@ -89,26 +88,32 @@ export const StudentAssignments = ({
         [courses],
     );
 
+    // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: приводим assignmentId к числу
+    const submissionsMap = useMemo(() => {
+        const map = new Map(submissions.map((sub) => [Number(sub.assignmentId), sub]));
+        console.log('Submissions map:', Array.from(map.entries()));
+        return map;
+    }, [submissions]);
+
     const enrichedAssignments: EnrichedAssignment[] = useMemo(
         () =>
-            assignments.map((assignment) => ({
-                ...assignment,
-                courseTitle:
-                    coursesMap.get(assignment.courseId) ||
-                    `Курс ${assignment.courseId}`,
-                //assignment.status ??
-                // заглушка пока не получаем статус задания
-                status: getDefaultStatus(assignment),
-            })),
-        [assignments, coursesMap],
+            assignments.map((assignment) => {
+                const submission = submissionsMap.get(assignment.id);
+                console.log(`Assignment ${assignment.id}: submission found?`, !!submission, submission?.status);
+                return {
+                    ...assignment,
+                    courseTitle: coursesMap.get(assignment.courseId) || `Курс ${assignment.courseId}`,
+                    status: getAssignmentStatusWithSubmission(assignment, submission),
+                    score: 0,
+                };
+            }),
+        [assignments, coursesMap, submissionsMap],
     );
 
     const filteredAssignments = useMemo(() => {
         let filtered = enrichedAssignments;
         if (selectedCourse !== 'all') {
-            filtered = filtered.filter(
-                (a) => a.courseId === Number(selectedCourse),
-            );
+            filtered = filtered.filter((a) => a.courseId === Number(selectedCourse));
         }
         if (selectedStatus !== 'all') {
             filtered = filtered.filter((a) => a.status === selectedStatus);
@@ -142,9 +147,7 @@ export const StudentAssignments = ({
 
     return (
         <Flex direction="column">
-            <Text as="h1" variant="display-1">
-                Мои домашние задания
-            </Text>
+            <Text as="h1" variant="display-1">Мои домашние задания</Text>
             <Flex wrap="wrap" gap={4} alignItems="flex-end">
                 <Box>
                     <Select
@@ -153,7 +156,6 @@ export const StudentAssignments = ({
                         options={courseOptions}
                     />
                 </Box>
-
                 <Box>
                     <Select
                         value={[selectedStatus]}
@@ -161,12 +163,9 @@ export const StudentAssignments = ({
                         options={statusOptions}
                     />
                 </Box>
-
                 <Button
                     onClick={handleReset}
-                    disabled={
-                        selectedCourse === 'all' && selectedStatus === 'all'
-                    }
+                    disabled={selectedCourse === 'all' && selectedStatus === 'all'}
                 >
                     Сбросить
                 </Button>
@@ -177,11 +176,9 @@ export const StudentAssignments = ({
                     data={filteredAssignments}
                     columns={columns}
                     verticalAlign="middle"
-                    onRowClick={(item: EnrichedAssignment) =>
-                        router.push(
-                            `/student/assignments?courseId=${item.courseId}`,
-                        )
-                    }
+                    onRowClick={(item: EnrichedAssignment) => {
+                        router.push(`/student/assignments/${item.id}`);
+                    }}
                     emptyMessage="Нет домашних заданий"
                 />
             </Box>

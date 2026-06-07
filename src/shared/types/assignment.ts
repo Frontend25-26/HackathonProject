@@ -9,6 +9,8 @@ export interface Assignment {
     maxGrade: number;
     title: string;
     updatedAt: string;
+    inviteLink?: string;
+    totalScore: number;
 }
 export enum AssignmentStatus {
     ACTIVE = 'active',

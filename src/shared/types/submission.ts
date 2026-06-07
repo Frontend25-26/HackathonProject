@@ -16,3 +16,11 @@ export interface Submission {
     createdAt: string;
     updatedAt: string;
 }
+export interface Commit {
+    sha: string;
+    message: string;
+    authorName: string;
+    committedAt: string;
+    ciStatus: string;
+    commitUrl?: string;
+}
