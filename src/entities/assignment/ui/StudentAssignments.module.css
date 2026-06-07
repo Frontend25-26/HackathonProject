@@ -1,0 +1,8 @@
+.tableWrapper {
+    padding-top: var(--g-spacing-8);
+    overflow-x: auto;
+}
+
+.tableWrapper table {
+    width: 100%;
+}

@@ -39,6 +39,13 @@ export const columns: TableColumnConfig<DisplayedSubmission>[] = [
             </a>
         ),
     },
+    {
+        id: 'id',
+        name: 'Страница работы',
+        template: (item) => (
+            <a href={`/mentor/review/submissionId=${item.id}`}>Ссылка</a>
+        ),
+    },
 ];
 
 export interface Filter {

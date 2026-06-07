@@ -13,7 +13,8 @@ import { Theme, useTheme } from '@/features/theme';
 
 import { MenuItemConfig, primaryMenu, secondaryMenu } from '../model/menu';
 
-import { UserFooterItem } from './UserFooterItem';
+import { NotificationFooterItem } from './notification/NotificationFooterItem';
+import { UserFooterItem } from './user/UserFooterItem';
 
 import type { Role, User } from '@/entities/user';
 
@@ -52,12 +53,7 @@ export const Sidebar: FC<SidebarProps> = ({
             renderContent={() => children}
             renderFooter={({ compact }) => (
                 <>
-                    <FooterItem
-                        compact={compact}
-                        id="notifications"
-                        title="Уведомления"
-                        icon={Bell}
-                    />
+                    <NotificationFooterItem compact={compact} />
                     <FooterItem
                         compact={compact}
                         id="theme"

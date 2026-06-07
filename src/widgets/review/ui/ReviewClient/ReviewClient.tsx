@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 
 import { DisplayedSubmission } from '@/entities/submission';
 import { Menu } from '@/shared/components/Menu';
+import { formatDateFromISODate } from '@/shared/utils/helpers';
 import { ReviewTable } from '@/widgets/review/ui/ReviewTable/ReviewTable';
 
 import { filtersData } from '../../model/review';
@@ -60,7 +61,16 @@ export function ReviewClient({ data }: { data: DisplayedSubmission[] }) {
     const toMenuItem = useCallback(
         (properties: FilterProperties) => {
             const options = [
-                ...new Set(data.map((r) => r[properties.propertyName])),
+                ...new Set(
+                    data.map((r) => {
+                        if (properties.propertyName === 'deadline') {
+                            return formatDateFromISODate(
+                                r[properties.propertyName],
+                            );
+                        }
+                        return r[properties.propertyName];
+                    }),
+                ),
                 CLEAR_FILTER_OPTION,
             ];
 
