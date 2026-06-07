@@ -10,3 +10,8 @@
     line-height: var(--g-text-header-1-line-height);
     color: var(--g-color-text-primary);
 }
+
+.link_to_course {
+    text-decoration: underline;
+    cursor: pointer;
+}

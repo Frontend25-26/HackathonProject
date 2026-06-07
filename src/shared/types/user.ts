@@ -1,3 +1,5 @@
+export type UserRole = 'STUDENT' | 'MENTOR' | 'ADMIN';
+
 export interface User {
     id: number;
     githubId: number;
@@ -5,7 +7,7 @@ export interface User {
     name: string | null;
     email: string | null;
     avatar: string | null;
-    role: string;
+    role: UserRole;
     createdAt: string;
     updatedAt: string;
 }
