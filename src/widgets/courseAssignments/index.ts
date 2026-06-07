@@ -1,0 +1,1 @@
+export { CourseAssignmentsWidget } from './CourseAssignmentsWidget';
