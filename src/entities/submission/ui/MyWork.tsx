@@ -1,9 +1,13 @@
 'use client';
+
+import { Text, Link, Flex } from '@gravity-ui/uikit';
 import { useEffect, useState } from 'react';
-import { Text, Link, Flex, Loader } from '@gravity-ui/uikit';
-import { CiBadge } from '@/widgets/cibadge';
-import { CommitHistory } from '@/widgets/commithistory';
+
 import { apiFetch } from '@/shared/api';
+
+import { CiBadge } from './CiBadge';
+import { CommitHistory } from './CommitHistory';
+
 import type { Submission, Commit } from '@/shared/types/submission';
 
 interface Props {
@@ -17,24 +21,37 @@ export const MyWork = ({ submission, hasSubmission, hasCommits }: Props) => {
     const [commits, setCommits] = useState<Commit[]>([]);
     const [loading, setLoading] = useState(false);
 
-    console.log('MyWork render:', { hasSubmission, hasCommits, submission });
-
     useEffect(() => {
+        let isMounted = true;
         if (submission?.id && hasCommits) {
-            setLoading(true);
-            apiFetch<Commit[]>(`/api/submissions/${submission.id}/commits?refresh=1`)
-                .then(setCommits)
-                .catch(err => console.error('Commits error:', err))
-                .finally(() => setLoading(false));
+            setTimeout(() => setLoading(true), 0);
+            apiFetch<Commit[]>(
+                `/api/submissions/${submission.id}/commits?refresh=1`,
+            )
+                .then((data) => {
+                    if (isMounted) setCommits(data);
+                })
+                .catch((err) => console.error('Commits error:', err))
+                .finally(() => {
+                    if (isMounted) setLoading(false);
+                });
         }
+        return () => {
+            isMounted = false;
+        };
     }, [submission, hasCommits]);
 
     if (!hasSubmission) {
-        return <Text>Вы ещё не приняли задание. Нажмите "Принять".</Text>;
+        return <Text>Вы ещё не приняли задание. Нажмите Принять.</Text>;
     }
 
     if (!hasCommits) {
-        return <Text>Задание принято, но коммитов пока нет.</Text>;
+        return (
+            <Text>
+                Задание принято, но коммитов пока нет. После первого коммита
+                здесь появится информация.
+            </Text>
+        );
     }
 
     if (!submission) return null;
@@ -43,7 +60,9 @@ export const MyWork = ({ submission, hasSubmission, hasCommits }: Props) => {
         <Flex direction="column" gap={4}>
             <Flex gap={4} alignItems="center">
                 <Text>Репозиторий:</Text>
-                <Link href={submission.repoUrl} target="_blank">{submission.repoUrl}</Link>
+                <Link href={submission.repoUrl} target="_blank">
+                    {submission.repoUrl}
+                </Link>
                 <CiBadge status={submission.ciStatus} />
             </Flex>
             {!loading && <CommitHistory commits={commits} />}

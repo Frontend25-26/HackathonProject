@@ -1,1 +1,0 @@
-export { CommitHistory } from './CommitHistory';

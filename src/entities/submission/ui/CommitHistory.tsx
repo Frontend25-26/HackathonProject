@@ -1,13 +1,16 @@
 import { Table } from '@gravity-ui/uikit';
+
 import { formatDateFromISODate } from '@/shared/utils/helpers';
-import { CiBadge } from '@/widgets/cibadge';
+
+import { CiBadge } from './CiBadge';
+
 import type { Commit } from '@/shared/types/submission';
 
 const columns = [
     {
         id: 'date',
         name: 'Дата',
-        template: (c: Commit) => formatDateFromISODate(c.committedAt),
+        template: (c: Commit) => formatDateFromISODate(c.committedAt), // используем committedAt
     },
     {
         id: 'message',
@@ -27,5 +30,7 @@ const columns = [
 ];
 
 export const CommitHistory = ({ commits }: { commits: Commit[] }) => {
-    return <Table data={commits} columns={columns} emptyMessage="Нет коммитов" />;
+    return (
+        <Table data={commits} columns={columns} emptyMessage="Нет коммитов" />
+    );
 };

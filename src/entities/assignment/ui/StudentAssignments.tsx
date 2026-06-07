@@ -3,12 +3,15 @@
 import { Text, Box, Select, Button, Label, Flex } from '@gravity-ui/uikit';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useMemo } from 'react';
-import type { Submission } from '@/shared/types/submission';
+
 import { AssignmentStatus, type Assignment } from '@/shared/types/assignment';
 import { Table } from '@/shared/ui/Table/Table';
 import { formatDueDate } from '@/shared/utils/helpers';
+
 import styles from './StudentAssignments.module.css';
+
 import type { Course } from '@/entities/course';
+import type { Submission } from '@/shared/types/submission';
 
 interface StudentAssignmentsProps {
     assignments: Assignment[];
@@ -25,11 +28,17 @@ interface EnrichedAssignment extends Assignment {
 
 const STATUS_CONFIG = {
     [AssignmentStatus.ACTIVE]: { text: 'Активное', theme: 'info' as const },
-    [AssignmentStatus.OVERDUE]: { text: 'Просрочено', theme: 'danger' as const },
+    [AssignmentStatus.OVERDUE]: {
+        text: 'Просрочено',
+        theme: 'danger' as const,
+    },
     [AssignmentStatus.COMPLETED]: { text: 'Сдано', theme: 'success' as const },
 };
 
-const getAssignmentStatusWithSubmission = (assignment: Assignment, submission?: Submission): AssignmentStatus => {
+const getAssignmentStatusWithSubmission = (
+    assignment: Assignment,
+    submission?: Submission,
+): AssignmentStatus => {
     if (submission && ['APPROVED', 'COMPLETED'].includes(submission.status)) {
         return AssignmentStatus.COMPLETED;
     }
@@ -57,7 +66,8 @@ const columns = [
     {
         id: 'maxGrade',
         name: 'Баллы',
-        template: (item: EnrichedAssignment) => `${item.score} / ${item.maxGrade}`,
+        template: (item: EnrichedAssignment) =>
+            `${item.score} / ${item.maxGrade}`,
     },
     {
         id: 'status',
@@ -88,22 +98,25 @@ export const StudentAssignments = ({
         [courses],
     );
 
-    // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: приводим assignmentId к числу
-    const submissionsMap = useMemo(() => {
-        const map = new Map(submissions.map((sub) => [Number(sub.assignmentId), sub]));
-        console.log('Submissions map:', Array.from(map.entries()));
-        return map;
-    }, [submissions]);
+    const submissionsMap = useMemo(
+        () =>
+            new Map(submissions.map((sub) => [Number(sub.assignmentId), sub])),
+        [submissions],
+    );
 
     const enrichedAssignments: EnrichedAssignment[] = useMemo(
         () =>
             assignments.map((assignment) => {
                 const submission = submissionsMap.get(assignment.id);
-                console.log(`Assignment ${assignment.id}: submission found?`, !!submission, submission?.status);
                 return {
                     ...assignment,
-                    courseTitle: coursesMap.get(assignment.courseId) || `Курс ${assignment.courseId}`,
-                    status: getAssignmentStatusWithSubmission(assignment, submission),
+                    courseTitle:
+                        coursesMap.get(assignment.courseId) ||
+                        `Курс ${assignment.courseId}`,
+                    status: getAssignmentStatusWithSubmission(
+                        assignment,
+                        submission,
+                    ),
                     score: 0,
                 };
             }),
@@ -113,7 +126,9 @@ export const StudentAssignments = ({
     const filteredAssignments = useMemo(() => {
         let filtered = enrichedAssignments;
         if (selectedCourse !== 'all') {
-            filtered = filtered.filter((a) => a.courseId === Number(selectedCourse));
+            filtered = filtered.filter(
+                (a) => a.courseId === Number(selectedCourse),
+            );
         }
         if (selectedStatus !== 'all') {
             filtered = filtered.filter((a) => a.status === selectedStatus);
@@ -147,7 +162,9 @@ export const StudentAssignments = ({
 
     return (
         <Flex direction="column">
-            <Text as="h1" variant="display-1">Мои домашние задания</Text>
+            <Text as="h1" variant="display-1">
+                Мои домашние задания
+            </Text>
             <Flex wrap="wrap" gap={4} alignItems="flex-end">
                 <Box>
                     <Select
@@ -165,7 +182,9 @@ export const StudentAssignments = ({
                 </Box>
                 <Button
                     onClick={handleReset}
-                    disabled={selectedCourse === 'all' && selectedStatus === 'all'}
+                    disabled={
+                        selectedCourse === 'all' && selectedStatus === 'all'
+                    }
                 >
                     Сбросить
                 </Button>
@@ -176,9 +195,9 @@ export const StudentAssignments = ({
                     data={filteredAssignments}
                     columns={columns}
                     verticalAlign="middle"
-                    onRowClick={(item: EnrichedAssignment) => {
-                        router.push(`/student/assignments/${item.id}`);
-                    }}
+                    onRowClick={(item: EnrichedAssignment) =>
+                        router.push(`/student/assignments/${item.id}`)
+                    }
                     emptyMessage="Нет домашних заданий"
                 />
             </Box>

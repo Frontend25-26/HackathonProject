@@ -1,33 +1,46 @@
 'use client';
 
-import { useState } from 'react';
 import { Card, Text, Button, Flex } from '@gravity-ui/uikit';
+import { useState } from 'react';
+
 import { MyWork } from '@/entities/submission';
+import { formatDueDate } from '@/shared/utils/helpers';
+
+import styles from './AssignmentDetails.module.css';
+
 import type { Assignment } from '@/shared/types/assignment';
 import type { Submission } from '@/shared/types/submission';
-import { formatDueDate } from '@/shared/utils/helpers';
-import styles from './AssignmentDetails.module.css';
 
 interface Props {
     assignment: Assignment;
     submission?: Submission;
 }
 
-const getAssignmentStatus = (assignment: Assignment, isCompleted?: boolean): { text: string; className: string } => {
-    if (isCompleted) return { text: 'Сдано', className: styles.statusCompleted };
+const getAssignmentStatus = (
+    assignment: Assignment,
+    isCompleted?: boolean,
+): { text: string; className: string } => {
+    if (isCompleted)
+        return { text: 'Сдано', className: styles.statusCompleted };
     const now = new Date();
     const dueDate = new Date(assignment.dueDate);
-    if (dueDate < now) return { text: 'Просрочено', className: styles.statusOverdue };
+    if (dueDate < now)
+        return { text: 'Просрочено', className: styles.statusOverdue };
     return { text: 'Активно', className: styles.statusActive };
 };
 
 export const AssignmentDetails = ({ assignment, submission }: Props) => {
-    const [activeTab, setActiveTab] = useState<'description' | 'my-work' | 'review'>('description');
+    const [activeTab, setActiveTab] = useState<
+        'description' | 'my-work' | 'review'
+    >('description');
 
     const hasSubmission = !!submission;
     const hasCommits = !!submission?.repoUrl;
     const isCompleted = submission?.status === 'APPROVED';
-    const { text: statusText, className: statusClass } = getAssignmentStatus(assignment, isCompleted);
+    const { text: statusText, className: statusClass } = getAssignmentStatus(
+        assignment,
+        isCompleted,
+    );
 
     const handleAccept = () => {
         if (assignment.inviteLink) {
@@ -38,11 +51,17 @@ export const AssignmentDetails = ({ assignment, submission }: Props) => {
     return (
         <div className={styles.page}>
             <Card className={styles.card}>
-                <Flex justifyContent="space-between" alignItems="center" className={styles.header}>
-                    <Text variant="display-1">
+                <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    className={styles.header}
+                >
+                    <Text as="h1" variant="display-1">
                         {assignment.title}
                     </Text>
-                    <span className={`${styles.statusBadge} ${statusClass}`}>{statusText}</span>
+                    <span className={`${styles.statusBadge} ${statusClass}`}>
+                        {statusText}
+                    </span>
                 </Flex>
 
                 <Flex gap={8} className={styles.meta}>
@@ -65,30 +84,27 @@ export const AssignmentDetails = ({ assignment, submission }: Props) => {
                 )}
 
                 <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tab} ${activeTab === 'description' ? styles.tabActive : ''}`}
-                        onClick={() => setActiveTab('description')}
-                    >
-                        Описание
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === 'my-work' ? styles.tabActive : ''}`}
-                        onClick={() => setActiveTab('my-work')}
-                    >
-                        Моя работа
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === 'review' ? styles.tabActive : ''}`}
-                        onClick={() => setActiveTab('review')}
-                    >
-                        Ревью
-                    </button>
+                    {(['description', 'my-work', 'review'] as const).map(
+                        (tab) => (
+                            <button
+                                key={tab}
+                                className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab === 'description' && 'Описание'}
+                                {tab === 'my-work' && 'Моя работа'}
+                                {tab === 'review' && 'Ревью'}
+                            </button>
+                        ),
+                    )}
                 </div>
 
                 <div>
                     {activeTab === 'description' && (
                         <div className={styles.description}>
-                            <Text>{assignment.description || 'Нет описания'}</Text>
+                            <Text>
+                                {assignment.description || 'Нет описания'}
+                            </Text>
                         </div>
                     )}
 
@@ -102,7 +118,9 @@ export const AssignmentDetails = ({ assignment, submission }: Props) => {
                     )}
 
                     {activeTab === 'review' && (
-                        <Text color="secondary">Раздел ревью появится позже после проверки ментором.</Text>
+                        <Text color="secondary">
+                            Раздел ревью появится позже после проверки ментором.
+                        </Text>
                     )}
                 </div>
             </Card>

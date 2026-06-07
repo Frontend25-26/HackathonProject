@@ -1,1 +1,0 @@
-export { CiBadge } from './CiBadge';
