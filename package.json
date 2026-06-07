@@ -2,9 +2,12 @@
     "name": "app",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": ">=20.19.0"
+    },
     "scripts": {
         "dev": "next dev",
-        "build": "next build",
+        "build": "prisma generate && next build",
         "start": "next start",
         "lint": "eslint . && prettier --check . && tsc --noEmit",
         "lint:fix": "eslint . --fix && prettier --write .",
