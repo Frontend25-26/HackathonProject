@@ -1,4 +1,4 @@
-import { Popup } from '@gravity-ui/uikit';
+import { Button, Popup } from '@gravity-ui/uikit';
 
 import { Notification } from '@/entities/notification';
 
@@ -11,7 +11,8 @@ interface NotificationPopupProps {
     anchorElement: HTMLDivElement | null;
     notifications: Notification[];
     reload: () => Promise<void>;
-    markAsReadLocally: (id: number) => void;
+    readLocally: (id: number) => void;
+    readAll: () => void;
 }
 
 export const NotificationPopup = ({
@@ -19,8 +20,9 @@ export const NotificationPopup = ({
     setOpen,
     anchorElement,
     notifications,
-    markAsReadLocally,
+    readLocally,
     reload,
+    readAll,
 }: NotificationPopupProps) => {
     return (
         <Popup
@@ -30,16 +32,24 @@ export const NotificationPopup = ({
             placement="right-end"
         >
             {notifications.length ? (
-                notifications
-                    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-                    .map((notification) => (
+                <>
+                    {notifications.map((notification) => (
                         <NotificationItem
                             key={notification.id}
                             notification={notification}
-                            onRead={markAsReadLocally}
+                            onRead={readLocally}
                             reload={reload}
                         />
-                    ))
+                    ))}
+                    <Button
+                        size="s"
+                        view="flat-action"
+                        width="max"
+                        onClick={readAll}
+                    >
+                        Отметить все как прочитанные
+                    </Button>
+                </>
             ) : (
                 <div className={styles.empty}>Нет уведомлений</div>
             )}
