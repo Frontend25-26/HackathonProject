@@ -25,7 +25,9 @@ const StudentAssignmentsPage: FC<PageProps> = async ({ searchParams }) => {
     let submissions: Submission[] = [];
     const me = await apiFetch<{ id: number }>('/api/me');
     const studentId = me.id;
-    submissions = await apiFetch<Submission[]>(`/api/submissions?studentId=${studentId}`);
+    submissions = await apiFetch<Submission[]>(
+        `/api/submissions?studentId=${studentId}`,
+    );
 
     return (
         <StudentAssignments
