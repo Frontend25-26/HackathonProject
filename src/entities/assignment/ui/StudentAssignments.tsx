@@ -4,14 +4,16 @@ import { Text, Box, Select, Button, Label, Flex } from '@gravity-ui/uikit';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useMemo } from 'react';
 
-import { AssignmentStatus, type Assignment } from '@/shared/types/assignment';
+import {
+    AssignmentStatus,
+    type Assignment,
+    type Course,
+    type Submission,
+} from '@/shared/types';
 import { Table } from '@/shared/ui/Table/Table';
 import { formatDueDate } from '@/shared/utils/helpers';
 
 import styles from './StudentAssignments.module.css';
-
-import type { Course } from '@/entities/course';
-import type { Submission } from '@/shared/types/submission';
 
 interface StudentAssignmentsProps {
     assignments: Assignment[];

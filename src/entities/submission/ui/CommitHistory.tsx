@@ -4,7 +4,7 @@ import { formatDateFromISODate } from '@/shared/utils/helpers';
 
 import { CiBadge } from './CiBadge';
 
-import type { Commit } from '@/shared/types/submission';
+import type { Commit } from '@/shared/types';
 
 const columns = [
     {

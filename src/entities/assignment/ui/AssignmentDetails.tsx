@@ -18,8 +18,7 @@ import { formatDueDate } from '@/shared/utils/helpers';
 
 import styles from './AssignmentDetails.module.css';
 
-import type { Assignment } from '@/shared/types/assignment';
-import type { Submission } from '@/shared/types/submission';
+import type { Assignment, Submission } from '@/shared/types';
 
 interface Props {
     assignment: Assignment;

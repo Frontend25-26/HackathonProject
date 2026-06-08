@@ -2,8 +2,7 @@ import { AssignmentDetails } from '@/entities/assignment';
 import { auth } from '@/features/auth/authSetup';
 import { apiFetch } from '@/shared/api';
 
-import type { Assignment } from '@/shared/types/assignment';
-import type { Submission } from '@/shared/types/submission';
+import type { Assignment, Submission } from '@/shared/types';
 
 interface PageProps {
     params: Promise<{ id: string }>;

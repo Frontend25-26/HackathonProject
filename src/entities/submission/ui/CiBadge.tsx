@@ -1,6 +1,6 @@
 import { Label } from '@gravity-ui/uikit';
 
-import { CiStatus } from '@/shared/types/submission';
+import { CiStatus } from '@/shared/types';
 
 type LabelTheme =
     | 'info'

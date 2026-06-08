@@ -8,7 +8,7 @@ import { apiFetch } from '@/shared/api';
 import { CiBadge } from './CiBadge';
 import { CommitHistory } from './CommitHistory';
 
-import type { Submission, Commit } from '@/shared/types/submission';
+import type { Submission, Commit } from '@/shared/types';
 
 interface Props {
     assignmentId: number;
