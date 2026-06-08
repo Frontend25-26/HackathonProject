@@ -14,7 +14,7 @@ import { ReviewDiff } from '../ReviewDiff/ReviewDiff';
 
 import styles from './ReviewSubmissionClient.module.css';
 
-import type { FileChange, RepoDiff } from '@/shared/types/file-diff';
+import type { FileChange, RepoDiff } from '@/shared/types';
 
 interface ReviewSubmissionProps {
     fileChanges: FileChange[];

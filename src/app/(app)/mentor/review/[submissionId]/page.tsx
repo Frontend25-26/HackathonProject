@@ -1,7 +1,15 @@
 import { apiFetch } from '@/shared/api';
-import { ReviewSubmissionClient } from '@/widgets/review-submission';
+import {
+    ReviewSubmissionClient,
+    ReviewHeader,
+} from '@/widgets/review-submission';
 
-import type { FileChange } from '@/shared/types/file-diff';
+import type {
+    Assignment,
+    Commit,
+    FileChange,
+    Submission,
+} from '@/shared/types';
 
 interface ReviewSubmissionProps {
     params: {
@@ -16,15 +24,32 @@ interface DiffFetch {
 async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
     const a = await params;
     let fileData: DiffFetch;
+    let commits: Commit[];
+    let submission: Submission;
     try {
-        fileData = await apiFetch<DiffFetch>(
-            `/api/submissions/${a.submissionId}/diff`,
-        );
+        [fileData, commits, submission] = await Promise.all([
+            apiFetch<DiffFetch>(`/api/submissions/${a.submissionId}/diff`),
+            apiFetch<Commit[]>(`/api/submissions/${a.submissionId}/commits`),
+            apiFetch<Submission>(`/api/submissions/${a.submissionId}`),
+        ]);
     } catch {
         return <p>Работа не найдена</p>;
     }
 
-    return <ReviewSubmissionClient fileChanges={fileData.files} />;
+    const assignment = await apiFetch<Assignment>(
+        `/api/assignments/${submission.assignmentId}`,
+    );
+
+    return (
+        <div>
+            <ReviewHeader
+                commits={commits}
+                submission={submission}
+                assignment={assignment}
+            />
+            <ReviewSubmissionClient fileChanges={fileData.files} />
+        </div>
+    );
 }
 
 export default ReviewSubmissionPage;

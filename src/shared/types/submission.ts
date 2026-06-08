@@ -1,3 +1,5 @@
+import type { CIStatus } from '@/shared/types/commit';
+
 interface StudentSchema {
     id: number;
     name: string;
@@ -8,7 +10,8 @@ interface StudentSchema {
 export interface Submission {
     id: number;
     repoUrl: string;
-    ciStatus: string;
+    repoName: string;
+    ciStatus: CIStatus;
     status: string;
     assignmentId: number;
     studentId: number;

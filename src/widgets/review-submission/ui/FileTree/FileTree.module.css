@@ -44,14 +44,17 @@
 }
 
 .add {
+    font-size: var(--g-spacing-4);
     color: var(--g-color-base-positive-heavy);
 }
 
 .modify {
+    font-size: var(--g-spacing-4);
     color: var(--g-color-base-info-heavy);
 }
 
 .delete {
+    font-size: var(--g-spacing-4);
     color: var(--g-color-base-danger-heavy);
 }
 
@@ -59,10 +62,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: var(--g-spacing-4);
 }
 
 .changedLines {
-    font-size: var(--g-spacing-3);
+    font-size: var(--g-spacing-4);
     font-family: monospace;
     display: flex;
     align-items: center;
