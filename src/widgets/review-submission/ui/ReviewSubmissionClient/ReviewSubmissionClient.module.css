@@ -11,8 +11,6 @@
 }
 
 .reviewDiff {
-    flex: 1;
-    max-height: 75vh;
-    overflow-y: auto;
     padding: 16px;
+    max-height: 75vh;
 }

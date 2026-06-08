@@ -42,9 +42,7 @@ export const columns: TableColumnConfig<DisplayedSubmission>[] = [
     {
         id: 'id',
         name: 'Страница работы',
-        template: (item) => (
-            <a href={`/mentor/review/submissionId=${item.id}`}>Ссылка</a>
-        ),
+        template: (item) => <a href={`/mentor/review/${item.id}`}>Ссылка</a>,
     },
 ];
 
