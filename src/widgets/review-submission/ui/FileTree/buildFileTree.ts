@@ -1,6 +1,6 @@
 import { parse } from 'diff2html';
 
-import { FileStatus, RepoDiff } from '@/shared/types/file-diff';
+import { FileStatus, RepoDiff } from '@/shared/types';
 import { getChangePatch } from '@/shared/utils/helpers/gitPatch';
 
 type FileType = 'FILE' | 'FOLDER';

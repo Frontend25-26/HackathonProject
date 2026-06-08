@@ -9,9 +9,10 @@ export type Commit = {
     submissionId: string;
 };
 
-export type CIStatus =
-    | 'UNKNOWN'
-    | 'PENDING'
-    | 'RUNNING'
-    | 'SUCCESS'
-    | 'FAILURE';
+export enum CIStatus {
+    UNKNOWN = 'UNKNOWN',
+    PENDING = 'PENDING',
+    RUNNING = 'RUNNING',
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+}

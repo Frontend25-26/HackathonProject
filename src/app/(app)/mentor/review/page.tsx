@@ -2,11 +2,13 @@ import { DisplayedSubmission } from '@/entities/submission';
 import { apiFetch } from '@/shared/api';
 import { ReviewClient } from '@/widgets/review/ui/ReviewClient/ReviewClient';
 
-import type { Assignment } from '@/shared/types/assignment';
-import type { Course } from '@/shared/types/course';
-import type { Enrollment } from '@/shared/types/enrollment';
-import type { Submission } from '@/shared/types/submission';
-import type { User } from '@/shared/types/user';
+import type {
+    Assignment,
+    Course,
+    Enrollment,
+    Submission,
+    User,
+} from '@/shared/types';
 
 const toKey = (student: number, course: number): string => {
     return student + '@' + course;

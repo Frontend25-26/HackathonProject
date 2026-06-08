@@ -3,41 +3,49 @@ import { Clock } from '@gravity-ui/icons';
 import { Circle } from '@gravity-ui/icons';
 import { Check } from '@gravity-ui/icons';
 import { Xmark } from '@gravity-ui/icons';
-import { Icon } from '@gravity-ui/uikit';
-import { FC } from 'react';
+import { Icon, Label } from '@gravity-ui/uikit';
+import { FC, SVGProps } from 'react';
 
-import styles from './CIBadge.module.css';
+import type { CIStatus } from '@/shared/types';
 
 interface Props {
-    status: 'UNKNOWN' | 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILURE';
+    status: CIStatus;
     size: number;
 }
 
-const CONFIG = {
+interface ConfigValue {
+    icon: (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
+    theme: 'unknown' | 'warning' | 'info' | 'success' | 'danger';
+}
+
+const CONFIG: Record<CIStatus, ConfigValue> = {
     UNKNOWN: {
         icon: Ban,
-        className: styles.unknown,
+        theme: 'unknown',
     },
     PENDING: {
         icon: Clock,
-        className: styles.pending,
+        theme: 'warning',
     },
     RUNNING: {
         icon: Circle,
-        className: styles.running,
+        theme: 'info',
     },
     SUCCESS: {
         icon: Check,
-        className: styles.success,
+        theme: 'success',
     },
     FAILURE: {
         icon: Xmark,
-        className: styles.failure,
+        theme: 'danger',
     },
 };
 
 export const CIBadge: FC<Props> = ({ status, size }) => {
-    const { icon, className } = CONFIG[status];
-
-    return <Icon data={icon} className={className} size={size} />;
+    const { icon, theme } = CONFIG[status];
+    return (
+        <Label type={'default'} theme={theme}>
+            <Icon data={icon} size={size} />
+        </Label>
+    );
 };

@@ -1,11 +1,11 @@
 'use client';
 
-import { Avatar } from '@gravity-ui/uikit';
-import { FC } from 'react';
+import { Flex } from '@gravity-ui/uikit';
+import Link from 'next/link';
+import { FC, JSX } from 'react';
 
-import { Assignment } from '@/shared/types/assignment';
-import { Commit } from '@/shared/types/commit';
-import { Submission } from '@/shared/types/submission';
+import { UserAvatar } from '@/shared/components/UserAvatar';
+import { Assignment, Commit, Submission } from '@/shared/types';
 import { formatDateFromISODate, formatDueDate } from '@/shared/utils/helpers';
 import { CIBadge } from '@/widgets/ciBadge/CIBadge';
 
@@ -17,9 +17,13 @@ interface ReviewHeaderProps {
     assignment: Assignment;
 }
 
-const renderCommit = (commit: Commit) => {
+const formatSha: (sha: string) => string = (sha) => {
+    return sha.slice(0, 6);
+};
+
+const renderCommit: (commit: Commit) => JSX.Element = (commit) => {
     return (
-        <div key={commit.sha} className={styles.commitWrapper}>
+        <div className={styles.commitWrapper} key={commit.sha}>
             <div className={styles.commitDate}>
                 {formatDateFromISODate(commit.committedAt)}
             </div>
@@ -28,14 +32,11 @@ const renderCommit = (commit: Commit) => {
                     <span className={styles.commitTitle}>
                         {commit.message}
                         <span className={styles.badge}>
-                            <CIBadge
-                                status={commit.ciStatus}
-                                size={18}
-                            ></CIBadge>
+                            <CIBadge status={commit.ciStatus} size={18} />
                         </span>
                     </span>
                     <span className={styles.commitSha}>
-                        {commit.sha.slice(0, 6)}
+                        {formatSha(commit.sha)}
                     </span>
                 </div>
             </div>
@@ -49,59 +50,46 @@ export const ReviewHeader: FC<ReviewHeaderProps> = ({
 }) => {
     const lastCommits = commits.slice(0, 10);
     const student = submission.student;
-    const avatar = student.avatar ? (
-        <Avatar
-            imgUrl={student.avatar}
-            size="m"
-            borderColor={'var(--g-color-text-positive)'}
-        />
-    ) : (
-        <Avatar
-            text={student.name}
-            size="m"
-            theme="brand"
-            borderColor={'var(--g-color-text-positive)'}
-        />
-    );
     return (
         <div className={styles.reviewHeader}>
-            <div className={styles.reviewInfo}>
-                <div className={styles.headerTop}>
+            <Flex direction={'column'}>
+                <Flex justifyContent={'space-between'} alignItems={'center'}>
                     <h2 className={styles.assignmentTitle}>
                         {assignment.title}
                         <span className={styles.badge}>
-                            <CIBadge
-                                status={submission.ciStatus}
-                                size={24}
-                            ></CIBadge>
+                            <CIBadge status={submission.ciStatus} size={24} />
                         </span>
                     </h2>
 
-                    <a
+                    <Link
                         href={`/user/${student.id}`}
                         className={styles.studentInfo}
                     >
                         <span className={styles.studentName}>Автор:</span>
-                        {avatar}
+                        <UserAvatar
+                            avatarUrl={student.avatar}
+                            name={student.name}
+                            borderColor={'var(--g-color-text-positive)'}
+                        />
                         <span className={styles.studentName}>
                             {student.name}
                         </span>
-                    </a>
-                </div>
+                    </Link>
+                </Flex>
 
-                <div className={styles.metaInfo}>
-                    <div>Дедлайн: {formatDueDate(assignment.dueDate)}</div>
+                <Flex direction={'column'} gap={2}>
+                    <span>Дедлайн: {formatDueDate(assignment.dueDate)}</span>
 
-                    <div>
-                        <a href={assignment.classroomUrl}>Classroom</a>
-                    </div>
+                    <Link href={assignment.classroomUrl}>Classroom</Link>
 
-                    <div>
-                        Репозиторий:{' '}
-                        <a href={submission.repoUrl}>{submission.repoName}</a>
-                    </div>
-                </div>
-            </div>
+                    <span>
+                        {'Репозиторий: '}
+                        <Link href={submission.repoUrl}>
+                            {submission.repoName}
+                        </Link>
+                    </span>
+                </Flex>
+            </Flex>
 
             <h3>Коммиты ({lastCommits.length}):</h3>
             <div className={styles.commits}>

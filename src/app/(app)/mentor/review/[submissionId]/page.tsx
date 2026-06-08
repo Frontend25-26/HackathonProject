@@ -1,13 +1,15 @@
 import { apiFetch } from '@/shared/api';
-import { Assignment } from '@/shared/types/assignment';
 import {
     ReviewSubmissionClient,
     ReviewHeader,
 } from '@/widgets/review-submission';
 
-import type { Commit } from '@/shared/types/commit';
-import type { FileChange } from '@/shared/types/file-diff';
-import type { Submission } from '@/shared/types/submission';
+import type {
+    Assignment,
+    Commit,
+    FileChange,
+    Submission,
+} from '@/shared/types';
 
 interface ReviewSubmissionProps {
     params: {
@@ -22,20 +24,18 @@ interface DiffFetch {
 async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
     const a = await params;
     let fileData: DiffFetch;
+    let commits: Commit[];
+    let submission: Submission;
     try {
-        fileData = await apiFetch<DiffFetch>(
-            `/api/submissions/${a.submissionId}/diff`,
-        );
+        [fileData, commits, submission] = await Promise.all([
+            apiFetch<DiffFetch>(`/api/submissions/${a.submissionId}/diff`),
+            apiFetch<Commit[]>(`/api/submissions/${a.submissionId}/commits`),
+            apiFetch<Submission>(`/api/submissions/${a.submissionId}`),
+        ]);
     } catch {
         return <p>Работа не найдена</p>;
     }
 
-    const commits = await apiFetch<Commit[]>(
-        `/api/submissions/${a.submissionId}/commits?refresh=1`,
-    );
-    const submission = await apiFetch<Submission>(
-        `/api/submissions/${a.submissionId}`,
-    );
     const assignment = await apiFetch<Assignment>(
         `/api/assignments/${submission.assignmentId}`,
     );
@@ -46,7 +46,7 @@ async function ReviewSubmissionPage({ params }: ReviewSubmissionProps) {
                 commits={commits}
                 submission={submission}
                 assignment={assignment}
-            ></ReviewHeader>
+            />
             <ReviewSubmissionClient fileChanges={fileData.files} />
         </div>
     );

@@ -3,24 +3,10 @@
     margin-bottom: var(--g-spacing-6);
 }
 
-.reviewInfo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--g-spacing-3);
-    flex: 1;
-}
-
-.headerTop {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--g-spacing-4);
-}
-
 .assignmentTitle {
     margin: 0;
-    font-size: calc(var(--g-spacing-2) * 2);
-    font-weight: 600;
+    font-size: var(--g-text-header-1-font-size);
+    font-weight: bold;
 
     display: flex;
     align-items: center;
@@ -37,41 +23,33 @@
 }
 
 .studentName {
-    font-size: var(--g-spacing-4);
-    font-weight: 500;
-}
-
-.metaInfo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--g-spacing-2);
+    font-size: var(--g-text-body-2-font-size);
+    font-weight: bolder;
 }
 
 .commitWrapper {
-    display: flex;
-    gap: var(--g-spacing-2);
-    margin: var(--g-spacing-1) 0;
-    align-items: flex-start;
+    display: grid;
+    width: 40vw;
+    grid-template-columns: 2fr 5fr;
 }
 
 .commitDate {
     margin-top: auto;
     margin-bottom: auto;
-    width: calc(var(--g-spacing-2) * 16);
-    font-size: var(--g-spacing-3);
+    font-size: var(--g-text-body-short-font-size);
 }
 
 .commits {
-    width: fit-content;
     display: flex;
     flex-direction: column;
-    max-height: calc(var(--g-spacing-2) * 20);
+    gap: var(--g-spacing-2);
+    max-height: 25vh;
     overflow-y: auto;
 }
 
 .commit {
     flex: 1;
-    border: 1px solid;
+    border: 1px solid var(--g-color-base-neutral-heavy);
     margin-right: var(--g-spacing-3);
     max-width: calc(var(--g-spacing-2) * 50);
     border-radius: var(--g-spacing-1);
@@ -86,8 +64,7 @@
 }
 
 .commitTitle {
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-block: auto;
     font-weight: bold;
     font-size: var(--g-spacing-3);
     display: flex;
@@ -96,7 +73,7 @@
 
 .commitSha {
     margin-left: var(--g-spacing-3);
-    font-family: monospace;
+    font: var(--g-font-family-monospace);
     font-size: var(--g-spacing-3);
     color: inherit;
 }
