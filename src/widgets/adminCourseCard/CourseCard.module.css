@@ -1,0 +1,37 @@
+.pageWrapper {
+    padding: var(--g-spacing-6);
+}
+
+.notFoundContainer {
+    display: flex;
+    justify-content: center;
+    padding: var(--g-spacing-8);
+}
+
+.notFoundCard {
+    width: 100%;
+    max-width: 500px;
+    padding: var(--g-spacing-6);
+    text-align: center;
+}
+
+.notFoundTitle {
+    display: block;
+    margin-bottom: var(--g-spacing-4);
+}
+
+.notFoundDescription {
+    display: block;
+    margin-bottom: var(--g-spacing-6);
+    color: var(--g-color-text-secondary);
+}
+
+.codeSnippet {
+    background: var(--g-color-base-misc-light);
+    padding: var(--g-spacing-1) var(--g-spacing-2);
+    border-radius: var(--g-border-radius-s);
+}
+
+.tabList {
+    margin-bottom: var(--g-spacing-5);
+}

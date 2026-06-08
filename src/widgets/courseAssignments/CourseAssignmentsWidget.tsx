@@ -6,6 +6,7 @@ import {
     Loader,
     Alert,
     type TableColumnConfig,
+    Link,
 } from '@gravity-ui/uikit';
 import { FC, useMemo } from 'react';
 
@@ -54,6 +55,11 @@ export const CourseAssignmentsWidget: FC<CourseAssignmentsWidgetProps> = ({
             {
                 id: 'title',
                 name: 'Название задания',
+                template: (item) => (
+                    <Link href={item.classroomUrl} target="_blank">
+                        {item.title}
+                    </Link>
+                ),
                 meta: {
                     sort: (a: AssignmentRow, b: AssignmentRow): number =>
                         a.title.localeCompare(b.title, 'ru'),
@@ -85,18 +91,6 @@ export const CourseAssignmentsWidget: FC<CourseAssignmentsWidgetProps> = ({
                     sort: (a: AssignmentRow, b: AssignmentRow): number =>
                         a.maxGrade - b.maxGrade,
                 },
-            },
-            {
-                id: 'classroomUrl',
-                name: 'Ссылка на classroom',
-                template: (item) => (
-                    <div
-                        className={styles.link_to_course}
-                        onClick={() => window.open(item.classroomUrl)}
-                    >
-                        {item.classroomUrl}
-                    </div>
-                ),
             },
         ],
         [],
