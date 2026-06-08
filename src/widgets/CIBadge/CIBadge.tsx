@@ -1,8 +1,4 @@
-import { Ban } from '@gravity-ui/icons';
-import { Clock } from '@gravity-ui/icons';
-import { Circle } from '@gravity-ui/icons';
-import { Check } from '@gravity-ui/icons';
-import { Xmark } from '@gravity-ui/icons';
+import { Ban, Clock, Circle, Check, Xmark } from '@gravity-ui/icons';
 import { Icon, Label } from '@gravity-ui/uikit';
 import { FC, SVGProps } from 'react';
 

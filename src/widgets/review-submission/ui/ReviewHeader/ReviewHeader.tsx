@@ -7,7 +7,7 @@ import { FC, JSX } from 'react';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { Assignment, Commit, Submission } from '@/shared/types';
 import { formatDateFromISODate, formatDueDate } from '@/shared/utils/helpers';
-import { CIBadge } from '@/widgets/ciBadge/CIBadge';
+import { CIBadge } from '@/widgets/CIBadge';
 
 import styles from './ReviewHeader.module.css';
 
@@ -79,8 +79,9 @@ export const ReviewHeader: FC<ReviewHeaderProps> = ({
 
                 <Flex direction={'column'} gap={2}>
                     <span>Дедлайн: {formatDueDate(assignment.dueDate)}</span>
-
-                    <Link href={assignment.classroomUrl}>Classroom</Link>
+                    {assignment.classroomUrl && (
+                        <Link href={assignment.classroomUrl}>Classroom</Link>
+                    )}
 
                     <span>
                         {'Репозиторий: '}
