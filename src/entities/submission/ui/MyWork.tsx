@@ -22,23 +22,24 @@ export const MyWork = ({ submission, hasSubmission, hasCommits }: Props) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        let isMounted = true;
-        if (submission?.id && hasCommits) {
-            setTimeout(() => setLoading(true), 0);
-            apiFetch<Commit[]>(
-                `/api/submissions/${submission.id}/commits?refresh=1`,
-            )
-                .then((data) => {
-                    if (isMounted) setCommits(data);
-                })
-                .catch((err) => console.error('Commits error:', err))
-                .finally(() => {
-                    if (isMounted) setLoading(false);
-                });
-        }
-        return () => {
-            isMounted = false;
-        };
+        if (!submission?.id || !hasCommits) return;
+
+        const abortController = new AbortController();
+
+        apiFetch<Commit[]>(
+            `/api/submissions/${submission.id}/commits?refresh=1`,
+            {
+                signal: abortController.signal,
+            },
+        )
+            .then(setCommits)
+            .catch((err) => {
+                if (err.name !== 'AbortError')
+                    console.error('Commits error:', err);
+            })
+            .finally(() => setLoading(false));
+
+        return () => abortController.abort();
     }, [submission, hasCommits]);
 
     if (!hasSubmission) {

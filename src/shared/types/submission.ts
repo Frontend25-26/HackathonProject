@@ -1,3 +1,18 @@
+export enum CiStatus {
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+    RUNNING = 'RUNNING',
+    PENDING = 'PENDING',
+    UNKNOWN = 'UNKNOWN',
+}
+
+export type SubmissionStatus =
+    | 'DRAFT'
+    | 'PENDING'
+    | 'IN_REVIEW'
+    | 'CHANGES_REQUESTED'
+    | 'APPROVED';
+
 interface StudentSchema {
     id: number;
     name: string;
@@ -8,19 +23,21 @@ interface StudentSchema {
 export interface Submission {
     id: number;
     repoUrl: string;
-    ciStatus: string;
-    status: string;
+    ciStatus: CiStatus;
+    status: SubmissionStatus;
     assignmentId: number;
     studentId: number;
     student: StudentSchema;
     createdAt: string;
     updatedAt: string;
+    score?: number;
 }
+
 export interface Commit {
     sha: string;
     message: string;
     authorName: string;
     committedAt: string;
-    ciStatus: string;
+    ciStatus: CiStatus;
     commitUrl?: string;
 }

@@ -8,22 +8,14 @@ import type { Commit } from '@/shared/types/submission';
 
 const columns = [
     {
-        id: 'date',
+        id: 'committedAt',
         name: 'Дата',
-        template: (c: Commit) => formatDateFromISODate(c.committedAt), // используем committedAt
+        template: (c: Commit) => formatDateFromISODate(c.committedAt),
     },
+    { id: 'message', name: 'Сообщение' },
+    { id: 'authorName', name: 'Автор' },
     {
-        id: 'message',
-        name: 'Сообщение',
-        template: (c: Commit) => c.message,
-    },
-    {
-        id: 'author',
-        name: 'Автор',
-        template: (c: Commit) => c.authorName,
-    },
-    {
-        id: 'ci',
+        id: 'ciStatus',
         name: 'CI',
         template: (c: Commit) => <CiBadge status={c.ciStatus} />,
     },

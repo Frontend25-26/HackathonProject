@@ -1,36 +1,16 @@
 .page {
-    padding: var(--g-spacing-6);
     background-color: var(--g-color-base-background);
 }
 
 .card {
     padding: var(--g-spacing-8);
-    box-shadow: var(--g-shadow-level-3);
     background-color: var(--g-color-base-card);
 }
 
 .header {
     flex-wrap: wrap;
     gap: var(--g-spacing-3);
-}
-
-.statusBadge {
-    display: inline-block;
-    padding: var(--g-spacing-1) var(--g-spacing-4);
-    font-size: var(--g-text-body-2-font-size);
-    background-color: var(--g-color-base-generic);
-}
-
-.statusActive {
-    color: var(--g-color-text-info);
-}
-
-.statusOverdue {
-    color: var(--g-color-text-danger);
-}
-
-.statusCompleted {
-    color: var(--g-color-text-positive);
+    margin-bottom: var(--g-spacing-6);
 }
 
 .meta {
@@ -43,29 +23,19 @@
     margin-bottom: var(--g-spacing-6);
 }
 
-.tabs {
-    display: flex;
-    gap: var(--g-spacing-2);
-    border-bottom: 1px solid var(--g-color-line-generic);
-    margin-bottom: var(--g-spacing-6);
-}
-
-.tab {
+.acceptLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: var(--g-spacing-2) var(--g-spacing-4);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--g-color-text-secondary);
+    background-color: var(--g-color-base-brand);
+    color: var(--g-color-text-action-contrast);
+    text-decoration: none;
+    border-radius: var(--g-spacing-1);
 }
 
-.tab:hover {
-    color: var(--g-color-text-brand);
-}
-
-.tabActive {
-    color: var(--g-color-text-brand);
-    border-bottom: 2px solid var(--g-color-text-brand);
-    margin-bottom: -1px;
+.tabs {
+    margin-bottom: var(--g-spacing-6);
 }
 
 .description {

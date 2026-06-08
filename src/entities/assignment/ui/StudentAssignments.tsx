@@ -35,11 +35,13 @@ const STATUS_CONFIG = {
     [AssignmentStatus.COMPLETED]: { text: 'Сдано', theme: 'success' as const },
 };
 
+const COMPLETED_STATUSES = ['APPROVED', 'COMPLETED'];
+
 const getAssignmentStatusWithSubmission = (
     assignment: Assignment,
     submission?: Submission,
 ): AssignmentStatus => {
-    if (submission && ['APPROVED', 'COMPLETED'].includes(submission.status)) {
+    if (submission && COMPLETED_STATUSES.includes(submission.status)) {
         return AssignmentStatus.COMPLETED;
     }
     const now = new Date();
@@ -117,7 +119,7 @@ export const StudentAssignments = ({
                         assignment,
                         submission,
                     ),
-                    score: 0,
+                    score: submission?.score ?? 0,
                 };
             }),
         [assignments, coursesMap, submissionsMap],

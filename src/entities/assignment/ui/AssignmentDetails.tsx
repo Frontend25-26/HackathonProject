@@ -1,6 +1,16 @@
 'use client';
 
-import { Card, Text, Button, Flex } from '@gravity-ui/uikit';
+import {
+    Card,
+    Text,
+    Flex,
+    Box,
+    Label,
+    TabProvider,
+    TabList,
+    Tab,
+    TabPanel,
+} from '@gravity-ui/uikit';
 import { useState } from 'react';
 
 import { MyWork } from '@/entities/submission';
@@ -19,37 +29,26 @@ interface Props {
 const getAssignmentStatus = (
     assignment: Assignment,
     isCompleted?: boolean,
-): { text: string; className: string } => {
-    if (isCompleted)
-        return { text: 'Сдано', className: styles.statusCompleted };
+): { text: string; theme: 'success' | 'danger' | 'info' } => {
+    if (isCompleted) return { text: 'Сдано', theme: 'success' };
     const now = new Date();
     const dueDate = new Date(assignment.dueDate);
-    if (dueDate < now)
-        return { text: 'Просрочено', className: styles.statusOverdue };
-    return { text: 'Активно', className: styles.statusActive };
+    if (dueDate < now) return { text: 'Просрочено', theme: 'danger' };
+    return { text: 'Активно', theme: 'info' };
 };
 
 export const AssignmentDetails = ({ assignment, submission }: Props) => {
-    const [activeTab, setActiveTab] = useState<
-        'description' | 'my-work' | 'review'
-    >('description');
-
+    const [activeTab, setActiveTab] = useState<string>('description');
     const hasSubmission = !!submission;
     const hasCommits = !!submission?.repoUrl;
     const isCompleted = submission?.status === 'APPROVED';
-    const { text: statusText, className: statusClass } = getAssignmentStatus(
+    const { text: statusText, theme: statusTheme } = getAssignmentStatus(
         assignment,
         isCompleted,
     );
 
-    const handleAccept = () => {
-        if (assignment.inviteLink) {
-            window.location.href = assignment.inviteLink;
-        }
-    };
-
     return (
-        <div className={styles.page}>
+        <Flex direction="column" gap={6} className={styles.page}>
             <Card className={styles.card}>
                 <Flex
                     justifyContent="space-between"
@@ -59,71 +58,68 @@ export const AssignmentDetails = ({ assignment, submission }: Props) => {
                     <Text as="h1" variant="display-1">
                         {assignment.title}
                     </Text>
-                    <span className={`${styles.statusBadge} ${statusClass}`}>
-                        {statusText}
-                    </span>
+                    <Label theme={statusTheme}>{statusText}</Label>
                 </Flex>
 
                 <Flex gap={8} className={styles.meta}>
                     <Text>
-                        <Text>Дедлайн: </Text>
-                        {formatDueDate(assignment.dueDate)}
+                        <Text variant="caption-1" color="secondary">
+                            Дедлайн:{' '}
+                        </Text>
+                        <Text variant="body-2">
+                            {formatDueDate(assignment.dueDate)}
+                        </Text>
                     </Text>
                     <Text>
-                        <Text>Макс. балл: </Text>
-                        {assignment.maxGrade}
+                        <Text variant="caption-1" color="secondary">
+                            Макс. балл:{' '}
+                        </Text>
+                        <Text variant="body-2">{assignment.maxGrade}</Text>
                     </Text>
                 </Flex>
 
                 {!hasSubmission && (
-                    <div className={styles.acceptButton}>
-                        <Button view="action" size="l" onClick={handleAccept}>
+                    <Box className={styles.acceptButton}>
+                        <a
+                            href={assignment.inviteLink}
+                            className={styles.acceptLink}
+                        >
                             Принять задание
-                        </Button>
-                    </div>
+                        </a>
+                    </Box>
                 )}
 
-                <div className={styles.tabs}>
-                    {(['description', 'my-work', 'review'] as const).map(
-                        (tab) => (
-                            <button
-                                key={tab}
-                                className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-                                onClick={() => setActiveTab(tab)}
-                            >
-                                {tab === 'description' && 'Описание'}
-                                {tab === 'my-work' && 'Моя работа'}
-                                {tab === 'review' && 'Ревью'}
-                            </button>
-                        ),
-                    )}
-                </div>
+                <TabProvider value={activeTab}>
+                    <TabList onUpdate={setActiveTab} className={styles.tabs}>
+                        <Tab value="description">Описание</Tab>
+                        <Tab value="my-work">Моя работа</Tab>
+                        <Tab value="review">Ревью</Tab>
+                    </TabList>
 
-                <div>
-                    {activeTab === 'description' && (
-                        <div className={styles.description}>
+                    <TabPanel value="description">
+                        <Box className={styles.description}>
                             <Text>
                                 {assignment.description || 'Нет описания'}
                             </Text>
-                        </div>
-                    )}
+                        </Box>
+                    </TabPanel>
 
-                    {activeTab === 'my-work' && (
+                    <TabPanel value="my-work">
                         <MyWork
                             assignmentId={assignment.id}
                             submission={submission}
                             hasSubmission={hasSubmission}
                             hasCommits={hasCommits}
                         />
-                    )}
+                    </TabPanel>
 
-                    {activeTab === 'review' && (
+                    <TabPanel value="review">
                         <Text color="secondary">
                             Раздел ревью появится позже после проверки ментором.
                         </Text>
-                    )}
-                </div>
+                    </TabPanel>
+                </TabProvider>
             </Card>
-        </div>
+        </Flex>
     );
 };
