@@ -1,0 +1,5 @@
+.errorCard {
+    padding: var(--g-spacing-6, 24px);
+    text-align: center;
+    color: var(--g-color-text-danger);
+}
