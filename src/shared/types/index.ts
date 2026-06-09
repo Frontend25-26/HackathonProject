@@ -6,3 +6,5 @@ export { CiStatus } from './submission';
 export type { Submission, Commit, SubmissionStatus } from './submission';
 export type { User } from './user';
 export type {} from './next-auth.d';
+export type { Commit, CIStatus } from './commit';
+export type { FilePath, FileStatus, FileChange, RepoDiff } from './file-diff';

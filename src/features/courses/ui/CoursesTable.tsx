@@ -1,6 +1,11 @@
 'use client';
 
-import { DropdownMenu, Table, TableColumnConfig } from '@gravity-ui/uikit';
+import {
+    DropdownMenu,
+    Link,
+    Table,
+    TableColumnConfig,
+} from '@gravity-ui/uikit';
 import { FC } from 'react';
 
 import { Course } from '@/entities/course';
@@ -33,7 +38,18 @@ export const CoursesTable: FC<CourseTableProps> = ({
 
     const columns: TableColumnConfig<Course>[] = [
         { id: 'id', name: 'ID' },
-        { id: 'title', name: 'Название' },
+        {
+            id: 'title',
+            name: 'Название',
+            template: (item) => (
+                <Link
+                    className={styles.link_to_course}
+                    href={`/admin/courses/${item.id}`}
+                >
+                    {item.title}
+                </Link>
+            ),
+        },
         {
             id: 'createdAt',
             name: 'Создан',

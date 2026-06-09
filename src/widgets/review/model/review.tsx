@@ -1,4 +1,5 @@
 import { TableColumnConfig } from '@gravity-ui/uikit';
+import Link from 'next/link';
 
 import { DisplayedSubmission } from '@/entities/submission';
 import { formatDateFromISODate } from '@/shared/utils/helpers';
@@ -43,7 +44,7 @@ export const columns: TableColumnConfig<DisplayedSubmission>[] = [
         id: 'id',
         name: 'Страница работы',
         template: (item) => (
-            <a href={`/mentor/review/submissionId=${item.id}`}>Ссылка</a>
+            <Link href={`/mentor/review/${item.id}`}>Ссылка</Link>
         ),
     },
 ];

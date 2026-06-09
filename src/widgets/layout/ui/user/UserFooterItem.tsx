@@ -1,8 +1,9 @@
 'use client';
 
 import { FooterItem } from '@gravity-ui/navigation';
-import { Avatar } from '@gravity-ui/uikit';
 import { FC } from 'react';
+
+import { UserAvatar } from '@/shared/components/UserAvatar';
 
 import type { Role, User } from '@/entities/user';
 
@@ -32,17 +33,10 @@ export const UserFooterItem: FC<UserFooterItemProps> = ({ user, compact }) => {
             href={`/user/${user.id}`}
             itemWrapper={(_, makeItem) =>
                 makeItem({
-                    icon: user.avatar ? (
-                        <Avatar
-                            imgUrl={user.avatar}
-                            size="m"
-                            borderColor={getRoleColor(user.role)}
-                        />
-                    ) : (
-                        <Avatar
-                            text={userName}
-                            size="m"
-                            theme="brand"
+                    icon: (
+                        <UserAvatar
+                            avatarUrl={user.avatar}
+                            name={userName}
                             borderColor={getRoleColor(user.role)}
                         />
                     ),

@@ -12,6 +12,7 @@ export type SubmissionStatus =
     | 'IN_REVIEW'
     | 'CHANGES_REQUESTED'
     | 'APPROVED';
+import type { CIStatus } from '@/shared/types/commit';
 
 interface StudentSchema {
     id: number;
@@ -25,6 +26,7 @@ export interface Submission {
     repoUrl: string;
     ciStatus: CiStatus;
     status: SubmissionStatus;
+    repoName: string;
     assignmentId: number;
     studentId: number;
     student: StudentSchema;
