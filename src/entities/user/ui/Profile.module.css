@@ -1,0 +1,26 @@
+.page {
+    background-color: var(--g-color-base-background);
+    padding: var(--g-spacing-6);
+}
+
+.card {
+    padding: var(--g-spacing-6);
+}
+
+.header {
+    flex-wrap: wrap;
+}
+
+.sectionTitle {
+    margin-bottom: var(--g-spacing-4);
+}
+
+.githubLink,
+.emailLink {
+    display: block;
+    margin: var(--g-spacing-2) 0;
+}
+
+.tableWrapper table {
+    width: 100%;
+}
