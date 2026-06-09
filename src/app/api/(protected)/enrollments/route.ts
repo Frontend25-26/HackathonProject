@@ -4,10 +4,10 @@
  * STUDENT видит только свои зачисления; MENTOR/ADMIN видят все.
  */
 
+import { Role } from '@backend/generated/prisma';
 import { NextRequest } from 'next/server';
 
 import { enrollmentRepository } from '@backend/enrollments/repository';
-import { Role } from '@backend/generated/prisma';
 import { requireAuth } from '@backend/lib/auth';
 
 export async function GET(request: NextRequest) {

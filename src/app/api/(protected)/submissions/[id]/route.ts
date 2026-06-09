@@ -9,9 +9,9 @@
  *  PATCH — STUDENT обновляет только свои сабмишны; MENTOR/ADMIN — любые.
  */
 
+import { Role } from '@backend/generated/prisma';
 import { NextRequest } from 'next/server';
 
-import { Role } from '@backend/generated/prisma';
 import { requireAuth } from '@backend/lib/auth';
 import { submissionRepository } from '@backend/submissions/repository';
 import { UpdateSubmissionSchema } from '@backend/submissions/schema';
