@@ -1,7 +1,11 @@
 'use client';
 
-import { DropdownMenu, Table, TableColumnConfig } from '@gravity-ui/uikit';
-import { useRouter } from 'next/navigation';
+import {
+    DropdownMenu,
+    Link,
+    Table,
+    TableColumnConfig,
+} from '@gravity-ui/uikit';
 import { FC } from 'react';
 
 import { Course } from '@/entities/course';
@@ -20,8 +24,6 @@ export const CoursesTable: FC<CourseTableProps> = ({
     onEditAction,
     onDeleteAction,
 }) => {
-    const router = useRouter();
-
     const getRowActions = (course: Course) => [
         {
             text: 'Редактировать',
@@ -40,12 +42,12 @@ export const CoursesTable: FC<CourseTableProps> = ({
             id: 'title',
             name: 'Название',
             template: (item) => (
-                <div
+                <Link
                     className={styles.link_to_course}
-                    onClick={() => router.push(`/admin/courses/${item.id}`)}
+                    href={`/admin/courses/${item.id}`}
                 >
                     {item.title}
-                </div>
+                </Link>
             ),
         },
         {
