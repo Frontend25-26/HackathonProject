@@ -1,7 +1,10 @@
+export { AssignmentStatus } from './assignment';
 export type { Assignment } from './assignment';
-export type { Commit, CIStatus } from './commit';
 export type { Course } from './course';
 export type { Enrollment } from './enrollment';
-export type { FilePath, FileStatus, FileChange, RepoDiff } from './file-diff';
-export type { Submission } from './submission';
+export { CiStatus } from './submission';
+export type { Submission, Commits, SubmissionStatus } from './submission';
 export type { User } from './user';
+export type {} from './next-auth.d';
+export type { Commit } from './commit';
+export type { FilePath, FileStatus, FileChange, RepoDiff } from './file-diff';

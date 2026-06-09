@@ -1,6 +1,5 @@
 import {
     ArrowRightFromSquare,
-    Bell,
     GraduationCap,
     Moon,
     Sun,

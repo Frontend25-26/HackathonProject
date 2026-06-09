@@ -4,23 +4,28 @@ import { Text, Box, Select, Button, Label, Flex } from '@gravity-ui/uikit';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useMemo } from 'react';
 
-import { AssignmentStatus, type Assignment } from '@/shared/types/assignment';
+import {
+    AssignmentStatus,
+    type Assignment,
+    type Course,
+    type Submission,
+} from '@/shared/types';
 import { Table } from '@/shared/ui/Table/Table';
 import { formatDueDate } from '@/shared/utils/helpers';
 
 import styles from './StudentAssignments.module.css';
 
-import type { Course } from '@/entities/course';
-
 interface StudentAssignmentsProps {
     assignments: Assignment[];
     courses: Course[];
+    submissions?: Submission[];
     initialCourseId?: number;
 }
 
 interface EnrichedAssignment extends Assignment {
     courseTitle: string;
     status: AssignmentStatus;
+    score: number;
 }
 
 const STATUS_CONFIG = {
@@ -32,7 +37,15 @@ const STATUS_CONFIG = {
     [AssignmentStatus.COMPLETED]: { text: 'Сдано', theme: 'success' as const },
 };
 
-const getDefaultStatus = (assignment: Assignment): AssignmentStatus => {
+const COMPLETED_STATUSES = ['APPROVED', 'COMPLETED'];
+
+const getAssignmentStatusWithSubmission = (
+    assignment: Assignment,
+    submission?: Submission,
+): AssignmentStatus => {
+    if (submission && COMPLETED_STATUSES.includes(submission.status)) {
+        return AssignmentStatus.COMPLETED;
+    }
     const now = new Date();
     const dueDate = new Date(assignment.dueDate);
     return dueDate < now ? AssignmentStatus.OVERDUE : AssignmentStatus.ACTIVE;
@@ -57,9 +70,8 @@ const columns = [
     {
         id: 'maxGrade',
         name: 'Баллы',
-        // заглушка пока на 0 баллов
-        // template: (item: EnrichedAssignment) => `${item.score ?? 0} / ${item.maxGrade}`,
-        template: (item: EnrichedAssignment) => `0 / ${item.maxGrade}`,
+        template: (item: EnrichedAssignment) =>
+            `${item.score} / ${item.maxGrade}`,
     },
     {
         id: 'status',
@@ -75,6 +87,7 @@ const columns = [
 export const StudentAssignments = ({
     assignments,
     courses,
+    submissions = [],
     initialCourseId,
 }: StudentAssignmentsProps) => {
     const router = useRouter();
@@ -89,18 +102,29 @@ export const StudentAssignments = ({
         [courses],
     );
 
+    const submissionsMap = useMemo(
+        () =>
+            new Map(submissions.map((sub) => [Number(sub.assignmentId), sub])),
+        [submissions],
+    );
+
     const enrichedAssignments: EnrichedAssignment[] = useMemo(
         () =>
-            assignments.map((assignment) => ({
-                ...assignment,
-                courseTitle:
-                    coursesMap.get(assignment.courseId) ||
-                    `Курс ${assignment.courseId}`,
-                //assignment.status ??
-                // заглушка пока не получаем статус задания
-                status: getDefaultStatus(assignment),
-            })),
-        [assignments, coursesMap],
+            assignments.map((assignment) => {
+                const submission = submissionsMap.get(assignment.id);
+                return {
+                    ...assignment,
+                    courseTitle:
+                        coursesMap.get(assignment.courseId) ||
+                        `Курс ${assignment.courseId}`,
+                    status: getAssignmentStatusWithSubmission(
+                        assignment,
+                        submission,
+                    ),
+                    score: submission?.score ?? 0,
+                };
+            }),
+        [assignments, coursesMap, submissionsMap],
     );
 
     const filteredAssignments = useMemo(() => {
@@ -153,7 +177,6 @@ export const StudentAssignments = ({
                         options={courseOptions}
                     />
                 </Box>
-
                 <Box>
                     <Select
                         value={[selectedStatus]}
@@ -161,7 +184,6 @@ export const StudentAssignments = ({
                         options={statusOptions}
                     />
                 </Box>
-
                 <Button
                     onClick={handleReset}
                     disabled={
@@ -178,9 +200,7 @@ export const StudentAssignments = ({
                     columns={columns}
                     verticalAlign="middle"
                     onRowClick={(item: EnrichedAssignment) =>
-                        router.push(
-                            `/student/assignments?courseId=${item.courseId}`,
-                        )
+                        router.push(`/student/assignments/${item.id}`)
                     }
                     emptyMessage="Нет домашних заданий"
                 />

@@ -5,11 +5,11 @@ export type Commit = {
     authorName: string;
     authorLogin: string;
     committedAt: string;
-    ciStatus: CIStatus;
+    ciStatus: CiStatus;
     submissionId: string;
 };
 
-export enum CIStatus {
+export enum CiStatus {
     UNKNOWN = 'UNKNOWN',
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',

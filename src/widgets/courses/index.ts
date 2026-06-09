@@ -1,1 +1,0 @@
-export { StudentCourses } from './StudentCourses';
