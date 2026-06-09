@@ -4,24 +4,24 @@ import { formatDateFromISODate } from '@/shared/utils/helpers';
 
 import { CiBadge } from './CiBadge';
 
-import type { Commit } from '@/shared/types';
+import type { Commits } from '@/shared/types';
 
 const columns = [
     {
         id: 'committedAt',
         name: 'Дата',
-        template: (c: Commit) => formatDateFromISODate(c.committedAt),
+        template: (c: Commits) => formatDateFromISODate(c.committedAt),
     },
     { id: 'message', name: 'Сообщение' },
     { id: 'authorName', name: 'Автор' },
     {
         id: 'ciStatus',
         name: 'CI',
-        template: (c: Commit) => <CiBadge status={c.ciStatus} />,
+        template: (c: Commits) => <CiBadge status={c.ciStatus} />,
     },
 ];
 
-export const CommitHistory = ({ commits }: { commits: Commit[] }) => {
+export const CommitHistory = ({ commits }: { commits: Commits[] }) => {
     return (
         <Table data={commits} columns={columns} emptyMessage="Нет коммитов" />
     );

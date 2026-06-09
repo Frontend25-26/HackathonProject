@@ -8,7 +8,7 @@ import { apiFetch } from '@/shared/api';
 import { CiBadge } from './CiBadge';
 import { CommitHistory } from './CommitHistory';
 
-import type { Submission, Commit } from '@/shared/types';
+import type { Submission, Commits } from '@/shared/types';
 
 interface Props {
     assignmentId: number;
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const MyWork = ({ submission, hasSubmission, hasCommits }: Props) => {
-    const [commits, setCommits] = useState<Commit[]>([]);
+    const [commits, setCommits] = useState<Commits[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ export const MyWork = ({ submission, hasSubmission, hasCommits }: Props) => {
 
         const abortController = new AbortController();
 
-        apiFetch<Commit[]>(
+        apiFetch<Commits[]>(
             `/api/submissions/${submission.id}/commits?refresh=1`,
             {
                 signal: abortController.signal,

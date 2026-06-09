@@ -7,7 +7,7 @@ import { FC, JSX } from 'react';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { Assignment, Commit, Submission } from '@/shared/types';
 import { formatDateFromISODate, formatDueDate } from '@/shared/utils/helpers';
-import { CIBadge } from '@/widgets/CIBadge';
+import { CIBadge } from '@/widgets/cibadge';
 
 import styles from './ReviewHeader.module.css';
 

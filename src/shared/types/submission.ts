@@ -12,7 +12,6 @@ export type SubmissionStatus =
     | 'IN_REVIEW'
     | 'CHANGES_REQUESTED'
     | 'APPROVED';
-import type { CIStatus } from '@/shared/types/commit';
 
 interface StudentSchema {
     id: number;
@@ -35,7 +34,7 @@ export interface Submission {
     score?: number;
 }
 
-export interface Commit {
+export interface Commits {
     sha: string;
     message: string;
     authorName: string;

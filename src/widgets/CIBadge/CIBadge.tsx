@@ -2,10 +2,10 @@ import { Ban, Clock, Circle, Check, Xmark } from '@gravity-ui/icons';
 import { Icon, Label } from '@gravity-ui/uikit';
 import { FC, SVGProps } from 'react';
 
-import type { CIStatus } from '@/shared/types';
+import type { CiStatus } from '@/shared/types';
 
 interface Props {
-    status: CIStatus;
+    status: CiStatus;
     size: number;
 }
 
@@ -14,7 +14,7 @@ interface ConfigValue {
     theme: 'unknown' | 'warning' | 'info' | 'success' | 'danger';
 }
 
-const CONFIG: Record<CIStatus, ConfigValue> = {
+const CONFIG: Record<CiStatus, ConfigValue> = {
     UNKNOWN: {
         icon: Ban,
         theme: 'unknown',
