@@ -14,9 +14,9 @@ import type { User, UserRole } from '@/shared/types/user';
 
 interface ProfileProps {
     user: User;
-    courses?: Course[];
-    students?: (User & { courseName: string })[];
-    mentors?: User[];
+    courses: Course[];
+    students: (User & { courseName: string })[];
+    mentors: User[];
 }
 
 const getRoleText = (role: UserRole): string => {
@@ -32,14 +32,8 @@ const getRoleText = (role: UserRole): string => {
     }
 };
 
-export const Profile = ({
-    user,
-    courses = [],
-    students = [],
-    mentors = [],
-}: ProfileProps) => {
+export const Profile = ({ user, courses, students, mentors }: ProfileProps) => {
     const gitHubLink = `https://github.com/${user.login}`;
-    const emailLink = user.email ? `mailto:${user.email}` : undefined;
     const userName = user.name ?? user.login;
 
     return (
@@ -76,7 +70,7 @@ export const Profile = ({
                         </Link>
                         {user.email && (
                             <Link
-                                href={emailLink!}
+                                href={`mailto:${user.email}`}
                                 className={styles.emailLink}
                             >
                                 Email: {user.email}
