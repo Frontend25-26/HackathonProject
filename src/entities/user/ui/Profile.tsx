@@ -1,32 +1,25 @@
 'use client';
 
-import { Card, Text, Flex, Box, Avatar, Link, Table } from '@gravity-ui/uikit';
+import { Card, Text, Flex, Box, Avatar, Link } from '@gravity-ui/uikit';
 
+import { getRoleColor } from '../lib/getRoleColor';
+
+import { AdminSection } from './AdminSection';
+import { MentorSection } from './MentorSection';
 import styles from './Profile.module.css';
+import { StudentSection } from './StudentSection';
 
 import type { Course } from '@/entities/course';
 import type { User, UserRole } from '@/shared/types/user';
 
 interface ProfileProps {
     user: User;
-    courses: Course[];
-    students: (User & { courseName: string })[];
+    courses?: Course[];
+    students?: (User & { courseName: string })[];
+    mentors?: User[];
 }
 
-const getRoleColor = (role: UserRole) => {
-    switch (role) {
-        case 'STUDENT':
-            return 'var(--g-color-text-positive)';
-        case 'MENTOR':
-            return 'var(--g-color-text-warning)';
-        case 'ADMIN':
-            return 'var(--g-color-text-danger)';
-        default:
-            return 'var(--g-color-text-secondary)';
-    }
-};
-
-const getRoleText = (role: UserRole) => {
+const getRoleText = (role: UserRole): string => {
     switch (role) {
         case 'STUDENT':
             return 'Студент';
@@ -39,8 +32,14 @@ const getRoleText = (role: UserRole) => {
     }
 };
 
-export const Profile = ({ user, courses, students }: ProfileProps) => {
+export const Profile = ({
+    user,
+    courses = [],
+    students = [],
+    mentors = [],
+}: ProfileProps) => {
     const gitHubLink = `https://github.com/${user.login}`;
+    const emailLink = user.email ? `mailto:${user.email}` : undefined;
     const userName = user.name ?? user.login;
 
     return (
@@ -76,81 +75,21 @@ export const Profile = ({ user, courses, students }: ProfileProps) => {
                             GitHub: {user.login}
                         </Link>
                         {user.email && (
-                            <Text variant="body-2">Email: {user.email}</Text>
+                            <Link
+                                href={emailLink!}
+                                className={styles.emailLink}
+                            >
+                                Email: {user.email}
+                            </Link>
                         )}
                     </Box>
                 </Flex>
             </Card>
 
-            {user.role === 'STUDENT' && (
-                <Card className={styles.card}>
-                    <Text
-                        as="h2"
-                        variant="subheader-2"
-                        className={styles.sectionTitle}
-                    >
-                        Мои курсы
-                    </Text>
-                    <Box className={styles.tableWrapper}>
-                        <Table
-                            data={courses}
-                            columns={[
-                                {
-                                    id: 'title',
-                                    name: 'Название',
-                                    template: (c: Course) => c.title,
-                                },
-                                {
-                                    id: 'progress',
-                                    name: 'Прогресс',
-                                    template: (c: Course) =>
-                                        `${c.assignmentsCompleted} / ${c.assignmentsTotal} ДЗ`,
-                                },
-                                {
-                                    id: 'score',
-                                    name: 'Баллы',
-                                    template: (c: Course) =>
-                                        `${c.totalScore} / ${c.maxScore}`,
-                                },
-                            ]}
-                            emptyMessage="Нет курсов"
-                        />
-                    </Box>
-                </Card>
-            )}
-
-            {user.role === 'MENTOR' && (
-                <Card className={styles.card}>
-                    <Text
-                        as="h2"
-                        variant="subheader-2"
-                        className={styles.sectionTitle}
-                    >
-                        Мои студенты
-                    </Text>
-                    <Box className={styles.tableWrapper}>
-                        <Table
-                            data={students}
-                            columns={[
-                                {
-                                    id: 'name',
-                                    name: 'Студент',
-                                    template: (
-                                        s: User & { courseName: string },
-                                    ) => s.name || s.login,
-                                },
-                                {
-                                    id: 'courseName',
-                                    name: 'Курс',
-                                    template: (
-                                        s: User & { courseName: string },
-                                    ) => s.courseName,
-                                },
-                            ]}
-                            emptyMessage="Нет курируемых студентов"
-                        />
-                    </Box>
-                </Card>
+            {user.role === 'STUDENT' && <StudentSection courses={courses} />}
+            {user.role === 'MENTOR' && <MentorSection students={students} />}
+            {user.role === 'ADMIN' && (
+                <AdminSection courses={courses} mentors={mentors} />
             )}
         </Flex>
     );
