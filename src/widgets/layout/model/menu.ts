@@ -1,12 +1,4 @@
-import {
-    CircleQuestion,
-    Dots9,
-    Gear,
-    GraduationCap,
-    ListCheck,
-    ListUl,
-    Persons,
-} from '@gravity-ui/icons';
+import { ListCheck, ListUl, Persons } from '@gravity-ui/icons';
 
 import type { Role } from '@/entities/user';
 import type { IconProps } from '@gravity-ui/uikit';
@@ -20,22 +12,13 @@ export interface MenuItemConfig {
     type?: 'action';
 }
 
-const ALL_ROLES: Role[] = ['STUDENT', 'MENTOR', 'ADMIN'];
-
 export const primaryMenu: MenuItemConfig[] = [
-    { id: 'dashboard', title: 'Дашборд', icon: Dots9, visibleRoles: ALL_ROLES },
     {
         id: 'assignments',
         title: 'Задания',
         icon: ListUl,
         visibleRoles: ['STUDENT'],
         href: '/student/assignments',
-    },
-    {
-        id: 'mentors',
-        title: 'Менторы',
-        icon: GraduationCap,
-        visibleRoles: ['ADMIN'],
     },
     {
         id: 'students',
@@ -67,13 +50,4 @@ export const primaryMenu: MenuItemConfig[] = [
     },
 ];
 
-export const secondaryMenu: MenuItemConfig[] = [
-    { id: 'faq', title: 'FAQ', icon: CircleQuestion, visibleRoles: ALL_ROLES },
-    {
-        id: 'settings',
-        title: 'Настройки',
-        icon: Gear,
-        visibleRoles: ['ADMIN'],
-        href: '/admin/classrooms',
-    },
-];
+export const secondaryMenu: MenuItemConfig[] = [];

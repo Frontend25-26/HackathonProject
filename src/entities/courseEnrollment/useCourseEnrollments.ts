@@ -52,11 +52,9 @@ export const useCourseEnrollments = (
             return {
                 index: idx + 1,
                 studentName:
-                    student?.name ??
-                    student?.githubId.toString() ??
-                    'Неизвестный студент',
+                    student?.name ?? student?.login ?? 'Неизвестный студент',
                 studentId: enc.studentId,
-                mentorName: mentor?.name ?? null,
+                mentorName: mentor?.name ?? mentor?.login ?? null,
                 mentorId: enc.mentorId,
                 enrollmentId: enc.id,
             };
