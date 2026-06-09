@@ -45,6 +45,13 @@ export const primaryMenu: MenuItemConfig[] = [
     },
     {
         id: 'courses',
+        title: 'Список курсов',
+        icon: ListUl,
+        visibleRoles: ['ADMIN'],
+        href: '/admin/courses',
+    },
+    {
+        id: 'courses',
         title: 'Список Курсов',
         icon: ListUl,
         visibleRoles: ['STUDENT'],

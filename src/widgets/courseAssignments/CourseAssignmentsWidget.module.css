@@ -1,0 +1,39 @@
+.wrapper {
+    gap: var(--g-spacing-4);
+    padding: var(--g-spacing-5);
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--g-spacing-10);
+}
+
+.headerCard,
+.tableCard {
+    padding: var(--g-spacing-4);
+    margin: var(--g-spacing-2);
+    font-size: var(--g-text-body-3-font-size);
+    line-height: var(--g-text-body-3-line-height);
+}
+
+.headerCard {
+    display: flex;
+    gap: var(--g-spacing-2);
+    align-items: center;
+}
+
+.tableCard table {
+    width: 100%;
+}
+
+.tableCard th,
+.tableCard td {
+    padding: var(--g-spacing-3) var(--g-spacing-4);
+}
+
+.link_to_course {
+    text-decoration: underline;
+    cursor: pointer;
+}
