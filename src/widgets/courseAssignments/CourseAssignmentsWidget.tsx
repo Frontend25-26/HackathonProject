@@ -10,13 +10,11 @@ import {
 } from '@gravity-ui/uikit';
 import { FC, useMemo } from 'react';
 
+import { TableWithSorting } from '@/shared/ui/Table';
 import { formatDateFromISODate } from '@/shared/utils/helpers';
-import {
-    AssignmentRow,
-    TableWithSorting,
-} from '@/widgets/courseAssignments/utils';
 
 import styles from './CourseAssignmentsWidget.module.css';
+import { AssignmentRow } from './types';
 
 import type { Assignment } from '@/shared/types/assignment';
 import type { Course } from '@/shared/types/course';
@@ -35,6 +33,8 @@ export const CourseAssignmentsWidget: FC<CourseAssignmentsWidgetProps> = ({
     isLoading,
     error,
 }) => {
+    const CourseAssigmentTable = TableWithSorting<AssignmentRow>();
+
     const tableData: AssignmentRow[] = useMemo(
         (): AssignmentRow[] =>
             assignments.map(
@@ -123,7 +123,7 @@ export const CourseAssignmentsWidget: FC<CourseAssignmentsWidgetProps> = ({
             )}
 
             <Card view="raised" className={styles.tableCard}>
-                <TableWithSorting data={tableData} columns={columns} />
+                <CourseAssigmentTable data={tableData} columns={columns} />
             </Card>
         </div>
     );

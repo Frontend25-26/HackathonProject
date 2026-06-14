@@ -12,9 +12,10 @@ import { FC, useMemo } from 'react';
 
 import { UserRoleDropdown } from '@/features/userDropdown';
 import { User } from '@/shared/types';
+import { TableWithSorting } from '@/shared/ui/Table';
 import { formatDateFromISODate } from '@/shared/utils/helpers';
-import { TableWithSorting, UserTableRow } from '@/widgets/usersRoleTable/utils';
 
+import { UserTableRow } from './types';
 import styles from './UsersTableWidget.module.css';
 
 import type { ReactNode } from 'react';
@@ -34,6 +35,8 @@ export const UsersTableWidget: FC<UsersTableWidgetProps> = ({
     error,
     onUpdateRole,
 }) => {
+    const UsersTable = TableWithSorting<UserTableRow>();
+
     const tableData: UserTableRow[] = useMemo(
         () =>
             users.map((u) => {
@@ -156,7 +159,7 @@ export const UsersTableWidget: FC<UsersTableWidgetProps> = ({
             )}
 
             <Card view="raised" className={styles.tableCard}>
-                <TableWithSorting
+                <UsersTable
                     data={tableData}
                     columns={columns}
                     className={styles.table}

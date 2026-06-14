@@ -32,7 +32,10 @@ export const MentorDropdown: FC<MentorDropdownProps> = ({
 
         const mentorItems: DropdownMenuItem[] = mentors.map(
             (m: User): DropdownMenuItem => ({
-                text: currentMentorId === m.id ? `-> ${m.name}` : m.name,
+                text:
+                    currentMentorId === m.id
+                        ? `-> ${m.name}`
+                        : m.name || m.login,
                 action: (): void => onSelect(m.id),
             }),
         );

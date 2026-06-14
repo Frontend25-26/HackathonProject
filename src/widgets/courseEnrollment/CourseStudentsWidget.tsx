@@ -12,9 +12,9 @@ import { FC, useMemo } from 'react';
 import { CourseStudentRow } from '@/entities/courseEnrollment';
 import { MentorDropdown } from '@/features/mentorDropdown';
 import { User } from '@/shared/types/user';
+import { TableWithSorting } from '@/shared/ui/Table';
 
 import styles from './CourseStudentsWidget.module.css';
-import { TableWithSorting } from './utils';
 
 import type { ReactNode } from 'react';
 
@@ -33,6 +33,8 @@ export const CourseStudentsWidget: FC<CourseStudentsWidgetProps> = ({
     error,
     onAssignMentor,
 }) => {
+    const CourseEnrollmentTable = TableWithSorting<CourseStudentRow>();
+
     const columns: TableColumnConfig<CourseStudentRow>[] = useMemo(
         (): TableColumnConfig<CourseStudentRow>[] => [
             {
@@ -120,7 +122,7 @@ export const CourseStudentsWidget: FC<CourseStudentsWidgetProps> = ({
             )}
 
             <Card view="raised" className={styles.tableCard}>
-                <TableWithSorting data={students} columns={columns} />
+                <CourseEnrollmentTable data={students} columns={columns} />
             </Card>
         </div>
     );
